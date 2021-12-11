@@ -1,0 +1,20 @@
+module.exports = [
+    'Text', 
+    'Name', 
+    'Phone Number', 
+    'Email', 
+    'Date', 
+    'Time', 
+    'Number',
+    'Rank',
+    'Username',
+    'Money', 
+    // 'Color', 
+    'Company', 
+    'Rating', 
+    'Trend',
+    // 'Status', 
+    'Image', 
+    'Person', 
+    'People'
+];
