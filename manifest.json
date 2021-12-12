@@ -22,7 +22,7 @@
     "uiEntryPoints": [
         {
             "type": "panel",
-            "label": "Open",
+            "label": "Fern",
             "panelId": "show"
         }
     ]
