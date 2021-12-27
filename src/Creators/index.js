@@ -2,10 +2,12 @@ const { placeInParent, createIcon, editDom, base64ArrayBuffer } = require("../ut
 const { PLUGIN_ID } = require("../constants");
 const Button = require("./Button");
 const Navbar = require("./Navbar");
+const MediaSection = require("./MediaSection");
 
 class Creators {
     static Button = Button
     static Navbar = Navbar
+    static MediaSection = MediaSection
     
     static Rating(selection, props = {}){
         const {

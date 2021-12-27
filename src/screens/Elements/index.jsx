@@ -6,6 +6,7 @@ const Card = require("./Card");
 const Image = require("./Image");
 const Button = require('./Button');
 const Navbar = require('./Navbar');
+const MediaSection = require('./MediaSection');
 
 function Elements({value, subscription, onUpgrade}){
     const [screen, setScreen] = React.useState("");
@@ -61,7 +62,8 @@ function Elements({value, subscription, onUpgrade}){
 
     function RenderElement(){
         const uiElements = {
-            Button, Navbar, Card, Image
+            Button, Navbar, MediaSection,
+            Card, Image
         };
 
         if(ELEMENT_TYPES.includes(screen)){

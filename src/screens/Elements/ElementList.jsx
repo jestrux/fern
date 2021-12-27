@@ -10,7 +10,7 @@ function ElementList({onGoToScreen}){
                 </h1>
 
                 {
-                    ['Button', 'Navbar'].map((element, index) => (
+                    ['Button', 'Navbar', 'MediaSection'].map((element, index) => (
                         <div key={index} className="mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base"
                             onClick={() => Creators[element]()}
                         >

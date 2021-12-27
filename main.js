@@ -29602,6 +29602,170 @@ module.exports = Button;
 
 /***/ }),
 
+/***/ "./src/Creators/MediaSection/createMedia.js":
+/*!**************************************************!*\
+  !*** ./src/Creators/MediaSection/createMedia.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function createMedia(props = {}, [defaultImage, portraitImage]) {
+    let {
+        color = "black",
+        shadow = true,
+        roundedCorners = true
+    } = props || {};
+
+    function createOverlayMedia() {
+        const bgRectangle = new Rectangle();
+        bgRectangle.resize(580, 380);
+        bgRectangle.name = "BG";
+        bgRectangle.fill = new ImageFill(portraitImage);
+
+        selection.insertionParent.addChild(bgRectangle);
+
+        selection.items = [bgRectangle];
+        commands.duplicate();
+
+        const overlayImage = selection.items[0];
+        overlayImage.name = "Overlay";
+        overlayImage.fill = new ImageFill(defaultImage);
+
+        selection.items = [bgRectangle, overlayImage];
+        commands.group();
+        overlayImage.moveInParentCoordinates(70, -60);
+        return selection.items[0];
+    }
+
+    function createDefaultMedia() {
+        const bgRectangle = new Rectangle();
+        bgRectangle.resize(580, 380); // land
+        // bgRectangle.resize(460, 560); // portrait
+        bgRectangle.name = "BG";
+        bgRectangle.fill = new ImageFill(defaultImage);
+        if (roundedCorners) bgRectangle.setAllCornerRadii(10);
+
+        selection.insertionParent.addChild(bgRectangle);
+
+        selection.items = [bgRectangle];
+        commands.duplicate();
+
+        if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+        const scrim = selection.items[0];
+        scrim.name = "Scrim";
+        scrim.fill = new Color("black", 0.3);
+
+        const playButtonBg = new Ellipse();
+        playButtonBg.radiusX = 40;
+        playButtonBg.radiusY = 40;
+        playButtonBg.fill = new Color("white");
+
+        selection.insertionParent.addChild(playButtonBg);
+
+        const playIcon = createIcon("M8 5v14l11-7z", {
+            fill: "red",
+            size: 30
+        });
+
+        selection.insertionParent.addChild(playIcon);
+
+        selection.items = [playButtonBg, playIcon];
+        commands.alignHorizontalCenter();
+        commands.alignVerticalCenter();
+        commands.group();
+        playIcon.moveInParentCoordinates(3, 0);
+
+        const playButton = selection.items[0];
+
+        selection.items = [bgRectangle, scrim, playButton];
+        commands.alignHorizontalCenter();
+        commands.alignVerticalCenter();
+        commands.group();
+        return selection.items[0];
+    }
+
+    return [createDefaultMedia()];
+}
+
+module.exports = createMedia;
+
+/***/ }),
+
+/***/ "./src/Creators/MediaSection/index.js":
+/*!********************************************!*\
+  !*** ./src/Creators/MediaSection/index.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { editDom, getAssetFileFromPath, someTime, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
+
+async function MediaSection(props) {
+    let {
+        shadow = true,
+        roundedCorners = true
+    } = props || {};
+
+    const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
+    const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
+
+    try {
+        const oldMediaSection = props ? selection.items[0] : null;
+        let media;
+
+        editDom(async selection => {
+            try {
+                const [mediaNode] = createMedia(props, [defaultMediaImage, portraitMediaImage]);
+                media = mediaNode;
+            } catch (error) {
+                console.log("Error creating mediaSection: ", error);
+            }
+        });
+
+        await someTime(0);
+
+        editDom(async selection => {
+            try {
+                selection.items = [media];
+                // commands.alignRight();
+                commands.group();
+                const mediaSection = selection.items[0];
+                mediaSection.name = "FernMediaSection";
+
+                const data = {
+                    type: "MediaSection",
+                    shadow,
+                    roundedCorners
+                };
+
+                mediaSection.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+
+                if (oldMediaSection) {
+                    placeInParent(mediaSection, oldMediaSection.topLeftInParent);
+                    oldMediaSection.removeFromParent();
+                } else placeInParent(mediaSection);
+            } catch (error) {
+                console.log("Error creating mediaSection: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = MediaSection;
+
+/***/ }),
+
 /***/ "./src/Creators/Navbar/createNavContainer.js":
 /*!***************************************************!*\
   !*** ./src/Creators/Navbar/createNavContainer.js ***!
@@ -29898,6 +30062,7 @@ const { placeInParent, createIcon, editDom, base64ArrayBuffer } = __webpack_requ
 const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
+const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 
 class Creators {
 
@@ -29990,6 +30155,7 @@ class Creators {
 
 Creators.Button = Button;
 Creators.Navbar = Navbar;
+Creators.MediaSection = MediaSection;
 
 Creators.Card = async function (props) {
     const {
@@ -30488,7 +30654,7 @@ module.exports = {
     "#41A257", // green
     "#FFD0A2", // orange
     "#000000", "#FFFFFF"],
-    ELEMENT_TYPES: ["Button", "Navbar", "card", "Image"]
+    ELEMENT_TYPES: ["Button", "Navbar", "MediaSection", "card", "Image"]
 };
 
 /***/ }),
@@ -31013,7 +31179,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Navbar'].map((element, index) => React.createElement(
+            ['Button', 'Navbar', 'MediaSection'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -31296,6 +31462,70 @@ module.exports = Image;
 
 /***/ }),
 
+/***/ "./src/screens/Elements/MediaSection.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/MediaSection.jsx ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
+const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
+const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+
+function MediaSection({ value, onClose }) {
+    const shadow = value ? value.shadow : false;
+    const [links, setLinks] = React.useState(value ? value.links : []);
+
+    function handleSetShadow(shadow) {
+        Creators.MediaSection(_extends({}, value, { shadow }));
+    }
+
+    return React.createElement(
+        'div',
+        { style: { margin: "0.5rem -12px" } },
+        React.createElement(
+            'div',
+            { className: 'flex items-center px-1' },
+            React.createElement(
+                'span',
+                { className: 'cursor-pointer opacity-65', onClick: onClose },
+                React.createElement(
+                    'svg',
+                    { height: '16', viewBox: '0 0 24 24', width: '24' },
+                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                )
+            ),
+            React.createElement(
+                'h2',
+                { className: 'px-0 text-md ml-1' },
+                'MediaSection'
+            )
+        ),
+        React.createElement(
+            'div',
+            { className: 'px-3' },
+            React.createElement(
+                'div',
+                { className: 'flex items-center justify-between mt-3 pt-2' },
+                React.createElement(
+                    'label',
+                    { className: 'text-md' },
+                    'Shadow'
+                ),
+                React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
+            )
+        )
+    );
+}
+
+module.exports = MediaSection;
+
+/***/ }),
+
 /***/ "./src/screens/Elements/Navbar/Links.jsx":
 /*!***********************************************!*\
   !*** ./src/screens/Elements/Navbar/Links.jsx ***!
@@ -31515,6 +31745,7 @@ const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx"
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
+const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
 
 function Elements({ value, subscription, onUpgrade }) {
     const [screen, setScreen] = React.useState("");
@@ -31565,7 +31796,8 @@ function Elements({ value, subscription, onUpgrade }) {
 
     function RenderElement() {
         const uiElements = {
-            Button, Navbar, Card, Image
+            Button, Navbar, MediaSection,
+            Card, Image
         };
 
         if (ELEMENT_TYPES.includes(screen)) {
