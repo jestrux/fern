@@ -1,15 +1,12 @@
 const React = require("react");
-const { useState } = require("react");
 const { downloadImage, editDom, getDimensions } = require("../../../utils");
 const errorDialog = require("../../../utils/CustomDialogs/Error");
 const Loader = require("../../../components/Loader");
 const BcImageSearch = require("./BcImageSearch");
 
-function Image({value, onClose}){
+function Image({value = "office space", onSelect, onClose}){
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
-    const defaultSearchQuery = value && value.darkMode ? "hotel pool summer" : "pool sunset hotel";
-    const [searchQuery, setSearchQuery] = useState(value && value.searchQuery ? value.searchQuery : defaultSearchQuery);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     async function fetchPhotos(url){
         const res = await fetch(url);
@@ -28,7 +25,7 @@ function Image({value, onClose}){
     function getLatestPhotos(){
         // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
         // return fetchPhotos(url);
-        return searchUnsplash(searchQuery);
+        return searchUnsplash(value);
     }
 
     function searchUnsplash(q){
@@ -38,27 +35,37 @@ function Image({value, onClose}){
     }
 
     async function setImage(url){
+        console.log("Image clicked: ", url);
+
         try {
             setLoading(true);
-            const imageSize = await new Promise(res => {
-                editDom(async (selection) => {
-                    const node = selection.items[0];
-                    const {width, height} = getDimensions(node);
-                    const size = Math.max(width, height);
-                    res(Math.min(1080, size * 2.5))
-                });
-            });
-            url = url.replace("&w=1080", `&w=${imageSize}`);
+            // try {
+            //     const imageSize = await new Promise(res => {
+            //         editDom(async (selection) => {
+            //             const node = selection.items[0];
+            //             const {width, height} = getDimensions(node);
+            //             const size = Math.max(width, height);
+            //             res(Math.min(1080, size * 2.5))
+            //         });
+            //     });
+
+            //     if(imageSize)
+            //         url = url.replace("&w=1080", `&w=${imageSize}`);
+            // } catch (error) {
+                
+            // }
             
-            const { ImageFill } = require("scenegraph");
+            // const { ImageFill } = require("scenegraph");
             const tempFile = await downloadImage(url, true);
-            const imageFill = new ImageFill(tempFile);
+            // const imageFill = new ImageFill(tempFile);
             
-            editDom(async (selection) => {
-                const node = selection.items[0];
-                node.fill = imageFill;
-                setLoading(false);
-            });
+            onSelect(tempFile);
+            setLoading(false);
+            // editDom(async (selection) => {
+            //     const node = selection.items[0];
+            //     node.fill = imageFill;
+            //     setLoading(false);
+            // });
         } catch (error) {
             setLoading(false);
             if(error.toString().indexOf("Network request failed") != -1)
@@ -85,7 +92,7 @@ function Image({value, onClose}){
             </div>
 
             <BcImageSearch 
-                query={searchQuery}
+                query={value}
                 placeholder="Search for image"
                 fetchLatestPhotos={getLatestPhotos}
                 searchPhotos={searchUnsplash}

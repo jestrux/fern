@@ -2,7 +2,9 @@ const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = require("sce
 const commands = require("commands");
 const { createIcon, getGroupChildByName } = require("../../utils");
 
-function createMedia(props, [defaultImage, portraitImage]){
+function createMedia(props, [
+    defaultImage, portraitImage, mainImageFill, bottomImageFill
+]){
     let {
         style,
         color,
@@ -44,7 +46,7 @@ function createMedia(props, [defaultImage, portraitImage]){
         let bgRectangle = new Rectangle();
         bgRectangle.resize(580, 380);
         bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(portraitImage);
+        bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
         if(cornerRadius)
             bgRectangle.setAllCornerRadii(5);
         
@@ -58,9 +60,16 @@ function createMedia(props, [defaultImage, portraitImage]){
         commands.duplicate();
         
         if(video){
+            overlayImage = selection.items[0];
+            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
+
+            commands.duplicate();
             const scrim = selection.items[0];
             scrim.name = "Scrim";
             scrim.fill = new Color("black", 0.3);
+
+            commands.duplicate();
+            const overlayScrim = selection.items[0];
 
             selection.items = [
                 bgRectangle, scrim
@@ -68,26 +77,21 @@ function createMedia(props, [defaultImage, portraitImage]){
 
             commands.group();
             bgRectangle = selection.items[0];
+            bgRectangle.name = "Underlay";
 
-            commands.duplicate();
-            overlayImage = selection.items[0];
-            overlayImage.name = "Overlay";
-
-            getGroupChildByName(overlayImage, "BG", bg => {
-                bg.fill = new ImageFill(defaultImage);
-            });
-
-            selection.items = [ overlayImage, playButton() ];
+            selection.items = [
+                overlayImage, overlayScrim, playButton()
+            ];
             commands.alignHorizontalCenter();
             commands.alignVerticalCenter();
             commands.group();
-
             overlayImage = selection.items[0];
+            overlayImage.name = "Overlay";
         }
         else{
             overlayImage = selection.items[0];
             overlayImage.name = "Overlay";
-            overlayImage.fill = new ImageFill(defaultImage);
+            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
         }
 
         selection.items = [ bgRectangle, overlayImage ];
@@ -100,7 +104,7 @@ function createMedia(props, [defaultImage, portraitImage]){
     function createRegularMedia(){
         const bgRectangle = new Rectangle();
         bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(defaultImage);
+        bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
         if(orientation == 'portrait')
             bgRectangle.resize(460, 580);
@@ -145,7 +149,7 @@ function createMedia(props, [defaultImage, portraitImage]){
         bg.name = "BG";
         bg.radiusX = 260;
         bg.radiusY = 260;
-        bg.fill = new ImageFill(defaultImage);
+        bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
         
         selection.insertionParent.addChild(bg);
 

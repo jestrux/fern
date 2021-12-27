@@ -29613,7 +29613,7 @@ const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_re
 const commands = __webpack_require__(/*! commands */ "commands");
 const { createIcon, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function createMedia(props, [defaultImage, portraitImage]) {
+function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomImageFill]) {
     let {
         style,
         color,
@@ -29653,7 +29653,7 @@ function createMedia(props, [defaultImage, portraitImage]) {
         let bgRectangle = new Rectangle();
         bgRectangle.resize(580, 380);
         bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(portraitImage);
+        bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
         if (cornerRadius) bgRectangle.setAllCornerRadii(5);
 
         selection.insertionParent.addChild(bgRectangle);
@@ -29665,33 +29665,33 @@ function createMedia(props, [defaultImage, portraitImage]) {
         commands.duplicate();
 
         if (video) {
+            overlayImage = selection.items[0];
+            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
+
+            commands.duplicate();
             const scrim = selection.items[0];
             scrim.name = "Scrim";
             scrim.fill = new Color("black", 0.3);
+
+            commands.duplicate();
+            const overlayScrim = selection.items[0];
 
             selection.items = [bgRectangle, scrim];
 
             commands.group();
             bgRectangle = selection.items[0];
+            bgRectangle.name = "Underlay";
 
-            commands.duplicate();
-            overlayImage = selection.items[0];
-            overlayImage.name = "Overlay";
-
-            getGroupChildByName(overlayImage, "BG", bg => {
-                bg.fill = new ImageFill(defaultImage);
-            });
-
-            selection.items = [overlayImage, playButton()];
+            selection.items = [overlayImage, overlayScrim, playButton()];
             commands.alignHorizontalCenter();
             commands.alignVerticalCenter();
             commands.group();
-
             overlayImage = selection.items[0];
+            overlayImage.name = "Overlay";
         } else {
             overlayImage = selection.items[0];
             overlayImage.name = "Overlay";
-            overlayImage.fill = new ImageFill(defaultImage);
+            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
         }
 
         selection.items = [bgRectangle, overlayImage];
@@ -29704,7 +29704,7 @@ function createMedia(props, [defaultImage, portraitImage]) {
     function createRegularMedia() {
         const bgRectangle = new Rectangle();
         bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(defaultImage);
+        bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
         if (orientation == 'portrait') bgRectangle.resize(460, 580);else bgRectangle.resize(580, 460);
 
@@ -29741,7 +29741,7 @@ function createMedia(props, [defaultImage, portraitImage]) {
         bg.name = "BG";
         bg.radiusX = 260;
         bg.radiusY = 260;
-        bg.fill = new ImageFill(defaultImage);
+        bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
         selection.insertionParent.addChild(bg);
 
@@ -29793,7 +29793,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, getAssetFileFromPath, someTime, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { editDom, getAssetFileFromPath, someTime, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
 
 const defaultMediaSectionProps = {
@@ -29808,14 +29808,39 @@ const defaultMediaSectionProps = {
 async function MediaSection(props) {
     const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
     const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
+    let mainImageFill, bottomImageFill;
 
     try {
         const oldMediaSection = props ? selection.items[0] : null;
         let media;
 
+        if (oldMediaSection) {
+            if (props.style == "overlay") {
+                getGroupChildByName(oldMediaSection, "Overlay", overlay => {
+                    if (props.video) {
+                        getGroupChildByName(overlay, "BG", bg => {
+                            mainImageFill = bg.fill;
+                        });
+                    } else mainImageFill = overlay.fill;
+                });
+
+                getGroupChildByName(oldMediaSection, "Underlay", underlay => {
+                    if (props.video) {
+                        getGroupChildByName(underlay, "BG", bg => {
+                            bottomImageFill = bg.fill;
+                        });
+                    } else bottomImageFill = overlay.fill;
+                });
+            } else if (props.video) {
+                getGroupChildByName(oldMediaSection, "BG", bg => {
+                    mainImageFill = bg.fill;
+                });
+            } else mainImageFill = oldMediaSection.fill;
+        }
+
         editDom(async selection => {
             try {
-                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage]);
+                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage, mainImageFill, bottomImageFill]);
                 media = mediaNode;
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
@@ -29828,20 +29853,20 @@ async function MediaSection(props) {
             try {
                 selection.items = [media];
                 // commands.alignRight();
-                commands.group();
-                const mediaSection = selection.items[0];
-                mediaSection.name = "FernMediaSection";
+                // commands.group();
+                // const mediaSection = selection.items[0];
+                media.name = "FernMedia";
 
                 const data = _extends({
                     type: "MediaSection"
                 }, props ? props : defaultMediaSectionProps);
 
-                mediaSection.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+                media.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 
                 if (oldMediaSection) {
-                    placeInParent(mediaSection, oldMediaSection.topLeftInParent);
+                    placeInParent(media, oldMediaSection.topLeftInParent);
                     oldMediaSection.removeFromParent();
-                } else placeInParent(mediaSection);
+                } else placeInParent(media);
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
             }
@@ -31447,17 +31472,14 @@ module.exports = BcImageSearch;
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { useState } = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const { downloadImage, editDom, getDimensions } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const errorDialog = __webpack_require__(/*! ../../../utils/CustomDialogs/Error */ "./src/utils/CustomDialogs/Error.js");
 const Loader = __webpack_require__(/*! ../../../components/Loader */ "./src/components/Loader.jsx");
 const BcImageSearch = __webpack_require__(/*! ./BcImageSearch */ "./src/screens/Elements/Image/BcImageSearch.js");
 
-function Image({ value, onClose }) {
+function Image({ value = "office space", onSelect, onClose }) {
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
-    const defaultSearchQuery = value && value.darkMode ? "hotel pool summer" : "pool sunset hotel";
-    const [searchQuery, setSearchQuery] = useState(value && value.searchQuery ? value.searchQuery : defaultSearchQuery);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     async function fetchPhotos(url) {
         const res = await fetch(url);
@@ -31476,7 +31498,7 @@ function Image({ value, onClose }) {
     function getLatestPhotos() {
         // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
         // return fetchPhotos(url);
-        return searchUnsplash(searchQuery);
+        return searchUnsplash(value);
     }
 
     function searchUnsplash(q) {
@@ -31486,27 +31508,37 @@ function Image({ value, onClose }) {
     }
 
     async function setImage(url) {
+        console.log("Image clicked: ", url);
+
         try {
             setLoading(true);
-            const imageSize = await new Promise(res => {
-                editDom(async selection => {
-                    const node = selection.items[0];
-                    const { width, height } = getDimensions(node);
-                    const size = Math.max(width, height);
-                    res(Math.min(1080, size * 2.5));
-                });
-            });
-            url = url.replace("&w=1080", `&w=${imageSize}`);
+            // try {
+            //     const imageSize = await new Promise(res => {
+            //         editDom(async (selection) => {
+            //             const node = selection.items[0];
+            //             const {width, height} = getDimensions(node);
+            //             const size = Math.max(width, height);
+            //             res(Math.min(1080, size * 2.5))
+            //         });
+            //     });
 
-            const { ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
+            //     if(imageSize)
+            //         url = url.replace("&w=1080", `&w=${imageSize}`);
+            // } catch (error) {
+
+            // }
+
+            // const { ImageFill } = require("scenegraph");
             const tempFile = await downloadImage(url, true);
-            const imageFill = new ImageFill(tempFile);
+            // const imageFill = new ImageFill(tempFile);
 
-            editDom(async selection => {
-                const node = selection.items[0];
-                node.fill = imageFill;
-                setLoading(false);
-            });
+            onSelect(tempFile);
+            setLoading(false);
+            // editDom(async (selection) => {
+            //     const node = selection.items[0];
+            //     node.fill = imageFill;
+            //     setLoading(false);
+            // });
         } catch (error) {
             setLoading(false);
             if (error.toString().indexOf("Network request failed") != -1) errorDialog("Network error", "Please check your internet connection and try again");else errorDialog("Unknown error", "Please try again and if it persists, reach out to me on twitter @jestrux");
@@ -31537,7 +31569,7 @@ function Image({ value, onClose }) {
             )
         ),
         React.createElement(BcImageSearch, {
-            query: searchQuery,
+            query: value,
             placeholder: "Search for image",
             fetchLatestPhotos: getLatestPhotos,
             searchPhotos: searchUnsplash,
@@ -31561,9 +31593,13 @@ module.exports = Image;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
 const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
 const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
 const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
+const { editDom, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function MediaSection({ value, onClose }) {
     const style = value ? value.style : 'regular';
@@ -31571,6 +31607,49 @@ function MediaSection({ value, onClose }) {
     const shadow = value ? value.shadow : false;
     const video = value ? value.video : false;
     const cornerRadius = value ? value.cornerRadius : 'sm';
+
+    const [editImage, setEditImage] = React.useState(false);
+    const [editUnderlayImage, setEditUnderlayImage] = React.useState(false);
+
+    function handleSetImage(image) {
+        const selectedNode = selection.items[0];
+
+        if (selectedNode instanceof Rectangle || selectedNode instanceof Ellipse) {
+            editDom(() => {
+                selectedNode.fill = new ImageFill(image);
+            });
+        } else if (style == "overlay") {
+            getGroupChildByName(selectedNode, "Overlay", overlay => {
+                getGroupChildByName(overlay, "BG", bg => {
+                    editDom(() => {
+                        bg.fill = new ImageFill(image);
+                    });
+                });
+            });
+        } else {
+            getGroupChildByName(selectedNode, "BG", bg => {
+                editDom(() => {
+                    bg.fill = new ImageFill(image);
+                });
+            });
+        }
+    }
+
+    function handleSetUnderlayImage(image) {
+        getGroupChildByName(selection.items[0], "Underlay", underlay => {
+            if (video) {
+                getGroupChildByName(underlay, "BG", bg => {
+                    editDom(() => {
+                        bg.fill = new ImageFill(image);
+                    });
+                });
+            } else {
+                editDom(() => {
+                    underlay.fill = new ImageFill(image);
+                });
+            }
+        });
+    }
 
     function handleSetStyle(style) {
         Creators.MediaSection(_extends({}, value, { style }));
@@ -31592,6 +31671,14 @@ function MediaSection({ value, onClose }) {
         if (cornerRadius == true) cornerRadius = 'sm';
         Creators.MediaSection(_extends({}, value, { cornerRadius }));
     }
+
+    if (editImage || editUnderlayImage) return React.createElement(Image, {
+        value: 'office space',
+        onClose: () => {
+            setEditImage(false);setEditUnderlayImage(false);
+        },
+        onSelect: editUnderlayImage ? handleSetUnderlayImage : handleSetImage
+    });
 
     return React.createElement(
         'div',
@@ -31616,7 +31703,39 @@ function MediaSection({ value, onClose }) {
         ),
         React.createElement(
             'div',
-            { className: 'px-3 pt-2 mt-3 flex flex-col items-start' },
+            { className: 'px-3 pt-2 mt-3 flex items-center justify-between' },
+            React.createElement(
+                'label',
+                { className: 'text-md' },
+                'Picture'
+            ),
+            React.createElement(
+                'span',
+                { className: 'text-sm border-b border-current text-blue cursor-pointer',
+                    onClick: () => setEditImage(true)
+                },
+                'CHANGE'
+            )
+        ),
+        style == "overlay" && React.createElement(
+            'div',
+            { className: 'px-3 pt-2 mt-3 flex items-center justify-between' },
+            React.createElement(
+                'label',
+                { className: 'text-md' },
+                'Bottom Picture'
+            ),
+            React.createElement(
+                'span',
+                { className: 'text-sm border-b border-current text-blue cursor-pointer',
+                    onClick: () => setEditUnderlayImage(true)
+                },
+                'CHANGE'
+            )
+        ),
+        React.createElement(
+            'div',
+            { className: 'px-3 mt-3 flex flex-col items-start' },
             React.createElement(
                 'label',
                 { className: 'mb-1 text-md' },
