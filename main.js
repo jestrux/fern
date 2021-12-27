@@ -99,7 +99,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: #fff;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: #fff;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}", ""]);
+exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: #fff;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: #fff;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.5;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
 
 // exports
 
@@ -29716,28 +29716,18 @@ function changeLinkText(link, text = "Link", cb = () => {}) {
     });
 }
 
-function getActiveLinkBorder(activeLink) {
-    const { width, height } = activeLink.localBounds;
-    return createBorder({
-        width: width + 1,
-        thickness: 2
-    });
-}
-
 function createNavLinks(props = {}, cb = () => {}) {
     const {
-        links = ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
-        activeLink = "Blogs"
+        links = []
     } = props;
 
-    links.reverse();
-
-    let activeLinkNode, activeLinkIndicator;
+    const linkItems = [...links];
+    linkItems.reverse();
 
     try {
         const linkNode = createLink();
-        changeLinkText(linkNode, links[0]);
-        linkNode.name = links[0];
+        changeLinkText(linkNode, linkItems[0]);
+        linkNode.name = linkItems[0];
         const navLinkNodes = [linkNode];
 
         for (let i = 1; i < links.length; i++) {
@@ -29745,22 +29735,9 @@ function createNavLinks(props = {}, cb = () => {}) {
             const newLink = selection.items[0];
             selection.items = [newLink];
             navLinkNodes.push(newLink);
-            newLink.name = links[i];
+            newLink.name = linkItems[i];
 
-            if (activeLink == links[i]) {
-                activeLinkNode = newLink;
-                changeLinkText(newLink, links[i], () => {
-                    if (activeLinkIndicator) {
-                        activeLinkIndicator.resize(0);
-                        activeLinkIndicator.setStartEnd(0, 0, activeLinkNode.localBounds.width + 1, 0);
-                    } else {
-                        activeLinkIndicator = getActiveLinkBorder(activeLinkNode);
-                        selection.insertionParent.addChild(activeLinkIndicator);
-                    }
-
-                    doneRenderingNavLinks();
-                });
-            } else changeLinkText(newLink, links[i]);
+            changeLinkText(newLink, linkItems[i]);
         }
 
         selection.items = navLinkNodes;
@@ -29774,18 +29751,7 @@ function createNavLinks(props = {}, cb = () => {}) {
             }
         };
 
-        if (activeLinkNode) {
-            if (!activeLinkIndicator) {
-                activeLinkIndicator = getActiveLinkBorder(activeLinkNode);
-                selection.insertionParent.addChild(activeLinkIndicator);
-            }
-        } else doneRenderingNavLinks();
-
-        function doneRenderingNavLinks() {
-            cb([navLinks, activeLinkNode, activeLinkIndicator]);
-        }
-
-        return [navLinks, activeLinkNode, activeLinkIndicator];
+        return navLinks;
     } catch (error) {
         console.log("Error creating nav links: ", error);
     }
@@ -29805,7 +29771,7 @@ module.exports = createNavLinks;
 const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, getAssetFileFromPath, someTime, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { editDom, getAssetFileFromPath, someTime, placeInParent, createBorder, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createNavContainer = __webpack_require__(/*! ./createNavContainer */ "./src/Creators/Navbar/createNavContainer.js");
 const createNavLinks = __webpack_require__(/*! ./createNavLinks */ "./src/Creators/Navbar/createNavLinks.js");
 
@@ -29815,8 +29781,8 @@ async function Navbar(props) {
         shadow = true,
         border = true,
         linksPlacement = 'right',
-        activeLink = "Home",
-        links = ["Home", "About Us", "Our Services", "Contact Us"],
+        links = ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
+        activeLink = "Contact Us",
         buttons = ["Get Started"],
         socialMediaIcons = ["Facebook, Twitter, Instagram, Youtube"],
         profile = true,
@@ -29828,24 +29794,39 @@ async function Navbar(props) {
     try {
         const oldNavbar = props ? selection.items[0] : null;
         let navBackground, navLogo, navMenu, navActiveLink, navActiveIndicator;
+
         editDom(async selection => {
             try {
                 const [navBg, logo] = createNavContainer(props, logoImage);
-                const [navLinks, activeLinkNode, activeLinkIndicator] = createNavLinks();
+                const navLinks = createNavLinks({
+                    links
+                });
 
                 navBackground = navBg;
                 navLogo = logo;
                 navMenu = navLinks;
-                navActiveLink = activeLinkNode;
-                navActiveIndicator = activeLinkIndicator;
 
-                if (navActiveLink && navActiveIndicator) {
-                    selection.items = [navMenu, navActiveIndicator];
-                    commands.alignLeft();
-                    commands.alignBottom();
-                    commands.group();
-                    navActiveIndicator.moveInParentCoordinates(navActiveLink.topLeftInParent.x + 3, -1);
-                    navMenu = selection.items[0];
+                if (links.includes(activeLink)) {
+                    getGroupChildByName(navLinks, activeLink, node => {
+                        navActiveLink = node;
+                        console.log("Nav Active Link: ", navLinks, links.indexOf(activeLink), navActiveLink);
+
+                        const { width, height } = navActiveLink.localBounds;
+                        navActiveIndicator = createBorder({
+                            width: width + 1,
+                            thickness: 2
+                        });
+
+                        console.log("Created link indicator border: ", navActiveIndicator);
+                        selection.insertionParent.addChild(navActiveIndicator);
+
+                        selection.items = [navMenu, navActiveIndicator];
+                        commands.alignLeft();
+                        commands.alignBottom();
+                        commands.group();
+                        navActiveIndicator.moveInParentCoordinates(navActiveLink.topLeftInParent.x + 3, -1);
+                        navMenu = selection.items[0];
+                    });
                 }
             } catch (error) {
                 console.log("Error creating navbar: ", error);
@@ -29853,8 +29834,6 @@ async function Navbar(props) {
         });
 
         await someTime(0);
-
-        console.log("Done waiting!");
 
         editDom(async selection => {
             try {
@@ -31317,25 +31296,160 @@ module.exports = Image;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Navbar.jsx":
-/*!*****************************************!*\
-  !*** ./src/screens/Elements/Navbar.jsx ***!
-  \*****************************************/
+/***/ "./src/screens/Elements/Navbar/Links.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Navbar/Links.jsx ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
+
+function NavbarLinks({ links, activeLink, onChange, onChangeActiveLink }) {
+    const [linkBeingEdited, setLinkBeingEdited] = React.useState(null);
+    function handleSetLinks(links) {
+        onChange(links);
+    }
+
+    function handleLinkTextChanged(e) {
+        e.preventDefault();
+        const form = e.target;
+        const newValue = form.elements[0].value;
+
+        if (links[linkBeingEdited] != newValue) {
+            const newLinks = [...links];
+            newLinks.splice(linkBeingEdited, 1, newValue);
+
+            const wasSelected = linkBeingEdited === links.indexOf(activeLink);
+            onChange(newLinks, wasSelected ? newValue : null);
+        } else setLinkBeingEdited(null);
+    }
+
+    function handleMoveLink(e, linkIndex) {
+        const isLastItem = linkIndex === links.length - 1;
+        const { shiftKey, altKey } = e;
+        const leap = shiftKey ? 3 : 1;
+        let newIndex = isLastItem || altKey ? linkIndex - leap : linkIndex + leap;
+
+        // clamp
+        newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
+        console.log("New index: ", newIndex);
+
+        const newLinks = [...links];
+        const link = newLinks.splice(linkIndex, 1)[0];
+        newLinks.splice(newIndex, 0, link);
+
+        onChange(newLinks);
+    }
+
+    return React.createElement(
+        'div',
+        { className: 'pt-2 mt-3' },
+        React.createElement(
+            'div',
+            { className: 'flex items-center justify-between px-3' },
+            React.createElement(
+                'label',
+                { className: 'text-md' },
+                'Links'
+            ),
+            React.createElement(Toggle, { checked: links, onChange: handleSetLinks })
+        ),
+        links && React.createElement(
+            'div',
+            { className: '-mx-12pxs mt-1' },
+            React.createElement(
+                'div',
+                { className: 'bg-white' },
+                links.map((link, index) => {
+                    const selected = activeLink === link;
+                    const editting = linkBeingEdited === index;
+
+                    return React.createElement(
+                        'div',
+                        { key: index, className: `parent bg-white py-2 px-3 border-b border-light-gray flex items-center ${selected ? 'text-blue' : ''}` },
+                        React.createElement('div', { className: `mr-2 rounded-full border ${selected ? 'bg-blue border-blue' : 'border-dark-gray cursor-pointer'}`,
+                            style: { width: "10px", height: "10px" },
+                            onClick: () => selected ? null : onChangeActiveLink(link)
+                        }),
+                        editting && React.createElement(
+                            'form',
+                            { action: '#', className: 'flex-1 bg-gray', onSubmit: handleLinkTextChanged },
+                            React.createElement('input', {
+                                autoFocus: true,
+                                className: 'w-full',
+                                defaultValue: link,
+                                name: 'link',
+                                'uxp-quiet': 'true',
+                                onKeyDown: e => e.key == 'Escape' ? setLinkBeingEdited(null) : null
+                            })
+                        ),
+                        !editting && React.createElement(
+                            React.Fragment,
+                            null,
+                            React.createElement(
+                                'h5',
+                                { className: 'flex-1 text-base font-normal cursor-pointer',
+                                    onClick: () => setLinkBeingEdited(index)
+                                },
+                                link
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'visible-on-parent-hover cursor-pointer rounded-full bg-light-gray flex center-center',
+                                    style: { width: "20px", height: "20px" },
+                                    onClick: e => handleMoveLink(e, index)
+                                },
+                                React.createElement(
+                                    'svg',
+                                    { width: '14px', height: '14px', viewBox: '0 0 24 24' },
+                                    React.createElement('polygon', { points: '13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01' })
+                                )
+                            )
+                        )
+                    );
+                })
+            )
+        )
+    );
+}
+
+module.exports = NavbarLinks;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Navbar/index.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Navbar/index.jsx ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
-const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
-const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+const Creators = __webpack_require__(/*! ../../../Creators */ "./src/Creators/index.js");
+const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
+const ButtonGroup = __webpack_require__(/*! ../../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+const NavbarLinks = __webpack_require__(/*! ./Links */ "./src/screens/Elements/Navbar/Links.jsx");
 
 function Navbar({ value, onClose }) {
     const shadow = value ? value.shadow : false;
+    const [links, setLinks] = React.useState(value ? value.links : []);
 
     function handleSetShadow(shadow) {
         Creators.Navbar(_extends({}, value, { shadow }));
+    }
+
+    function handleSetLinks(links, newActiveLink) {
+        setLinks(links);
+
+        const newProps = _extends({}, value, { links });
+
+        if (newActiveLink) newProps.activeLink = newActiveLink;
+
+        Creators.Navbar(newProps);
     }
 
     return React.createElement(
@@ -31372,7 +31486,13 @@ function Navbar({ value, onClose }) {
                 ),
                 React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
             )
-        )
+        ),
+        React.createElement(NavbarLinks, {
+            links: links,
+            activeLink: value.activeLink,
+            onChange: handleSetLinks,
+            onChangeActiveLink: activeLink => Creators.Navbar(_extends({}, value, { activeLink }))
+        })
     );
 }
 
@@ -31394,7 +31514,7 @@ const ElementList = __webpack_require__(/*! ./ElementList */ "./src/screens/Elem
 const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx");
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
-const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar.jsx");
+const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 
 function Elements({ value, subscription, onUpgrade }) {
     const [screen, setScreen] = React.useState("");

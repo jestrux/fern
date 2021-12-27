@@ -624,3 +624,16 @@ hr{
 .mix-screen{
     mix-blend-mode: screen;
 }
+
+.hoverable:hover{
+    opacity: 0.5;
+    cursor: pointer !important;
+}
+
+.parent:not(:hover) .show-on-parent-hover{
+    display: none !important;
+}
+
+.parent:not(:hover) .visible-on-parent-hover{
+    opacity: 0 !important;
+}

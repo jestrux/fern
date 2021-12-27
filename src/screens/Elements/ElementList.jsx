@@ -23,7 +23,6 @@ function ElementList({onGoToScreen}){
                         </div>
                     ))
                 }
-
             </div>
         </div>
     );

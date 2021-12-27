@@ -50,28 +50,18 @@ function changeLinkText(link, text = "Link", cb = () => {}){
     });
 }
 
-function getActiveLinkBorder(activeLink){
-    const {width, height} = activeLink.localBounds;
-    return createBorder({
-        width: width + 1,
-        thickness:2,
-    });
-}
-
 function createNavLinks(props = {}, cb = () => {}){
     const {
-        links = ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
-        activeLink = "Blogs"
+        links = [],
     } = props;
 
-    links.reverse();
-
-    let activeLinkNode, activeLinkIndicator;
+    const linkItems = [...links];
+    linkItems.reverse();
 
     try {
         const linkNode = createLink();
-        changeLinkText(linkNode, links[0]);
-        linkNode.name = links[0];
+        changeLinkText(linkNode, linkItems[0]);
+        linkNode.name = linkItems[0];
         const navLinkNodes = [linkNode];
 
         for (let i = 1; i < links.length; i++) {
@@ -79,25 +69,9 @@ function createNavLinks(props = {}, cb = () => {}){
             const newLink = selection.items[0];
             selection.items = [newLink];
             navLinkNodes.push(newLink);
-            newLink.name = links[i];
+            newLink.name = linkItems[i];
             
-            if(activeLink == links[i]){
-                activeLinkNode = newLink;
-                changeLinkText(newLink, links[i], () => {
-                    if(activeLinkIndicator) {
-                        activeLinkIndicator.resize(0);
-                        activeLinkIndicator.setStartEnd(0, 0, activeLinkNode.localBounds.width + 1, 0);
-                    }
-                    else{
-                        activeLinkIndicator = getActiveLinkBorder(activeLinkNode);
-                        selection.insertionParent.addChild(activeLinkIndicator);
-                    }
-
-                    doneRenderingNavLinks();
-                });
-            }
-            else
-                changeLinkText(newLink, links[i]);
+            changeLinkText(newLink, linkItems[i]);
         }
 
         selection.items = navLinkNodes;
@@ -111,20 +85,7 @@ function createNavLinks(props = {}, cb = () => {}){
             }
         }
 
-        if(activeLinkNode){
-            if(!activeLinkIndicator){
-                activeLinkIndicator = getActiveLinkBorder(activeLinkNode);
-                selection.insertionParent.addChild(activeLinkIndicator);
-            }
-        }
-        else
-            doneRenderingNavLinks();
-
-        function doneRenderingNavLinks(){
-            cb([navLinks, activeLinkNode, activeLinkIndicator]);
-        }
-
-        return [navLinks, activeLinkNode, activeLinkIndicator];
+        return navLinks;
     } catch (error) {
         console.log("Error creating nav links: ", error);
     }

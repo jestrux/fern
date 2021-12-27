@@ -1,13 +1,25 @@
 const React = require('react');
-const Creators = require('../../Creators');
-const Toggle = require('../../components/Toggle');
-const ButtonGroup = require('../../components/ButtonGroup');
+const Creators = require('../../../Creators');
+const Toggle = require('../../../components/Toggle');
+const ButtonGroup = require('../../../components/ButtonGroup');
+const NavbarLinks = require('./Links');
 
 function Navbar({value, onClose}){
     const shadow = value ? value.shadow : false;
+    const [links, setLinks] = React.useState(value ? value.links : []);
 
     function handleSetShadow(shadow){
         Creators.Navbar({...value, shadow});
+    }
+
+    function handleSetLinks(links, newActiveLink){
+        setLinks(links);
+
+        const newProps = {...value, links};
+
+        if(newActiveLink) newProps.activeLink = newActiveLink;
+
+        Creators.Navbar(newProps);
     }
 
     return (
@@ -31,6 +43,13 @@ function Navbar({value, onClose}){
                     <Toggle checked={shadow} onChange={handleSetShadow} />
                 </div>
             </div>
+
+            <NavbarLinks 
+                links={links}
+                activeLink={value.activeLink}
+                onChange={handleSetLinks}
+                onChangeActiveLink={activeLink => Creators.Navbar({...value, activeLink})}
+            />
         </div>
     );
 }

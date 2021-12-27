@@ -1,7 +1,7 @@
 const { SceneNode, selection } = require("scenegraph");
 const commands = require("commands");
 const { PLUGIN_ID } = require("../../constants");
-const { editDom, getAssetFileFromPath, someTime, placeInParent } = require("../../utils");
+const { editDom, getAssetFileFromPath, someTime, placeInParent, createBorder, getGroupChildByName } = require("../../utils");
 const createNavContainer = require("./createNavContainer");
 const createNavLinks = require("./createNavLinks");
 
@@ -11,8 +11,8 @@ async function Navbar(props){
         shadow = true,
         border = true,
         linksPlacement = 'right',
-        activeLink = "Home",
-        links = ["Home", "About Us", "Our Services", "Contact Us"],
+        links = ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
+        activeLink = "Contact Us",
         buttons = ["Get Started"],
         socialMediaIcons = ["Facebook, Twitter, Instagram, Youtube"],
         profile = true,
@@ -24,34 +24,46 @@ async function Navbar(props){
     try {
         const oldNavbar = props ? selection.items[0] : null;
         let navBackground, navLogo, navMenu, navActiveLink, navActiveIndicator;
+        
         editDom(async (selection) => {
             try {
                 const [navBg, logo] = createNavContainer(props, logoImage);
-                const [navLinks, activeLinkNode, activeLinkIndicator] = createNavLinks();
+                const navLinks = createNavLinks({
+                    links
+                });
 
                 navBackground = navBg;
                 navLogo = logo;
                 navMenu = navLinks;
-                navActiveLink = activeLinkNode;
-                navActiveIndicator = activeLinkIndicator;
 
-                if(navActiveLink && navActiveIndicator){
-                    selection.items = [navMenu, navActiveIndicator];
-                    commands.alignLeft();
-                    commands.alignBottom();
-                    commands.group();
-                    navActiveIndicator.moveInParentCoordinates(navActiveLink.topLeftInParent.x + 3, -1);
-                    navMenu = selection.items[0];
+                if(links.includes(activeLink)){
+                    getGroupChildByName(navLinks, activeLink, node => {
+                        navActiveLink = node;
+                        console.log("Nav Active Link: ", navLinks, links.indexOf(activeLink), navActiveLink);
+    
+                        const {width, height} = navActiveLink.localBounds;
+                        navActiveIndicator = createBorder({
+                            width: width + 1,
+                            thickness:2,
+                        });
+        
+                        console.log("Created link indicator border: ", navActiveIndicator);
+                        selection.insertionParent.addChild(navActiveIndicator);
+        
+                        selection.items = [navMenu, navActiveIndicator];
+                        commands.alignLeft();
+                        commands.alignBottom();
+                        commands.group();
+                        navActiveIndicator.moveInParentCoordinates(navActiveLink.topLeftInParent.x + 3, -1);
+                        navMenu = selection.items[0];
+                    });
                 }
             } catch (error) {
                 console.log("Error creating navbar: ", error);
             }
         });
-
         
         await someTime(0);
-        
-        console.log("Done waiting!");
 
         editDom(async (selection) => {
             try {
