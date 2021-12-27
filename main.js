@@ -29611,55 +29611,19 @@ module.exports = Button;
 
 const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { createIcon, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function createMedia(props = {}, [defaultImage, portraitImage]) {
+function createMedia(props, [defaultImage, portraitImage]) {
     let {
-        color = "black",
-        shadow = true,
-        roundedCorners = true
+        style,
+        color,
+        shadow,
+        cornerRadius,
+        video,
+        orientation
     } = props || {};
 
-    function createOverlayMedia() {
-        const bgRectangle = new Rectangle();
-        bgRectangle.resize(580, 380);
-        bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(portraitImage);
-
-        selection.insertionParent.addChild(bgRectangle);
-
-        selection.items = [bgRectangle];
-        commands.duplicate();
-
-        const overlayImage = selection.items[0];
-        overlayImage.name = "Overlay";
-        overlayImage.fill = new ImageFill(defaultImage);
-
-        selection.items = [bgRectangle, overlayImage];
-        commands.group();
-        overlayImage.moveInParentCoordinates(70, -60);
-        return selection.items[0];
-    }
-
-    function createDefaultMedia() {
-        const bgRectangle = new Rectangle();
-        bgRectangle.resize(580, 380); // land
-        // bgRectangle.resize(460, 560); // portrait
-        bgRectangle.name = "BG";
-        bgRectangle.fill = new ImageFill(defaultImage);
-        if (roundedCorners) bgRectangle.setAllCornerRadii(10);
-
-        selection.insertionParent.addChild(bgRectangle);
-
-        selection.items = [bgRectangle];
-        commands.duplicate();
-
-        if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
-
-        const scrim = selection.items[0];
-        scrim.name = "Scrim";
-        scrim.fill = new Color("black", 0.3);
-
+    function playButton() {
         const playButtonBg = new Ellipse();
         playButtonBg.radiusX = 40;
         playButtonBg.radiusY = 40;
@@ -29668,7 +29632,7 @@ function createMedia(props = {}, [defaultImage, portraitImage]) {
         selection.insertionParent.addChild(playButtonBg);
 
         const playIcon = createIcon("M8 5v14l11-7z", {
-            fill: "red",
+            fill: color,
             size: 30
         });
 
@@ -29680,16 +29644,137 @@ function createMedia(props = {}, [defaultImage, portraitImage]) {
         commands.group();
         playIcon.moveInParentCoordinates(3, 0);
 
-        const playButton = selection.items[0];
+        const button = selection.items[0];
+        button.name = 'playButton';
+        return button;
+    }
 
-        selection.items = [bgRectangle, scrim, playButton];
-        commands.alignHorizontalCenter();
-        commands.alignVerticalCenter();
+    function createOverlayMedia() {
+        let bgRectangle = new Rectangle();
+        bgRectangle.resize(580, 380);
+        bgRectangle.name = "BG";
+        bgRectangle.fill = new ImageFill(portraitImage);
+        if (cornerRadius) bgRectangle.setAllCornerRadii(5);
+
+        selection.insertionParent.addChild(bgRectangle);
+
+        if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+        let overlayImage;
+        selection.items = [bgRectangle];
+        commands.duplicate();
+
+        if (video) {
+            const scrim = selection.items[0];
+            scrim.name = "Scrim";
+            scrim.fill = new Color("black", 0.3);
+
+            selection.items = [bgRectangle, scrim];
+
+            commands.group();
+            bgRectangle = selection.items[0];
+
+            commands.duplicate();
+            overlayImage = selection.items[0];
+            overlayImage.name = "Overlay";
+
+            getGroupChildByName(overlayImage, "BG", bg => {
+                bg.fill = new ImageFill(defaultImage);
+            });
+
+            selection.items = [overlayImage, playButton()];
+            commands.alignHorizontalCenter();
+            commands.alignVerticalCenter();
+            commands.group();
+
+            overlayImage = selection.items[0];
+        } else {
+            overlayImage = selection.items[0];
+            overlayImage.name = "Overlay";
+            overlayImage.fill = new ImageFill(defaultImage);
+        }
+
+        selection.items = [bgRectangle, overlayImage];
         commands.group();
+        overlayImage.moveInParentCoordinates(70, -60);
+
         return selection.items[0];
     }
 
-    return [createDefaultMedia()];
+    function createRegularMedia() {
+        const bgRectangle = new Rectangle();
+        bgRectangle.name = "BG";
+        bgRectangle.fill = new ImageFill(defaultImage);
+
+        if (orientation == 'portrait') bgRectangle.resize(460, 580);else bgRectangle.resize(580, 460);
+
+        if (cornerRadius) {
+            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
+            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
+        }
+
+        selection.insertionParent.addChild(bgRectangle);
+
+        if (video) {
+            selection.items = [bgRectangle];
+            commands.duplicate();
+
+            if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+            const scrim = selection.items[0];
+            scrim.name = "Scrim";
+            scrim.fill = new Color("black", 0.3);
+
+            selection.items = [bgRectangle, scrim, playButton()];
+
+            commands.alignHorizontalCenter();
+            commands.alignVerticalCenter();
+            commands.group();
+            return selection.items[0];
+        } else if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+        return bgRectangle;
+    }
+
+    function createCircularMedia() {
+        const bg = new Ellipse();
+        bg.name = "BG";
+        bg.radiusX = 260;
+        bg.radiusY = 260;
+        bg.fill = new ImageFill(defaultImage);
+
+        selection.insertionParent.addChild(bg);
+
+        if (video) {
+            selection.items = [bg];
+            commands.duplicate();
+
+            if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+            const scrim = selection.items[0];
+            scrim.name = "Scrim";
+            scrim.fill = new Color("black", 0.3);
+
+            selection.items = [bg, scrim, playButton()];
+
+            commands.alignHorizontalCenter();
+            commands.alignVerticalCenter();
+            commands.group();
+            return selection.items[0];
+        } else if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+
+        return bg;
+    }
+
+    const styleMap = {
+        'regular': createRegularMedia,
+        'circle': createCircularMedia,
+        'overlay': createOverlayMedia
+    };
+
+    const mediaCreator = styleMap[style] || createRegularMedia;
+
+    return [mediaCreator()];
 }
 
 module.exports = createMedia;
@@ -29703,18 +29788,24 @@ module.exports = createMedia;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const { editDom, getAssetFileFromPath, someTime, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
 
-async function MediaSection(props) {
-    let {
-        shadow = true,
-        roundedCorners = true
-    } = props || {};
+const defaultMediaSectionProps = {
+    style: "regular",
+    color: "#EA4949",
+    shadow: true,
+    cornerRadius: 'sm',
+    video: false,
+    orientation: 'landscape'
+};
 
+async function MediaSection(props) {
     const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
     const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
 
@@ -29724,7 +29815,7 @@ async function MediaSection(props) {
 
         editDom(async selection => {
             try {
-                const [mediaNode] = createMedia(props, [defaultMediaImage, portraitMediaImage]);
+                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage]);
                 media = mediaNode;
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
@@ -29741,11 +29832,9 @@ async function MediaSection(props) {
                 const mediaSection = selection.items[0];
                 mediaSection.name = "FernMediaSection";
 
-                const data = {
-                    type: "MediaSection",
-                    shadow,
-                    roundedCorners
-                };
+                const data = _extends({
+                    type: "MediaSection"
+                }, props ? props : defaultMediaSectionProps);
 
                 mediaSection.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 
@@ -31477,11 +31566,31 @@ const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/compone
 const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
 
 function MediaSection({ value, onClose }) {
+    const style = value ? value.style : 'regular';
+    const orientation = value ? value.orientation : 'landscape';
     const shadow = value ? value.shadow : false;
-    const [links, setLinks] = React.useState(value ? value.links : []);
+    const video = value ? value.video : false;
+    const cornerRadius = value ? value.cornerRadius : 'sm';
+
+    function handleSetStyle(style) {
+        Creators.MediaSection(_extends({}, value, { style }));
+    }
 
     function handleSetShadow(shadow) {
         Creators.MediaSection(_extends({}, value, { shadow }));
+    }
+
+    function handleSetVideo(video) {
+        Creators.MediaSection(_extends({}, value, { video }));
+    }
+
+    function handleSetOrientation(orientation) {
+        Creators.MediaSection(_extends({}, value, { orientation }));
+    }
+
+    function handleSetCornerRadius(cornerRadius) {
+        if (cornerRadius == true) cornerRadius = 'sm';
+        Creators.MediaSection(_extends({}, value, { cornerRadius }));
     }
 
     return React.createElement(
@@ -31507,16 +31616,81 @@ function MediaSection({ value, onClose }) {
         ),
         React.createElement(
             'div',
+            { className: 'px-3 pt-2 mt-3 flex flex-col items-start' },
+            React.createElement(
+                'label',
+                { className: 'mb-1 text-md' },
+                'Style'
+            ),
+            React.createElement(ButtonGroup, {
+                value: style,
+                choices: ["regular", "circle", "overlay"],
+                onChange: handleSetStyle
+            })
+        ),
+        style == 'regular' && React.createElement(
+            'div',
+            { className: 'px-3 mt-2 flex flex-col items-start' },
+            React.createElement(
+                'label',
+                { className: 'mb-1 text-md' },
+                'Orientation'
+            ),
+            React.createElement(ButtonGroup, {
+                value: orientation,
+                choices: ["landscape", "portrait"],
+                onChange: handleSetOrientation
+            })
+        ),
+        React.createElement(
+            'div',
             { className: 'px-3' },
             React.createElement(
                 'div',
-                { className: 'flex items-center justify-between mt-3 pt-2' },
+                { className: 'flex items-center justify-between mt-3' },
                 React.createElement(
                     'label',
                     { className: 'text-md' },
                     'Shadow'
                 ),
                 React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
+            )
+        ),
+        React.createElement(
+            'div',
+            { className: 'px-3' },
+            React.createElement(
+                'div',
+                { className: 'flex items-center justify-between mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'text-md' },
+                    'Video'
+                ),
+                React.createElement(Toggle, { checked: video, onChange: handleSetVideo })
+            )
+        ),
+        style !== 'circle' && React.createElement(
+            'div',
+            { className: 'px-3 mt-3' },
+            React.createElement(
+                'div',
+                { className: 'flex items-center justify-between' },
+                React.createElement(
+                    'label',
+                    { className: 'text-md' },
+                    'Rounded Corners'
+                ),
+                React.createElement(Toggle, { checked: cornerRadius, onChange: handleSetCornerRadius })
+            ),
+            style == 'regular' && cornerRadius && video && React.createElement(
+                'div',
+                { className: 'mt-1' },
+                React.createElement(ButtonGroup, {
+                    value: cornerRadius,
+                    choices: ["xs", "sm", "md", "lg"],
+                    onChange: handleSetCornerRadius
+                })
             )
         )
     );

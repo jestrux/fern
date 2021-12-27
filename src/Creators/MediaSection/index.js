@@ -4,12 +4,16 @@ const { PLUGIN_ID } = require("../../constants");
 const { editDom, getAssetFileFromPath, someTime, placeInParent, } = require("../../utils");
 const createMedia = require("./createMedia");
 
+const defaultMediaSectionProps = {
+    style: "regular",
+    color: "#EA4949",
+    shadow: true,
+    cornerRadius: 'sm',
+    video: false,
+    orientation: 'landscape',
+};
+
 async function MediaSection(props){
-    let {
-        shadow = true,
-        roundedCorners = true,
-    } = props || {};
-    
     const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
     const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
 
@@ -19,7 +23,10 @@ async function MediaSection(props){
         
         editDom(async (selection) => {
             try {
-                const [mediaNode] = createMedia(props, [defaultMediaImage, portraitMediaImage]);
+                const [mediaNode] = createMedia(
+                    props || defaultMediaSectionProps, 
+                    [defaultMediaImage, portraitMediaImage]
+                );
                 media = mediaNode;
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
@@ -38,8 +45,7 @@ async function MediaSection(props){
 
                 const data = { 
                     type: "MediaSection",
-                    shadow,
-                    roundedCorners,
+                    ...(props ? props: defaultMediaSectionProps),
                 };
 
                 mediaSection.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));

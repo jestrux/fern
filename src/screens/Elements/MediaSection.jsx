@@ -4,11 +4,31 @@ const Toggle = require('../../components/Toggle');
 const ButtonGroup = require('../../components/ButtonGroup');
 
 function MediaSection({value, onClose}){
+    const style = value ? value.style : 'regular';
+    const orientation = value ? value.orientation : 'landscape';
     const shadow = value ? value.shadow : false;
-    const [links, setLinks] = React.useState(value ? value.links : []);
+    const video = value ? value.video : false;
+    const cornerRadius = value ? value.cornerRadius : 'sm';
+
+    function handleSetStyle(style){
+        Creators.MediaSection({...value, style});
+    }
 
     function handleSetShadow(shadow){
         Creators.MediaSection({...value, shadow});
+    }
+
+    function handleSetVideo(video){
+        Creators.MediaSection({...value, video});
+    }
+
+    function handleSetOrientation(orientation){
+        Creators.MediaSection({...value, orientation});
+    }
+
+    function handleSetCornerRadius(cornerRadius){
+        if(cornerRadius == true) cornerRadius = 'sm';
+        Creators.MediaSection({...value, cornerRadius});
     }
 
     return (
@@ -25,13 +45,64 @@ function MediaSection({value, onClose}){
                 </h2>
             </div>
 
+            <div className="px-3 pt-2 mt-3 flex flex-col items-start">
+                <label className="mb-1 text-md">Style</label>
+
+                <ButtonGroup 
+                    value={style}
+                    choices={["regular", "circle", "overlay"]}
+                    onChange={handleSetStyle}
+                />
+            </div>
+
+            { style == 'regular' &&
+                <div className="px-3 mt-2 flex flex-col items-start">
+                    <label className="mb-1 text-md">Orientation</label>
+
+                    <ButtonGroup 
+                        value={orientation}
+                        choices={["landscape", "portrait"]}
+                        onChange={handleSetOrientation}
+                    />
+                </div>
+            }
+
             <div className="px-3">
-                <div className="flex items-center justify-between mt-3 pt-2">
+                <div className="flex items-center justify-between mt-3">
                     <label className="text-md">Shadow</label>
                     
                     <Toggle checked={shadow} onChange={handleSetShadow} />
                 </div>
             </div>
+
+            <div className="px-3">
+                <div className="flex items-center justify-between mt-3">
+                    <label className="text-md">Video</label>
+                    
+                    <Toggle checked={video} onChange={handleSetVideo} />
+                </div>
+            </div>
+
+            { style !== 'circle' &&
+                <div className="px-3 mt-3">
+                    <div className="flex items-center justify-between">
+                        <label className="text-md">Rounded Corners</label>
+                        
+                        <Toggle checked={cornerRadius} onChange={handleSetCornerRadius} />
+                    </div>
+
+                    { style == 'regular' && cornerRadius && video &&
+                        <div className="mt-1">
+                            <ButtonGroup 
+                                value={cornerRadius}
+                                choices={["xs", "sm", "md", "lg"]}
+                                onChange={handleSetCornerRadius}
+                            />
+                        </div>
+                    }
+                </div>
+            }
+
         </div>
     );
 }
