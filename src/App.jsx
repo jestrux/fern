@@ -27,11 +27,11 @@ class App extends React.Component {
         if(selection.items && selection.items.length > 0){
             const node = selection.items[0];
             let jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
-            // console.log("Fancy Table JSON: ", jsonString);
+            console.log("Fern element: ", jsonString);
 
             if (jsonString) {
                 const { type, ...taggedProps } = JSON.parse(jsonString);
-                console.log("Fancy Table: ", taggedProps);
+                console.log("Fern element: ", taggedProps);
 
                 const state = {
                     currentSection: 'Elements',

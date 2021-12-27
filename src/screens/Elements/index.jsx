@@ -1,9 +1,11 @@
 const React = require('react');
-const { PLUGIN_ID } = require('../../constants');
+const { PLUGIN_ID, ELEMENT_TYPES } = require('../../constants');
 const SelectionContext = require('../../SelectionContext');
 const ElementList = require('./ElementList');
 const Card = require("./Card");
 const Image = require("./Image");
+const Button = require('./Button');
+const Navbar = require('./Navbar');
 
 function Elements({value, subscription, onUpgrade}){
     const [screen, setScreen] = React.useState("");
@@ -27,7 +29,7 @@ function Elements({value, subscription, onUpgrade}){
             else{
                 try {
                     jsonString = JSON.parse(jsonString);
-                    if(!jsonString.type || !["card", "image"].includes(jsonString.type))
+                    if(!jsonString.type || !ELEMENT_TYPES.includes(jsonString.type))
                         goToList = "Not a map element";
                 } catch (error) {
                     goToList = "No plugin data";
@@ -43,6 +45,9 @@ function Elements({value, subscription, onUpgrade}){
 
             return () => timeout ? clearTimeout(timeout) : false;
         }
+        else{
+            console.log("Not supported element: ", goToList);
+        }
     }
 
     React.useEffect(() => {
@@ -55,29 +60,20 @@ function Elements({value, subscription, onUpgrade}){
     }, [value]);
 
     function RenderElement(){
-        if(screen == "image")
+        const uiElements = {
+            Button, Navbar, Card, Image
+        };
+
+        if(ELEMENT_TYPES.includes(screen)){
+            const SelectedElement = uiElements[screen];
+
             return (
-                <Image
+                <SelectedElement
                     value={value}
                     onClose={() => setScreen("List")} 
                 />
             )
-
-        if(screen == "card")
-            return (
-                <Card 
-                    value={value}
-                    onClose={() => setScreen("List")} 
-                />
-            );
-
-        if(screen == "icons")
-            return (
-                <Icons 
-                    value={value}
-                    onClose={() => setScreen("List")} 
-                />
-            );
+        }
 
         return (
             <div className="mb-2 relative -mx-12px px-12px">

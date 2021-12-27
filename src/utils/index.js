@@ -301,14 +301,17 @@ function someTime(duration = 10){
     });
 }
 
-function getGroupChildByName(group, name = "BG"){
+function getGroupChildByName(group, name = "BG", cb = () => {}){
     return new Promise((res, rej) => {
         group.children.forEach(node => {
-            if(node.name == name)
+            if(node.name == name){
                 res(node);
+                cb(node);
+            }
         });
 
         rej();
+        cb(null);
     });
 }
 
@@ -350,8 +353,16 @@ function createIcon(pathData, defaultOptions = {}){
 
         if(options.fill && options.fill.length && options.fill != "none")
             icon.fill = new Color(options.fill);
-            
-        // icon.translation = { x: radius, y: radius };
+
+        if(options.size){
+            const {width, height} = icon.localBounds;
+            const aspectRatio = width / height;
+            if(width > height)
+                icon.resize(options.size, options.size / aspectRatio);
+            else
+            icon.resize(options.size * aspectRatio, options.size);
+        }
+        
         return icon;
     } catch (error) {
         console.log("Error with path: ", error);
@@ -360,7 +371,6 @@ function createIcon(pathData, defaultOptions = {}){
 }
 
 async function getAssetFileFromPath(path){
-    console.log("Asset path: ", path);
     try {
         const storage = require("uxp").storage;
         const fs = storage.localFileSystem;
@@ -369,6 +379,32 @@ async function getAssetFileFromPath(path){
     } catch (error) {
         console.log("Error fetching asset: ", error);
     }
+}
+
+function getPadding(px = 4, py = 4){
+    return {
+        bottom: py, top: py,
+        left: px, right: px,
+    }
+}
+
+function createBorder(props = {}){
+    const { Color, Line } = require("scenegraph");
+
+    const {
+        top = 0, 
+        width = 1920,
+        color = "black",
+        thickness = 1.5
+    } = props;
+
+    const border = new Line();
+    border.strokeEnabled = true;
+    border.stroke = new Color(color);
+    border.strokeWidth = thickness;
+    border.setStartEnd(0, top, width, top);
+    
+    return border;
 }
 
 module.exports = {
@@ -387,5 +423,7 @@ module.exports = {
     getCurrentSelection,
     fakeValue,
     createIcon,
-    getAssetFileFromPath
+    getAssetFileFromPath,
+    getPadding,
+    createBorder,
 }

@@ -1,7 +1,12 @@
 const { placeInParent, createIcon, editDom, base64ArrayBuffer } = require("../utils");
 const { PLUGIN_ID } = require("../constants");
+const Button = require("./Button");
+const Navbar = require("./Navbar");
 
 class Creators {
+    static Button = Button
+    static Navbar = Navbar
+    
     static Rating(selection, props = {}){
         const {
             rating = 3.2, 
