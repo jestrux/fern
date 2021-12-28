@@ -8,6 +8,7 @@ const ButtonGroup = require('../../components/ButtonGroup');
 const Image = require('./Image');
 const { editDom, getGroupChildByName } = require('../../utils');
 const getMediaImages = require('../../Creators/MediaSection/getMediaImages');
+const { PLUGIN_ID } = require('../../constants');
 
 function MediaSection({value, onClose}){
     const style = value ? value.style : 'basic';
@@ -34,6 +35,22 @@ function MediaSection({value, onClose}){
 
     const [editImage, setEditImage] = React.useState(false);
     const [editUnderlayImage, setEditUnderlayImage] = React.useState(false);
+
+    const [showShadowStyles, setShowShadowStyles] = React.useState(value.showShadowStyles);
+    const [showPlayIconStyles, setShowPlayIconStyles] = React.useState(value.showPlayIconStyles);
+
+    React.useEffect(() => {
+        if(showShadowStyles != value.showShadowStyles
+            || showPlayIconStyles != value.showPlayIconStyles
+        ){
+            value.showShadowStyles = showShadowStyles;
+            value.showPlayIconStyles = showPlayIconStyles;
+            
+            editDom(() => {
+                selection.items[0].sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(value));
+            });
+        }
+    }, [showShadowStyles, showPlayIconStyles]);
 
     function handleSetImage(image){
         const [topImage] = getMediaImages(selection.items[0]);
@@ -192,47 +209,56 @@ function MediaSection({value, onClose}){
                 </div>
 
                 { shadow &&
-                    <div className="-mx-12px px-12px mt-1 bg-white border-b">
-                        <div className="py-2 px-3 border-b border-light-gray">
+                    <div className={`-mx-12px px-12px mt-1 bg-white ${showShadowStyles && 'border-b'}`}>
+                        <div className="py-2 px-3 border-b border-light-gray flex items-center justify-between">
                             <label className="text-base">SHADOW STYLES</label>
-                        </div>
 
-                        <div className="py-2 px-3">
-                            <div className="flex flex-col items-start">
-                                <label className="mb-1 text-md">
-                                    Size
-                                </label>
-
-                                <ButtonGroup 
-                                    value={shadowSize}
-                                    choices={["sm","md", "lg"]}
-                                    onChange={handleSetShadowSize}
-                                />
-                            </div>
-
-                            <div className="mt-3 flex flex-col items-start">
-                                <label className="mb-1 text-md">
-                                    Placement
-                                </label>
-
-                                <ButtonGroup 
-                                    value={shadowPlacement}
-                                    choices={["B-L","B-R"]}
-                                    onChange={handleSetShadowPlacement}
-                                />
-                            </div>
-
-                            <div className="mt-3 flex flex-col items-start">
-                                <label className="mb-1 text-md">Color</label>
-
-                                <ColorList
-                                    choiceSize={8}
-                                    colors={["#000", "#5A2F15", "#9EE52C", "#22A4B5"]}
-                                    selectedColor={shadowColor}
-                                    onChange={handleSetShadowColor}
-                                />
+                            <div className="visible-on-parent-hover cursor-pointer rounded-full flex center-center"
+                                style={{ width: "20px", height: "20px" }}
+                                onClick={() => setShowShadowStyles(!showShadowStyles)}
+                            >
+                                <svg className='opacity-50' width="15px" height="15px" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
                             </div>
                         </div>
+
+                        { showShadowStyles &&
+                            <div className="pt-1 pb-3 px-3 bg-black12">
+                                <div className="flex flex-col items-start">
+                                    <label className="mb-1 text-md">
+                                        Size
+                                    </label>
+
+                                    <ButtonGroup 
+                                        value={shadowSize}
+                                        choices={["sm","md", "lg"]}
+                                        onChange={handleSetShadowSize}
+                                    />
+                                </div>
+
+                                <div className="mt-3 flex flex-col items-start">
+                                    <label className="mb-1 text-md">
+                                        Placement
+                                    </label>
+
+                                    <ButtonGroup 
+                                        value={shadowPlacement}
+                                        choices={["B-L","B-R"]}
+                                        onChange={handleSetShadowPlacement}
+                                    />
+                                </div>
+
+                                <div className="mt-3 flex flex-col items-start">
+                                    <label className="mb-1 text-md">Color</label>
+
+                                    <ColorList
+                                        choiceSize={8}
+                                        colors={["#000", "#5A2F15", "#9EE52C", "#22A4B5"]}
+                                        selectedColor={shadowColor}
+                                        onChange={handleSetShadowColor}
+                                    />
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -245,41 +271,50 @@ function MediaSection({value, onClose}){
                 </div>
 
                 { video &&
-                    <div className="-mx-12px px-12px mt-1 bg-white border-b">
-                        <div className="py-2 px-3 border-b border-light-gray">
+                    <div className={`-mx-12px px-12px mt-1 bg-white ${showPlayIconStyles && 'border-b'}`}>
+                        <div className="py-2 px-3 border-b border-light-gray flex items-center justify-between">
                             <label className="text-base">PLAY ICON</label>
-                        </div>
 
-                        <div className="py-2 px-3">
-                            <div className="flex flex-col items-start">
-                                <label className="mb-1 text-md">Color</label>
-
-                                <ColorList
-                                    choiceSize={8}
-                                    colors={["#EA4949", "#00DF7F", "#333"]}
-                                    selectedColor={playIconColor}
-                                    onChange={handleSetPlayIconColor}
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between pt-1 mt-3">
-                                <label className="text-md">Invert Colors</label>
-                                
-                                <Toggle 
-                                    checked={invertPlayIconColors} 
-                                    onChange={handleSetInvertPlayIconColors} 
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between mt-2">
-                                <label className="text-md">Smooth Corners {smoothPlayIconCorners} </label>
-                                
-                                <Toggle 
-                                    checked={smoothPlayIconCorners} 
-                                    onChange={handleSetSmoothPlayIconCorners} 
-                                />
+                            <div className="visible-on-parent-hover cursor-pointer rounded-full flex center-center"
+                                style={{ width: "20px", height: "20px" }}
+                                onClick={() => setShowPlayIconStyles(!showPlayIconStyles)}
+                            >
+                                <svg className='opacity-50' width="15px" height="15px" viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
                             </div>
                         </div>
+
+                        { showPlayIconStyles &&
+                            <div className="pt-1 pb-3 px-3 bg-black12">
+                                <div className="flex flex-col items-start">
+                                    <label className="mb-1 text-md">Color</label>
+
+                                    <ColorList
+                                        choiceSize={8}
+                                        colors={["#EA4949", "#00DF7F", "#333"]}
+                                        selectedColor={playIconColor}
+                                        onChange={handleSetPlayIconColor}
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between pt-1 mt-3">
+                                    <label className="text-md">Invert Colors</label>
+                                    
+                                    <Toggle 
+                                        checked={invertPlayIconColors} 
+                                        onChange={handleSetInvertPlayIconColors} 
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between mt-2">
+                                    <label className="text-md">Smooth Corners {smoothPlayIconCorners} </label>
+                                    
+                                    <Toggle 
+                                        checked={smoothPlayIconCorners} 
+                                        onChange={handleSetSmoothPlayIconCorners} 
+                                    />
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
