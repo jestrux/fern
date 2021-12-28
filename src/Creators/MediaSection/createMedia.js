@@ -151,9 +151,9 @@ function createMedia(props, [
         bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
         if(orientation == 'portrait')
-            bgRectangle.resize(460, 580);
+            bgRectangle.resize(540, 580);
         else
-            bgRectangle.resize(580, 400);
+            bgRectangle.resize(580, 440);
         
         if(cornerRadius)
             bgRectangle.setAllCornerRadii(10);

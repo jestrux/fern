@@ -29428,33 +29428,36 @@ module.exports = {
 
 module.exports = {
     "sm": {
-        size: [67, 31],
-        fontSize: 12,
+        size: [82, 38],
+        fontSize: 16,
+        fontStyle: "Regular",
         padding: {
-            bottom: 4,
-            left: 8,
-            right: 8,
-            top: 4
+            bottom: 10,
+            left: 16,
+            right: 16,
+            top: 10
         }
     },
     "md": {
         size: [82, 38],
-        fontSize: 16,
-        padding: {
-            bottom: 8,
-            left: 16,
-            right: 16,
-            top: 8
-        }
-    },
-    "lg": {
-        size: [101, 48],
         fontSize: 20,
+        fontStyle: "Regular",
         padding: {
             bottom: 12,
             left: 20,
             right: 20,
             top: 12
+        }
+    },
+    "lg": {
+        size: [101, 48],
+        fontSize: 22,
+        fontStyle: "Regular",
+        padding: {
+            bottom: 18,
+            left: 26,
+            right: 26,
+            top: 18
         }
     }
 };
@@ -29477,9 +29480,9 @@ const buttonRoundnessMap = __webpack_require__(/*! ./buttonRoundnessMap */ "./sr
 
 async function Button(props) {
     let {
-        icon = "add",
-        text = "New Task",
-        size = "md",
+        icon = null,
+        text = "Get Started",
+        size = "lg",
         color = "#333",
         shadow = false,
         outlined = false,
@@ -29520,6 +29523,7 @@ async function Button(props) {
         buttonText.fill = new Color(textColor);
         buttonText.fontFamily = "Helvetica Neue";
         buttonText.fontSize = buttonProps.fontSize;
+        buttonText.fontStyle = buttonProps.fontStyle;
 
         selection.insertionParent.addChild(buttonText);
 
@@ -29555,6 +29559,7 @@ async function Button(props) {
                     commands.alignHorizontalCenter();
                     commands.alignVerticalCenter();
                     commands.group();
+                    buttonText.moveInParentCoordinates(0, -0.5);
                 } else {
                     selection.items = [bgRectangle, buttonText];
                     commands.alignHorizontalCenter();
@@ -29746,7 +29751,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
         bgRectangle.name = "BG";
         bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
-        if (orientation == 'portrait') bgRectangle.resize(460, 580);else bgRectangle.resize(580, 400);
+        if (orientation == 'portrait') bgRectangle.resize(540, 580);else bgRectangle.resize(580, 440);
 
         if (cornerRadius) bgRectangle.setAllCornerRadii(10);
 

@@ -7,9 +7,9 @@ const buttonRoundnessMap = require("./buttonRoundnessMap");
 
 async function Button(props){
     let {
-        icon = "add",
-        text="New Task",
-        size = "md",
+        icon = null,
+        text="Get Started",
+        size = "lg",
         color = "#333",
         shadow = false, 
         outlined = false,
@@ -55,6 +55,7 @@ async function Button(props){
         buttonText.fill = new Color(textColor);
         buttonText.fontFamily = "Helvetica Neue";
         buttonText.fontSize = buttonProps.fontSize;
+        buttonText.fontStyle = buttonProps.fontStyle;
         
         selection.insertionParent.addChild(buttonText);
 
@@ -92,6 +93,7 @@ async function Button(props){
                     commands.alignHorizontalCenter()
                     commands.alignVerticalCenter()
                     commands.group();
+                    buttonText.moveInParentCoordinates(0, -0.5);
                 }
                 else{
                     selection.items = [bgRectangle, buttonText];
