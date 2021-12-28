@@ -10,7 +10,7 @@ function ButtonGroup({choices = [], value, onChange}){
 
                 return (
                     <span key={index} className={`rounded-xs cursor-pointer py-1 px-2 ${selected ? 'bg-dark-gray text-white' : 'text-dark-gray'}`}
-                        onClick={() => onChange(choice)}
+                        onClick={() => onChange(choice, index)}
                     >
                         { choice.toUpperCase() }
                     </span>

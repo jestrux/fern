@@ -1,78 +1,56 @@
-const { SceneNode, selection } = require("scenegraph");
-const commands = require("commands");
+const { selection } = require("scenegraph");
 const { PLUGIN_ID } = require("../../constants");
-const { editDom, getAssetFileFromPath, someTime, placeInParent, getGroupChildByName, } = require("../../utils");
+const { editDom, getAssetFileFromPath, placeInParent, } = require("../../utils");
 const createMedia = require("./createMedia");
+const getMediaImages = require("./getMediaImages");
+
+const defaultShadowProps = {
+    size: "lg",
+    placement: "B-R",
+    color: "#000",
+};
 
 const defaultMediaSectionProps = {
-    style: "regular",
-    color: "#EA4949",
-    shadow: true,
-    cornerRadius: 'sm',
+    style: "basic",
+    playIcon: {
+        color: "#EA4949",
+        invertColors: false,
+        smoothCorners: false,
+    },
+    shadow: defaultShadowProps,
+    cornerRadius: 'xs',
     video: false,
     orientation: 'landscape',
+    overLayout: "T-R",
 };
 
 async function MediaSection(props){
     const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
     const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
-    let mainImageFill, bottomImageFill;
+    let imageFills = [null, null];
 
     try {
         const oldMediaSection = props ? selection.items[0] : null;
         let media;
 
         if(oldMediaSection){
-            if(props.style == "overlay"){
-                getGroupChildByName(oldMediaSection, "Overlay", overlay => {
-                    if(props.video){
-                        getGroupChildByName(overlay, "BG", bg => {
-                            mainImageFill = bg.fill;
-                        });
-                    }
-                    else
-                        mainImageFill = overlay.fill;
-                });
-
-                getGroupChildByName(oldMediaSection, "Underlay", underlay => {
-                    if(props.video){
-                        getGroupChildByName(underlay, "BG", bg => {
-                            bottomImageFill = bg.fill;
-                        });
-                    }
-                    else
-                        bottomImageFill = overlay.fill
-                });
-            }
-            else if(props.video){
-                getGroupChildByName(oldMediaSection, "BG", bg => {
-                    mainImageFill = bg.fill;
-                });
-            }
-            else    
-                mainImageFill = oldMediaSection.fill;
+            const mediaImageNodes = getMediaImages(oldMediaSection);
+            if(mediaImageNodes)
+                imageFills = mediaImageNodes.map(image => image ? image.fill : null);
         }
         
         editDom(async (selection) => {
             try {
                 const [mediaNode] = createMedia(
                     props || defaultMediaSectionProps, 
-                    [defaultMediaImage, portraitMediaImage, mainImageFill, bottomImageFill]
+                    [
+                        defaultMediaImage, portraitMediaImage, 
+                        ...imageFills
+                    ]
                 );
                 media = mediaNode;
-            } catch (error) {
-                console.log("Error creating mediaSection: ", error);
-            }
-        });
-        
-        await someTime(0);
-
-        editDom(async (selection) => {
-            try {
+                
                 selection.items = [media];
-                // commands.alignRight();
-                // commands.group();
-                // const mediaSection = selection.items[0];
                 media.name = "FernMedia";
 
                 const data = { 

@@ -1,50 +1,86 @@
-const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = require("scenegraph");
+const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode } = require("scenegraph");
 const commands = require("commands");
-const { createIcon, getGroupChildByName } = require("../../utils");
+const { createIcon } = require("../../utils");
 
 function createMedia(props, [
     defaultImage, portraitImage, mainImageFill, bottomImageFill
 ]){
     let {
         style,
-        color,
+        playIcon,
         shadow,
         cornerRadius,
         video,
         orientation,
+        overLayout
     } = props || {};
 
     function playButton(){
+        const {
+            color,
+            invertColors,
+            smoothCorners,
+        } = playIcon;
+
         const playButtonBg = new Ellipse();
         playButtonBg.radiusX = 40;
         playButtonBg.radiusY = 40;
-        playButtonBg.fill = new Color("white");
+        playButtonBg.fill = new Color(invertColors ? color : "#fff");
 
         selection.insertionParent.addChild(playButtonBg);
 
-        const playIcon = createIcon("M8 5v14l11-7z", {
-            fill: color,
+        const playIconNode = createIcon("M8 5v14l11-7z", {
+            fill: invertColors ? "#fff" : color,
+            stroke: invertColors ? "#fff" : color,
+            strokeWidth: 5,
+            strokeJoins: smoothCorners 
+                ? GraphicNode.STROKE_JOIN_ROUND
+                : GraphicNode.STROKE_JOIN_MITER,
             size: 30,
         });
 
-        selection.insertionParent.addChild(playIcon);
+        selection.insertionParent.addChild(playIconNode);
 
         selection.items = [
-            playButtonBg, playIcon
+            playButtonBg, playIconNode
         ];
         commands.alignHorizontalCenter();
         commands.alignVerticalCenter();
         commands.group();
-        playIcon.moveInParentCoordinates(3, 0);
+        playIconNode.moveInParentCoordinates(3, 0);
 
         const button = selection.items[0];
         button.name = 'playButton';
         return button;
     }
 
+    function getShadow(){
+        let { size, placement, color } = shadow || {};
+        const shadowPropsMap = {
+            "sm": [5, 15, 30],
+            "md": [10, 22, 60],
+            "lg": [15, 30, 90],
+        };
+
+        if(!size || !Object.keys(shadowPropsMap).includes(size))
+            size = "sm";
+
+        const shadowProps = shadowPropsMap[size];
+        let shadowOffsets = shadowProps.slice(0,2);
+        const shadowBlur = shadowProps[2];
+
+        console.log("Shadow blur: ", shadowBlur);
+
+        if(placement.indexOf("-L") != -1)
+            shadowOffsets[0]*=-1;
+
+        console.log("Shadow offsets: ", shadowOffsets);
+        return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
+    }
+
     function createOverlayMedia(){
         let bgRectangle = new Rectangle();
-        bgRectangle.resize(580, 380);
+        bgRectangle.resize(510, 340);
         bgRectangle.name = "BG";
         bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
         if(cornerRadius)
@@ -53,7 +89,7 @@ function createMedia(props, [
         selection.insertionParent.addChild(bgRectangle);
 
         if(shadow)
-            bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+            bgRectangle.shadow = getShadow();
 
         let overlayImage;
         selection.items = [bgRectangle];
@@ -96,7 +132,15 @@ function createMedia(props, [
 
         selection.items = [ bgRectangle, overlayImage ];
         commands.group();
-        overlayImage.moveInParentCoordinates(70, -60);
+
+        const overLayouts = {
+            "T-R" : [70, -60],
+            "T-L" : [-70, -60],
+            "B-R" : [70, 60],
+            "B-L" : [-70, 60],
+        };
+
+        overlayImage.moveInParentCoordinates(...overLayouts[overLayout]);
 
         return selection.items[0];
     }
@@ -109,21 +153,22 @@ function createMedia(props, [
         if(orientation == 'portrait')
             bgRectangle.resize(460, 580);
         else
-            bgRectangle.resize(580, 460);
+            bgRectangle.resize(580, 400);
         
-        if(cornerRadius){
-            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
-            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
-        }
+        if(cornerRadius)
+            bgRectangle.setAllCornerRadii(10);
         
         selection.insertionParent.addChild(bgRectangle);
 
         if(video){
+            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
+            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
+
             selection.items = [bgRectangle];
             commands.duplicate();
 
             if(shadow)
-                bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+                bgRectangle.shadow = getShadow();
 
             const scrim = selection.items[0];
             scrim.name = "Scrim";
@@ -139,7 +184,7 @@ function createMedia(props, [
             return selection.items[0];
         }
         else if(shadow)
-            bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+            bgRectangle.shadow = getShadow();
 
         return bgRectangle;
     }
@@ -147,8 +192,8 @@ function createMedia(props, [
     function createCircularMedia(){
         const bg = new Ellipse();
         bg.name = "BG";
-        bg.radiusX = 260;
-        bg.radiusY = 260;
+        bg.radiusX = 246;
+        bg.radiusY = 246;
         bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
         
         selection.insertionParent.addChild(bg);
@@ -158,7 +203,7 @@ function createMedia(props, [
             commands.duplicate();
 
             if(shadow)
-                bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+                bg.shadow = getShadow();
 
             const scrim = selection.items[0];
             scrim.name = "Scrim";
@@ -174,13 +219,13 @@ function createMedia(props, [
             return selection.items[0];
         }
         else if(shadow)
-            bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+            bg.shadow = getShadow();
 
         return bg;
     }
 
     const styleMap = {
-        'regular': createRegularMedia,
+        'basic': createRegularMedia,
         'circle': createCircularMedia,
         'overlay': createOverlayMedia
     }

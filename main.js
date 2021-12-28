@@ -29609,56 +29609,88 @@ module.exports = Button;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createIcon, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomImageFill]) {
     let {
         style,
-        color,
+        playIcon,
         shadow,
         cornerRadius,
         video,
-        orientation
+        orientation,
+        overLayout
     } = props || {};
 
     function playButton() {
+        const {
+            color,
+            invertColors,
+            smoothCorners
+        } = playIcon;
+
         const playButtonBg = new Ellipse();
         playButtonBg.radiusX = 40;
         playButtonBg.radiusY = 40;
-        playButtonBg.fill = new Color("white");
+        playButtonBg.fill = new Color(invertColors ? color : "#fff");
 
         selection.insertionParent.addChild(playButtonBg);
 
-        const playIcon = createIcon("M8 5v14l11-7z", {
-            fill: color,
+        const playIconNode = createIcon("M8 5v14l11-7z", {
+            fill: invertColors ? "#fff" : color,
+            stroke: invertColors ? "#fff" : color,
+            strokeWidth: 5,
+            strokeJoins: smoothCorners ? GraphicNode.STROKE_JOIN_ROUND : GraphicNode.STROKE_JOIN_MITER,
             size: 30
         });
 
-        selection.insertionParent.addChild(playIcon);
+        selection.insertionParent.addChild(playIconNode);
 
-        selection.items = [playButtonBg, playIcon];
+        selection.items = [playButtonBg, playIconNode];
         commands.alignHorizontalCenter();
         commands.alignVerticalCenter();
         commands.group();
-        playIcon.moveInParentCoordinates(3, 0);
+        playIconNode.moveInParentCoordinates(3, 0);
 
         const button = selection.items[0];
         button.name = 'playButton';
         return button;
     }
 
+    function getShadow() {
+        let { size, placement, color } = shadow || {};
+        const shadowPropsMap = {
+            "sm": [5, 15, 30],
+            "md": [10, 22, 60],
+            "lg": [15, 30, 90]
+        };
+
+        if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
+
+        const shadowProps = shadowPropsMap[size];
+        let shadowOffsets = shadowProps.slice(0, 2);
+        const shadowBlur = shadowProps[2];
+
+        console.log("Shadow blur: ", shadowBlur);
+
+        if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
+
+        console.log("Shadow offsets: ", shadowOffsets);
+        return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
+    }
+
     function createOverlayMedia() {
         let bgRectangle = new Rectangle();
-        bgRectangle.resize(580, 380);
+        bgRectangle.resize(510, 340);
         bgRectangle.name = "BG";
         bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
         if (cornerRadius) bgRectangle.setAllCornerRadii(5);
 
         selection.insertionParent.addChild(bgRectangle);
 
-        if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+        if (shadow) bgRectangle.shadow = getShadow();
 
         let overlayImage;
         selection.items = [bgRectangle];
@@ -29696,7 +29728,15 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
 
         selection.items = [bgRectangle, overlayImage];
         commands.group();
-        overlayImage.moveInParentCoordinates(70, -60);
+
+        const overLayouts = {
+            "T-R": [70, -60],
+            "T-L": [-70, -60],
+            "B-R": [70, 60],
+            "B-L": [-70, 60]
+        };
+
+        overlayImage.moveInParentCoordinates(...overLayouts[overLayout]);
 
         return selection.items[0];
     }
@@ -29706,20 +29746,20 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
         bgRectangle.name = "BG";
         bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
-        if (orientation == 'portrait') bgRectangle.resize(460, 580);else bgRectangle.resize(580, 460);
+        if (orientation == 'portrait') bgRectangle.resize(460, 580);else bgRectangle.resize(580, 400);
 
-        if (cornerRadius) {
-            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
-            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
-        }
+        if (cornerRadius) bgRectangle.setAllCornerRadii(10);
 
         selection.insertionParent.addChild(bgRectangle);
 
         if (video) {
+            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
+            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
+
             selection.items = [bgRectangle];
             commands.duplicate();
 
-            if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+            if (shadow) bgRectangle.shadow = getShadow();
 
             const scrim = selection.items[0];
             scrim.name = "Scrim";
@@ -29731,7 +29771,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
             commands.alignVerticalCenter();
             commands.group();
             return selection.items[0];
-        } else if (shadow) bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+        } else if (shadow) bgRectangle.shadow = getShadow();
 
         return bgRectangle;
     }
@@ -29739,8 +29779,8 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
     function createCircularMedia() {
         const bg = new Ellipse();
         bg.name = "BG";
-        bg.radiusX = 260;
-        bg.radiusY = 260;
+        bg.radiusX = 246;
+        bg.radiusY = 246;
         bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
         selection.insertionParent.addChild(bg);
@@ -29749,7 +29789,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
             selection.items = [bg];
             commands.duplicate();
 
-            if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+            if (shadow) bg.shadow = getShadow();
 
             const scrim = selection.items[0];
             scrim.name = "Scrim";
@@ -29761,13 +29801,13 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
             commands.alignVerticalCenter();
             commands.group();
             return selection.items[0];
-        } else if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+        } else if (shadow) bg.shadow = getShadow();
 
         return bg;
     }
 
     const styleMap = {
-        'regular': createRegularMedia,
+        'basic': createRegularMedia,
         'circle': createCircularMedia,
         'overlay': createOverlayMedia
     };
@@ -29781,6 +29821,57 @@ module.exports = createMedia;
 
 /***/ }),
 
+/***/ "./src/Creators/MediaSection/getMediaImages.js":
+/*!*****************************************************!*\
+  !*** ./src/Creators/MediaSection/getMediaImages.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getMediaImages(media) {
+    let props, mainImage, bottomImage;
+    const jsonString = media.sharedPluginData.getItem(PLUGIN_ID, "richData");
+
+    if (jsonString) props = JSON.parse(jsonString);
+
+    if (!props) return null;
+
+    // console.log("\n\n\n");
+    // console.log("Media props from get media images: ", props);
+    // console.log("\n\n\n");
+
+    if (props.style == "overlay") {
+        getGroupChildByName(media, "Overlay", overlay => {
+            if (props.video) {
+                getGroupChildByName(overlay, "BG", bg => {
+                    mainImage = bg;
+                });
+            } else mainImage = overlay;
+        });
+
+        getGroupChildByName(media, "Underlay", underlay => {
+            if (props.video) {
+                getGroupChildByName(underlay, "BG", bg => {
+                    bottomImage = bg;
+                });
+            } else bottomImage = overlay;
+        });
+    } else if (props.video) {
+        getGroupChildByName(media, "BG", bg => {
+            mainImage = bg;
+        });
+    } else mainImage = media;
+
+    return [mainImage, bottomImage];
+}
+
+module.exports = getMediaImages;
+
+/***/ }),
+
 /***/ "./src/Creators/MediaSection/index.js":
 /*!********************************************!*\
   !*** ./src/Creators/MediaSection/index.js ***!
@@ -29790,71 +29881,52 @@ module.exports = createMedia;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const commands = __webpack_require__(/*! commands */ "commands");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, getAssetFileFromPath, someTime, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { editDom, getAssetFileFromPath, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
+const getMediaImages = __webpack_require__(/*! ./getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
+
+const defaultShadowProps = {
+    size: "lg",
+    placement: "B-R",
+    color: "#000"
+};
 
 const defaultMediaSectionProps = {
-    style: "regular",
-    color: "#EA4949",
-    shadow: true,
-    cornerRadius: 'sm',
+    style: "basic",
+    playIcon: {
+        color: "#EA4949",
+        invertColors: false,
+        smoothCorners: false
+    },
+    shadow: defaultShadowProps,
+    cornerRadius: 'xs',
     video: false,
-    orientation: 'landscape'
+    orientation: 'landscape',
+    overLayout: "T-R"
 };
 
 async function MediaSection(props) {
     const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
     const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
-    let mainImageFill, bottomImageFill;
+    let imageFills = [null, null];
 
     try {
         const oldMediaSection = props ? selection.items[0] : null;
         let media;
 
         if (oldMediaSection) {
-            if (props.style == "overlay") {
-                getGroupChildByName(oldMediaSection, "Overlay", overlay => {
-                    if (props.video) {
-                        getGroupChildByName(overlay, "BG", bg => {
-                            mainImageFill = bg.fill;
-                        });
-                    } else mainImageFill = overlay.fill;
-                });
-
-                getGroupChildByName(oldMediaSection, "Underlay", underlay => {
-                    if (props.video) {
-                        getGroupChildByName(underlay, "BG", bg => {
-                            bottomImageFill = bg.fill;
-                        });
-                    } else bottomImageFill = overlay.fill;
-                });
-            } else if (props.video) {
-                getGroupChildByName(oldMediaSection, "BG", bg => {
-                    mainImageFill = bg.fill;
-                });
-            } else mainImageFill = oldMediaSection.fill;
+            const mediaImageNodes = getMediaImages(oldMediaSection);
+            if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
         }
 
         editDom(async selection => {
             try {
-                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage, mainImageFill, bottomImageFill]);
+                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage, ...imageFills]);
                 media = mediaNode;
-            } catch (error) {
-                console.log("Error creating mediaSection: ", error);
-            }
-        });
 
-        await someTime(0);
-
-        editDom(async selection => {
-            try {
                 selection.items = [media];
-                // commands.alignRight();
-                // commands.group();
-                // const mediaSection = selection.items[0];
                 media.name = "FernMedia";
 
                 const data = _extends({
@@ -30531,7 +30603,7 @@ function ButtonGroup({ choices = [], value, onChange }) {
             return React.createElement(
                 "span",
                 { key: index, className: `rounded-xs cursor-pointer py-1 px-2 ${selected ? 'bg-dark-gray text-white' : 'text-dark-gray'}`,
-                    onClick: () => onChange(choice)
+                    onClick: () => onChange(choice, index)
                 },
                 choice.toUpperCase()
             );
@@ -31593,61 +31665,53 @@ module.exports = Image;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { selection, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
 const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
 const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
+const ColorList = __webpack_require__(/*! ../../components/ColorList */ "./src/components/ColorList.jsx");
 const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const { editDom, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const getMediaImages = __webpack_require__(/*! ../../Creators/MediaSection/getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
 
 function MediaSection({ value, onClose }) {
-    const style = value ? value.style : 'regular';
+    const style = value ? value.style : 'basic';
     const orientation = value ? value.orientation : 'landscape';
+    let overLayout = value ? value.overLayout : "T-R";
+
     const shadow = value ? value.shadow : false;
+    const defaultShadowProps = {
+        size: "lg",
+        placement: "B-R",
+        color: "#000"
+    };
+    const shadowSize = shadow ? shadow.size : "lg";
+    const shadowPlacement = shadow ? shadow.placement : "B-R";
+    const shadowColor = shadow ? shadow.color : "red";
+
     const video = value ? value.video : false;
+    const playIcon = value ? value.playIcon || {} : {};
+    const playIconColor = playIcon.color || "red";
+    const invertPlayIconColors = playIcon.invertColors;
+    const smoothPlayIconCorners = playIcon.smoothCorners;
+
     const cornerRadius = value ? value.cornerRadius : 'sm';
 
     const [editImage, setEditImage] = React.useState(false);
     const [editUnderlayImage, setEditUnderlayImage] = React.useState(false);
 
     function handleSetImage(image) {
-        const selectedNode = selection.items[0];
-
-        if (selectedNode instanceof Rectangle || selectedNode instanceof Ellipse) {
-            editDom(() => {
-                selectedNode.fill = new ImageFill(image);
-            });
-        } else if (style == "overlay") {
-            getGroupChildByName(selectedNode, "Overlay", overlay => {
-                getGroupChildByName(overlay, "BG", bg => {
-                    editDom(() => {
-                        bg.fill = new ImageFill(image);
-                    });
-                });
-            });
-        } else {
-            getGroupChildByName(selectedNode, "BG", bg => {
-                editDom(() => {
-                    bg.fill = new ImageFill(image);
-                });
-            });
-        }
+        const [topImage] = getMediaImages(selection.items[0]);
+        editDom(() => {
+            topImage.fill = new ImageFill(image);
+        });
     }
 
     function handleSetUnderlayImage(image) {
-        getGroupChildByName(selection.items[0], "Underlay", underlay => {
-            if (video) {
-                getGroupChildByName(underlay, "BG", bg => {
-                    editDom(() => {
-                        bg.fill = new ImageFill(image);
-                    });
-                });
-            } else {
-                editDom(() => {
-                    underlay.fill = new ImageFill(image);
-                });
-            }
+        const [topImage, bottomImage] = getMediaImages(selection.items[0]);
+        editDom(() => {
+            bottomImage.fill = new ImageFill(image);
         });
     }
 
@@ -31655,16 +31719,48 @@ function MediaSection({ value, onClose }) {
         Creators.MediaSection(_extends({}, value, { style }));
     }
 
+    function handleSetOrientation(orientation) {
+        Creators.MediaSection(_extends({}, value, { orientation }));
+    }
+
+    function handleSetOverLayout(overLayout) {
+        Creators.MediaSection(_extends({}, value, { overLayout }));
+    }
+
     function handleSetShadow(shadow) {
+        if (shadow) shadow = _extends({}, defaultShadowProps);
         Creators.MediaSection(_extends({}, value, { shadow }));
+    }
+
+    function handleSetShadowSize(size) {
+        if (!shadow) shadow = _extends({}, defaultShadowProps);
+        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { size }) }));
+    }
+
+    function handleSetShadowColor(color) {
+        if (!shadow) shadow = _extends({}, defaultShadowProps);
+        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { color }) }));
+    }
+
+    function handleSetShadowPlacement(placement) {
+        if (!shadow) shadow = _extends({}, defaultShadowProps);
+        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { placement }) }));
     }
 
     function handleSetVideo(video) {
         Creators.MediaSection(_extends({}, value, { video }));
     }
 
-    function handleSetOrientation(orientation) {
-        Creators.MediaSection(_extends({}, value, { orientation }));
+    function handleSetPlayIconColor(color) {
+        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { color }) }));
+    }
+
+    function handleSetInvertPlayIconColors(invertColors) {
+        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { invertColors }) }));
+    }
+
+    function handleSetSmoothPlayIconCorners(smoothCorners) {
+        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { smoothCorners }) }));
     }
 
     function handleSetCornerRadius(cornerRadius) {
@@ -31703,11 +31799,53 @@ function MediaSection({ value, onClose }) {
         ),
         React.createElement(
             'div',
-            { className: 'px-3 pt-2 mt-3 flex items-center justify-between' },
+            { className: 'px-3 pt-2 mt-3 flex flex-col items-start' },
+            React.createElement(
+                'label',
+                { className: 'mb-1 text-md' },
+                'Style'
+            ),
+            React.createElement(ButtonGroup, {
+                value: style,
+                choices: ["basic", "circle", "overlay"],
+                onChange: handleSetStyle
+            })
+        ),
+        style == 'basic' && React.createElement(
+            'div',
+            { className: 'px-3 mt-2 flex flex-col items-start' },
+            React.createElement(
+                'label',
+                { className: 'mb-1 text-md' },
+                'Orientation'
+            ),
+            React.createElement(ButtonGroup, {
+                value: orientation,
+                choices: ["landscape", "portrait"],
+                onChange: handleSetOrientation
+            })
+        ),
+        style == 'overlay' && React.createElement(
+            'div',
+            { className: 'px-3 mt-2 flex flex-col items-start' },
+            React.createElement(
+                'label',
+                { className: 'mb-1 text-md' },
+                'Overlay Placement'
+            ),
+            React.createElement(ButtonGroup, {
+                value: overLayout,
+                choices: ["T-R", "T-L", "B-R", "B-L"],
+                onChange: handleSetOverLayout
+            })
+        ),
+        React.createElement(
+            'div',
+            { className: 'px-3 pt-1 mt-3 flex items-center justify-between' },
             React.createElement(
                 'label',
                 { className: 'text-md' },
-                'Picture'
+                style == "overlay" ? 'Top Picture' : 'Picture'
             ),
             React.createElement(
                 'span',
@@ -31719,7 +31857,7 @@ function MediaSection({ value, onClose }) {
         ),
         style == "overlay" && React.createElement(
             'div',
-            { className: 'px-3 pt-2 mt-3 flex items-center justify-between' },
+            { className: 'px-3 mt-3 flex items-center justify-between' },
             React.createElement(
                 'label',
                 { className: 'text-md' },
@@ -31735,58 +31873,150 @@ function MediaSection({ value, onClose }) {
         ),
         React.createElement(
             'div',
-            { className: 'px-3 mt-3 flex flex-col items-start' },
-            React.createElement(
-                'label',
-                { className: 'mb-1 text-md' },
-                'Style'
-            ),
-            React.createElement(ButtonGroup, {
-                value: style,
-                choices: ["regular", "circle", "overlay"],
-                onChange: handleSetStyle
-            })
-        ),
-        style == 'regular' && React.createElement(
-            'div',
-            { className: 'px-3 mt-2 flex flex-col items-start' },
-            React.createElement(
-                'label',
-                { className: 'mb-1 text-md' },
-                'Orientation'
-            ),
-            React.createElement(ButtonGroup, {
-                value: orientation,
-                choices: ["landscape", "portrait"],
-                onChange: handleSetOrientation
-            })
-        ),
-        React.createElement(
-            'div',
-            { className: 'px-3' },
+            { className: '' },
             React.createElement(
                 'div',
-                { className: 'flex items-center justify-between mt-3' },
+                { className: 'px-3 flex items-center justify-between mt-3' },
                 React.createElement(
                     'label',
                     { className: 'text-md' },
                     'Shadow'
                 ),
                 React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
+            ),
+            shadow && React.createElement(
+                'div',
+                { className: '-mx-12px px-12px mt-1 bg-white border-b' },
+                React.createElement(
+                    'div',
+                    { className: 'py-2 px-3 border-b border-light-gray' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-base' },
+                        'SHADOW STYLES'
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'py-2 px-3' },
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-start' },
+                        React.createElement(
+                            'label',
+                            { className: 'mb-1 text-md' },
+                            'Size'
+                        ),
+                        React.createElement(ButtonGroup, {
+                            value: shadowSize,
+                            choices: ["sm", "md", "lg"],
+                            onChange: handleSetShadowSize
+                        })
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'mt-3 flex flex-col items-start' },
+                        React.createElement(
+                            'label',
+                            { className: 'mb-1 text-md' },
+                            'Placement'
+                        ),
+                        React.createElement(ButtonGroup, {
+                            value: shadowPlacement,
+                            choices: ["B-L", "B-R"],
+                            onChange: handleSetShadowPlacement
+                        })
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'mt-3 flex flex-col items-start' },
+                        React.createElement(
+                            'label',
+                            { className: 'mb-1 text-md' },
+                            'Color'
+                        ),
+                        React.createElement(ColorList, {
+                            choiceSize: 8,
+                            colors: ["#000", "#5A2F15", "#9EE52C", "#22A4B5"],
+                            selectedColor: shadowColor,
+                            onChange: handleSetShadowColor
+                        })
+                    )
+                )
             )
         ),
         React.createElement(
             'div',
-            { className: 'px-3' },
+            { className: '' },
             React.createElement(
                 'div',
-                { className: 'flex items-center justify-between mt-3' },
+                { className: 'px-3 flex items-center justify-between mt-3' },
                 React.createElement(
                     'label',
                     { className: 'text-md' },
                     'Video'
                 ),
                 React.createElement(Toggle, { checked: video, onChange: handleSetVideo })
+            ),
+            video && React.createElement(
+                'div',
+                { className: '-mx-12px px-12px mt-1 bg-white border-b' },
+                React.createElement(
+                    'div',
+                    { className: 'py-2 px-3 border-b border-light-gray' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-base' },
+                        'PLAY ICON'
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'py-2 px-3' },
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-start' },
+                        React.createElement(
+                            'label',
+                            { className: 'mb-1 text-md' },
+                            'Color'
+                        ),
+                        React.createElement(ColorList, {
+                            choiceSize: 8,
+                            colors: ["#EA4949", "#00DF7F", "#333"],
+                            selectedColor: playIconColor,
+                            onChange: handleSetPlayIconColor
+                        })
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex items-center justify-between pt-1 mt-3' },
+                        React.createElement(
+                            'label',
+                            { className: 'text-md' },
+                            'Invert Colors'
+                        ),
+                        React.createElement(Toggle, {
+                            checked: invertPlayIconColors,
+                            onChange: handleSetInvertPlayIconColors
+                        })
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex items-center justify-between mt-2' },
+                        React.createElement(
+                            'label',
+                            { className: 'text-md' },
+                            'Smooth Corners ',
+                            smoothPlayIconCorners,
+                            ' '
+                        ),
+                        React.createElement(Toggle, {
+                            checked: smoothPlayIconCorners,
+                            onChange: handleSetSmoothPlayIconCorners
+                        })
+                    )
+                )
             )
         ),
         style !== 'circle' && React.createElement(
@@ -31802,7 +32032,7 @@ function MediaSection({ value, onClose }) {
                 ),
                 React.createElement(Toggle, { checked: cornerRadius, onChange: handleSetCornerRadius })
             ),
-            style == 'regular' && cornerRadius && video && React.createElement(
+            style == 'basic' && cornerRadius && video && React.createElement(
                 'div',
                 { className: 'mt-1' },
                 React.createElement(ButtonGroup, {
@@ -33218,15 +33448,20 @@ function someTime(duration = 10) {
 
 function getGroupChildByName(group, name = "BG", cb = () => {}) {
     return new Promise((res, rej) => {
+        const found = false;
+
         group.children.forEach(node => {
             if (node.name == name) {
-                res(node);
                 cb(node);
+                res(node);
+                found = true;
             }
         });
 
-        rej();
+        if (found) return;
+
         cb(null);
+        rej();
     });
 }
 
@@ -33255,6 +33490,7 @@ function createIcon(pathData, defaultOptions = {}) {
     try {
         const icon = new Path();
         icon.pathData = pathData;
+        if (options.strokeJoins) icon.strokeJoins = options.strokeJoins;
 
         if (options.stroke && options.stroke.length && options.stroke != "none") {
             icon.stroke = new Color(options.stroke);

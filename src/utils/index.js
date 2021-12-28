@@ -303,15 +303,20 @@ function someTime(duration = 10){
 
 function getGroupChildByName(group, name = "BG", cb = () => {}){
     return new Promise((res, rej) => {
+        const found = false;
+
         group.children.forEach(node => {
             if(node.name == name){
-                res(node);
                 cb(node);
+                res(node);
+                found = true;
             }
         });
 
-        rej();
+        if(found) return;
+
         cb(null);
+        rej();
     });
 }
 
@@ -342,6 +347,8 @@ function createIcon(pathData, defaultOptions = {}){
     try {
         const icon = new Path();
         icon.pathData = pathData;
+        if(options.strokeJoins)
+            icon.strokeJoins = options.strokeJoins;
         
         if(options.stroke && options.stroke.length && options.stroke != "none"){
             icon.stroke = new Color(options.stroke);
