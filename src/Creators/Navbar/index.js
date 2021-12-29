@@ -1,10 +1,8 @@
 const { selection } = require("scenegraph");
 
-const { editDom, getAssetFileFromPath, someTime, placeInParent, tagNode } = require("../../utils");
+const { editDom, getAssetFileFromPath, placeInParent, tagNode } = require("../../utils");
 
 const defaultNavbarProps = require("./defaultProps");
-const createNavContainer = require("./createContainer");
-const createNavMenu = require("./createMenu");
 const assembleNavbar = require("./assemble");
 
 async function Navbar(userProps){
@@ -14,26 +12,17 @@ async function Navbar(userProps){
     };
     
     const logoImage = await getAssetFileFromPath("images/android.png");
+    const profileImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
 
     try {
         const oldNavbar = userProps ? selection.items[0] : null;
-        let navComponents = [];
         
         editDom(() => {
             try {
-                const [navBg, logo] = createNavContainer(props, logoImage);
-                const navMenu = createNavMenu(props);
-                navComponents = [navBg, logo, navMenu];
-            } catch (error) {
-                console.log("Error creating navbar: ", error);
-            }
-        });
-        
-        await someTime(0);
-
-        editDom(async () => {
-            try {
-                const navbar = assembleNavbar(navComponents);
+                const navbar = assembleNavbar(props, {
+                    logoImage,
+                    profileImage,
+                });
                 navbar.name = "FernNavbar";
 
                 tagNode(navbar, {  type: "Navbar", ...props });

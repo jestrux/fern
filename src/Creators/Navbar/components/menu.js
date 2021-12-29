@@ -1,6 +1,6 @@
 const { selection, Color, Rectangle, Text, SceneNode } = require("scenegraph");
 const commands = require("commands");
-const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = require("../../utils");
+const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = require("../../../utils");
 
 function createLink(){
     const linkBg = new Rectangle();
@@ -51,7 +51,7 @@ function createNavActiveIndicator({ shadow = false, activeLink, navMenu }){
         try {
             const { width, height } = navActiveLink.localBounds;
             const navActiveIndicator = createBorder({
-                width: width + 1,
+                width: width,
                 thickness: 2,
             });
             
@@ -62,7 +62,7 @@ function createNavActiveIndicator({ shadow = false, activeLink, navMenu }){
             navMenu.name = "FernNavMenu";
 
             placeInParent(navActiveIndicator, {
-                x: navActiveLink.topLeftInParent.x + 3, 
+                x: navActiveLink.topLeftInParent.x, 
                 y: height - (shadow ? 8 : 8.75)
             });
         } catch (error) {
@@ -73,7 +73,7 @@ function createNavActiveIndicator({ shadow = false, activeLink, navMenu }){
     return navMenu;
 }
 
-function createNavMenu(props = {}, cb = () => {}){
+function navMenuComponent(props = {}, cb = () => {}){
     const {
         links = [],
     } = props;
@@ -123,4 +123,4 @@ function createNavMenu(props = {}, cb = () => {}){
     }
 }
 
-module.exports = createNavMenu;
+module.exports = navMenuComponent;

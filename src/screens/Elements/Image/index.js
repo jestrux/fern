@@ -55,17 +55,20 @@ function Image({value = "office space", onSelect, onClose}){
                 
             // }
             
-            // const { ImageFill } = require("scenegraph");
             const tempFile = await downloadImage(url, true);
-            // const imageFill = new ImageFill(tempFile);
             
-            onSelect(tempFile);
             setLoading(false);
-            // editDom(async (selection) => {
-            //     const node = selection.items[0];
-            //     node.fill = imageFill;
-            //     setLoading(false);
-            // });
+            
+            if(onSelect)
+                onSelect(tempFile);
+            else{
+                const { ImageFill } = require("scenegraph");
+                editDom(async (selection) => {
+                    const node = selection.items[0];
+                    node.fill = new ImageFill(tempFile);;
+                    setLoading(false);
+                });
+            }
         } catch (error) {
             setLoading(false);
             if(error.toString().indexOf("Network request failed") != -1)
