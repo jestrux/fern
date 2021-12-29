@@ -16,6 +16,8 @@ function createButton(props){
         color,
         shadow,
         outlined,
+        link,
+        underline,
         roundness
     } = props;
 
@@ -26,24 +28,23 @@ function createButton(props){
 
     const bgRectangle = new Rectangle();
     bgRectangle.resize(...buttonProps.size);
-    bgRectangle.fill = new Color(color, outlined ? 0 : 1);
-    bgRectangle.strokeEnabled = true;
+    bgRectangle.fill = new Color(color, outlined || link ? 0 : 1);
+    bgRectangle.strokeEnabled = !link;
     bgRectangle.strokeWidth = 1.5;
 
-    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness]);
+    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness] || 0);
     bgRectangle.name = "BG";
     if(!shadow)
         bgRectangle.stroke = new Color(color);
-    else{
-        bgRectangle.stroke = new Color(color);
+    else
         bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
-    }
+        
     insertNode(bgRectangle);
 
     const buttonText = new Text();
     buttonText.text = text;
     let textColor = "#FFF";
-    if(outlined)
+    if(outlined || link)
         textColor = color;
     else
         textColor = tinyColor(color).isLight() ? "black" : "white";
@@ -52,6 +53,7 @@ function createButton(props){
     buttonText.fontFamily = "Helvetica Neue";
     buttonText.fontSize = buttonProps.fontSize;
     buttonText.fontStyle = buttonProps.fontStyle;
+    buttonText.underline = underline;
     
     insertNode(buttonText);
 

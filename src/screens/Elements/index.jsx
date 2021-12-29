@@ -1,5 +1,5 @@
 const React = require('react');
-const { PLUGIN_ID, ELEMENT_TYPES } = require('../../constants');
+const { ELEMENT_TYPES } = require('../../constants');
 const SelectionContext = require('../../SelectionContext');
 const ElementList = require('./ElementList');
 const Card = require("./Card");
@@ -7,6 +7,7 @@ const Image = require("./Image");
 const Button = require('./Button');
 const Navbar = require('./Navbar');
 const MediaSection = require('./MediaSection');
+const { getNodeTag } = require('../../utils');
 
 function Elements({value, subscription, onUpgrade}){
     const [screen, setScreen] = React.useState("");
@@ -23,18 +24,14 @@ function Elements({value, subscription, onUpgrade}){
         if(!selection || !selection.length)
             goToList = "No selection items or nothing selected";
         else{
-            const node = selection[0];
-            let jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
-            console.log("Fancy maps JSON: ", jsonString);
-            if(!jsonString) goToList = "No plugin data";
+            const props = getNodeTag(selection[0]);
+            console.log("Fancy maps JSON: ", props);
+            if(!props) 
+                goToList = "No plugin data";
             else{
-                try {
-                    jsonString = JSON.parse(jsonString);
-                    if(!jsonString.type || !ELEMENT_TYPES.includes(jsonString.type))
-                        goToList = "Not a map element";
-                } catch (error) {
-                    goToList = "No plugin data";
-                }
+                const { type } = props;
+                if(!type || !ELEMENT_TYPES.includes(type))
+                    goToList = "Not a map element";
             }
         }
 

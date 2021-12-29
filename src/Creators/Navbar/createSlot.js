@@ -3,19 +3,23 @@ const commands = require("commands");
 const { placeInParent, insertNode, getPadding } = require("../../utils");
 const navMenuComponent = require("./components/menu");
 const navLogoComponent = require("./components/logo");
-const navProfileImageComponent = require("./components/profileImage");
+const navDpComponent = require("./components/dp");
 const navSocialsComponent = require("./components/socials");
+const navSearchInputComponent = require("./components/searchInput");
+const navButtonsComponent = require("./components/buttons");
 
 function createNavSlot(props, components = []){
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
-        "dp": navProfileImageComponent,
-        "socials": navSocialsComponent
+        "dp": navDpComponent,
+        "socials": navSocialsComponent,
+        "search": navSearchInputComponent,
+        "buttons": navButtonsComponent,
     }
 
     try {
-        const { width, height, bg, alignment = "left" } = props;
+        const { width, height, container, alignment = "left" } = props;
 
         let slot;
 
@@ -45,7 +49,7 @@ function createNavSlot(props, components = []){
             commands.group();
         
             const slotContent = selection.items[0];
-            // if(content.length > 1){
+            if(slotContent.children.length > 1){
                 slotContent.layout = {
                     type: SceneNode.LAYOUT_STACK,
                     stack: {
@@ -53,7 +57,7 @@ function createNavSlot(props, components = []){
                         spacings: 30
                     }
                 };
-            // }
+            }
             slotContent.name = "FernNavSlotContent";
         
             selection.items = [ slotBg, slotContent ];
@@ -69,11 +73,13 @@ function createNavSlot(props, components = []){
                 }
             };
 
-            const { y, width } = bg.localBounds;
-            const slotPlacement = { x: 0, y };
+            const { width } = container.localBounds;
+            const { x, y } = container.topLeftInParent;
+            const slotPlacement = { x, y };
+            console.log("Container bounds: ", container);
             
             if(alignment == "right")
-                slotPlacement.x = width - slot.localBounds.width;
+                slotPlacement.x = width - slot.localBounds.width + x;
 
             placeInParent(slot, slotPlacement);
         }

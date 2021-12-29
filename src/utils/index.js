@@ -303,20 +303,32 @@ function someTime(duration = 10){
 
 function getGroupChildByName(group, name = "BG", cb = () => {}){
     return new Promise((res, rej) => {
-        const found = false;
+        try {
+            let found = false;
+            const namePath = name.split("/");
+            name = namePath.shift();
 
-        group.children.forEach(node => {
-            if(node.name == name){
-                cb(node);
-                res(node);
-                found = true;
-            }
-        });
+            group.children.forEach(node => {
+                if(node.name == name){
+                    found = true;
 
-        if(found) return;
+                    if(namePath.length == 0){
+                        cb(node);
+                        res(node);
+                        return;
+                    }
+                    else
+                        return getGroupChildByName(node, namePath.join("/"), cb);
+                }
+            });
 
-        cb(null);
-        rej();
+            if(found) return;
+
+            cb(null);
+            rej();
+        } catch (error) {
+            console.log("Error fetching group child: ", error);
+        }
     });
 }
 
@@ -408,8 +420,43 @@ function insertNode(node){
 }
 
 function tagNode(node, data){
+    console.log("Node data: ", data);
     node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
+
+function getNodeTag(node){
+    const jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
+
+    if (jsonString){
+        try {
+            return JSON.parse(jsonString);
+        } catch (error) {
+            console.log("Error getting node tag: ", error);
+        }
+    }
+
+    return;
+}
+
+function getFernComponentChildByName(component, childName, componentChildrenPathMap){
+    let child;
+
+    const childPath = componentChildrenPathMap[childName];
+    
+    if(!childPath)
+        return console.log(`${childName} component not found.`);
+    
+    getGroupChildByName(component, childPath, childFromPath => {
+        child = childFromPath;
+    });
+
+    return child;
+}
+
+function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return { width: srcWidth*ratio, height: srcHeight*ratio };
+ }
 
 module.exports = {
     shuffle,
@@ -430,5 +477,8 @@ module.exports = {
     getPadding,
     createBorder,
     insertNode,
-    tagNode
+    tagNode,
+    getNodeTag,
+    getFernComponentChildByName,
+    calculateAspectRatioFit
 }

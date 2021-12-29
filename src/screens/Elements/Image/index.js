@@ -4,7 +4,9 @@ const errorDialog = require("../../../utils/CustomDialogs/Error");
 const Loader = require("../../../components/Loader");
 const BcImageSearch = require("./BcImageSearch");
 
-function Image({value = "office space", onSelect, onClose}){
+function Image({value, onSelect, onClose}){
+    const searchQuery = value && value.searchQuery && value.searchQuery.length 
+        ? value.searchQuery : "office space";
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
     const [loading, setLoading] = React.useState(false);
 
@@ -25,7 +27,7 @@ function Image({value = "office space", onSelect, onClose}){
     function getLatestPhotos(){
         // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
         // return fetchPhotos(url);
-        return searchUnsplash(value);
+        return searchUnsplash(searchQuery);
     }
 
     function searchUnsplash(q){
@@ -95,7 +97,7 @@ function Image({value = "office space", onSelect, onClose}){
             </div>
 
             <BcImageSearch 
-                query={value}
+                query={searchQuery}
                 placeholder="Search for image"
                 fetchLatestPhotos={getLatestPhotos}
                 searchPhotos={searchUnsplash}

@@ -1,18 +1,11 @@
-const { PLUGIN_ID } = require("../../constants");
-const { getGroupChildByName } = require("../../utils");
+const { getGroupChildByName, getNodeTag } = require("../../utils");
 
 function getMediaImages(media){
-    let props, mainImage, bottomImage;
-    const jsonString = media.sharedPluginData.getItem(PLUGIN_ID, "richData");
-
-    if (jsonString)
-        props = JSON.parse(jsonString);
-
+    const props = getNodeTag(media);
+    
     if(!props) return null;
-
-    // console.log("\n\n\n");
-    // console.log("Media props from get media images: ", props);
-    // console.log("\n\n\n");
+    
+    let mainImage, bottomImage;
 
     if(props.style == "overlay"){
         getGroupChildByName(media, "Overlay", overlay => {

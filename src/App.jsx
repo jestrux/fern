@@ -5,6 +5,7 @@ require('./App.css');
 
 const { PLUGIN_ID } = require('./constants');
 const Elements = require('./screens/Elements');
+const { getNodeTag } = require('./utils');
 
 class App extends React.Component {
     constructor(props) {
@@ -26,11 +27,10 @@ class App extends React.Component {
 
         if(selection.items && selection.items.length > 0){
             const node = selection.items[0];
-            let jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
-            console.log("Fern element: ", jsonString);
+            const nodeProps = getNodeTag(node);
 
-            if (jsonString) {
-                const { type, ...taggedProps } = JSON.parse(jsonString);
+            if (nodeProps) {
+                const { type, ...taggedProps } = nodeProps;
                 console.log("Fern element: ", taggedProps);
 
                 const state = {

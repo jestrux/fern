@@ -2,7 +2,7 @@ module.exports = {
     "sm": {
         size: [82, 38],
         fontSize: 16,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 10,
             left: 16,
@@ -13,7 +13,7 @@ module.exports = {
     "md": {
         size: [82, 38],
         fontSize: 20,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 12,
             left: 20,
@@ -24,7 +24,7 @@ module.exports = {
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 18,
             left: 26,

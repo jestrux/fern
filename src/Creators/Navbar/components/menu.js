@@ -7,15 +7,16 @@ function createLink(){
     linkBg.resize(90, 70);
     linkBg.fill = new Color("white", 0);
     linkBg.strokeEnabled = false;
-    linkBg.name = "BG";
+    linkBg.name = "FernNavLinkBg";
     insertNode(linkBg);
 
     const linkText = new Text();
     linkText.name = "text";
     linkText.text = "Android 12";
-    linkText.fill = new Color("black");
+    linkText.fill = new Color("#606060");
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
+    linkText.name = "FernNavLinkText";
     insertNode(linkText);
 
     selection.items = [linkBg, linkText];
@@ -39,20 +40,25 @@ function createLink(){
 function changeLinkText(link, text = "Link", cb = () => {}){
     if(!link) return;
 
-    getGroupChildByName(link, 'text', linkText => {
+    getGroupChildByName(link, 'FernNavLinkText', linkText => {
         if(linkText)
             linkText.text = text.length ? text : "Link";
         cb();
     });
 }
 
-function createNavActiveIndicator({ shadow = false, activeLink, navMenu }){
+function createNavActiveIndicator({ shadow = false, activeLink, activeColor = "#000", navMenu }){
     getGroupChildByName(navMenu, activeLink, navActiveLink => {
         try {
             const { width, height } = navActiveLink.localBounds;
+            getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
+                linkText.fill = new Color(activeColor);
+            });
+
             const navActiveIndicator = createBorder({
                 width: width,
                 thickness: 2,
+                color: activeColor
             });
             
             selection.items = [navMenu];

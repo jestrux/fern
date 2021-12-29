@@ -29323,6 +29323,7 @@ __webpack_require__(/*! ./App.css */ "./src/App.css");
 
 const { PLUGIN_ID } = __webpack_require__(/*! ./constants */ "./src/constants.js");
 const Elements = __webpack_require__(/*! ./screens/Elements */ "./src/screens/Elements/index.jsx");
+const { getNodeTag } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 
 class App extends React.Component {
     constructor(props) {
@@ -29344,13 +29345,11 @@ class App extends React.Component {
 
         if (selection.items && selection.items.length > 0) {
             const node = selection.items[0];
-            let jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
-            console.log("Fern element: ", jsonString);
+            const nodeProps = getNodeTag(node);
 
-            if (jsonString) {
-                const _JSON$parse = JSON.parse(jsonString),
-                      { type } = _JSON$parse,
-                      taggedProps = _objectWithoutProperties(_JSON$parse, ['type']);
+            if (nodeProps) {
+                const { type } = nodeProps,
+                      taggedProps = _objectWithoutProperties(nodeProps, ['type']);
                 console.log("Fern element: ", taggedProps);
 
                 const state = {
@@ -29480,7 +29479,7 @@ module.exports = {
     "sm": {
         size: [82, 38],
         fontSize: 16,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 10,
             left: 16,
@@ -29491,7 +29490,7 @@ module.exports = {
     "md": {
         size: [82, 38],
         fontSize: 20,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 12,
             left: 20,
@@ -29502,7 +29501,7 @@ module.exports = {
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         padding: {
             bottom: 18,
             left: 26,
@@ -29539,6 +29538,8 @@ function createButton(props) {
         color,
         shadow,
         outlined,
+        link,
+        underline,
         roundness
     } = props;
 
@@ -29549,27 +29550,26 @@ function createButton(props) {
 
     const bgRectangle = new Rectangle();
     bgRectangle.resize(...buttonProps.size);
-    bgRectangle.fill = new Color(color, outlined ? 0 : 1);
-    bgRectangle.strokeEnabled = true;
+    bgRectangle.fill = new Color(color, outlined || link ? 0 : 1);
+    bgRectangle.strokeEnabled = !link;
     bgRectangle.strokeWidth = 1.5;
 
-    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness]);
+    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness] || 0);
     bgRectangle.name = "BG";
-    if (!shadow) bgRectangle.stroke = new Color(color);else {
-        bgRectangle.stroke = new Color(color);
-        bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
-    }
+    if (!shadow) bgRectangle.stroke = new Color(color);else bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
+
     insertNode(bgRectangle);
 
     const buttonText = new Text();
     buttonText.text = text;
     let textColor = "#FFF";
-    if (outlined) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
+    if (outlined || link) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
 
     buttonText.fill = new Color(textColor);
     buttonText.fontFamily = "Helvetica Neue";
     buttonText.fontSize = buttonProps.fontSize;
     buttonText.fontStyle = buttonProps.fontStyle;
+    buttonText.underline = underline;
 
     insertNode(buttonText);
 
@@ -29600,6 +29600,8 @@ module.exports = {
     color: "#333",
     shadow: false,
     outlined: false,
+    link: false,
+    underline: false,
     roundness: "full"
 };
 
@@ -29874,20 +29876,14 @@ module.exports = createMedia;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { getGroupChildByName, getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function getMediaImages(media) {
-    let props, mainImage, bottomImage;
-    const jsonString = media.sharedPluginData.getItem(PLUGIN_ID, "richData");
-
-    if (jsonString) props = JSON.parse(jsonString);
+    const props = getNodeTag(media);
 
     if (!props) return null;
 
-    // console.log("\n\n\n");
-    // console.log("Media props from get media images: ", props);
-    // console.log("\n\n\n");
+    let mainImage, bottomImage;
 
     if (props.style == "overlay") {
         getGroupChildByName(media, "Overlay", overlay => {
@@ -30018,7 +30014,6 @@ function createNavBackground({ width, height, color, shadow }) {
     bg.fill = new Color(color);
     bg.strokeEnabled = false;
     bg.name = "BG";
-
     insertNode(bg);
 
     if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);else {
@@ -30032,30 +30027,124 @@ function createNavBackground({ width, height, color, shadow }) {
         placeInParent(borderNode, { x: 0, y: height });
     }
 
-    return bg;
+    const container = new Rectangle();
+    container.resize(Math.min(width, 1600), height);
+    container.fill = new Color("white", 0);
+    container.strokeEnabled = false;
+    container.name = "Container";
+    insertNode(container);
+
+    selection.items = [bg, container];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+
+    return [bg, container];
 }
 
 function assembleNavbar(props = {}, images) {
     props = _extends({}, props, images, {
-        width: 1600, height: 70
+        width: 1920, height: 70
     });
 
-    const bg = createNavBackground(props);
-    props.bg = bg;
+    const [bg, container] = createNavBackground(props);
+    props.container = container;
 
-    const leftSlot = createNavSlot(props, ["logo", "menu"]);
+    const leftSlot = createNavSlot(props, ["logo", "menu", "buttons"]);
     leftSlot.name = "FernNavLeftSlot";
 
-    const rightSlot = createNavSlot(_extends({}, props, { alignment: "right" }), ["socials", "dp"]);
+    const rightSlot = createNavSlot(_extends({}, props, { alignment: "right" }), ["search", "socials", "dp"]
+    // "menu", "buttons"
+    );
     rightSlot.name = "FernNavRightSlot";
 
-    selection.items = [bg, leftSlot, rightSlot];
+    selection.items = [bg, container, leftSlot, rightSlot];
     commands.group();
 
     return selection.items[0];
 }
 
 module.exports = assembleNavbar;
+
+/***/ }),
+
+/***/ "./src/Creators/Navbar/components/buttons.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/Navbar/components/buttons.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+
+const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src/Creators/Button/createButton.js");
+
+function navButtonsComponent({ activeColor }) {
+    const button1 = createButton({
+        text: "Get Started",
+        size: "sm",
+        color: activeColor,
+        roundness: "md"
+    });
+
+    const button2 = createButton({
+        text: "Sign In",
+        size: "sm",
+        color: "#555",
+        link: true,
+        underline: true
+    });
+
+    selection.items = [button1, button2];
+    commands.alignVerticalCenter();
+    commands.group();
+
+    const buttons = selection.items[0];
+    buttons.name = "FernNavButtons";
+    buttons.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 6
+        }
+    };
+
+    return buttons;
+}
+
+module.exports = navButtonsComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Navbar/components/dp.js":
+/*!**********************************************!*\
+  !*** ./src/Creators/Navbar/components/dp.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { Ellipse, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { insertNode, tagNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+function navDpComponent({ dpImage }) {
+    const dp = new Ellipse();
+    dp.radiusX = 20;
+    dp.radiusY = 20;
+    dp.name = "FernNavDp";
+
+    try {
+        dp.fill = dpImage;
+    } catch (error) {
+        dp.fill = new ImageFill(dpImage);
+    }
+
+    insertNode(dp);
+    tagNode(dp, { type: "Image", searchQuery: "face" });
+
+    return dp;
+}
+
+module.exports = navDpComponent;
 
 /***/ }),
 
@@ -30067,12 +30156,25 @@ module.exports = assembleNavbar;
 /***/ (function(module, exports, __webpack_require__) {
 
 const { Rectangle, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const { insertNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const { insertNode, calculateAspectRatioFit } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
 function navLogoComponent({ logoImage }) {
     const logo = new Rectangle();
     logo.resize(163, 25);
-    logo.fill = new ImageFill(logoImage);
+    logo.name = "FernNavLogo";
+
+    try {
+        logo.fill = logoImage;
+    } catch (error) {
+        logo.fill = new ImageFill(logoImage);
+    }
+
+    if (logo.fill.naturalWidth) {
+        const { naturalWidth, naturalHeight } = logo.fill;
+        const { width, height } = calculateAspectRatioFit(naturalWidth, naturalHeight, 160, 50);
+        logo.resize(width, height);
+    }
+
     insertNode(logo);
 
     return logo;
@@ -30100,15 +30202,16 @@ function createLink() {
     linkBg.resize(90, 70);
     linkBg.fill = new Color("white", 0);
     linkBg.strokeEnabled = false;
-    linkBg.name = "BG";
+    linkBg.name = "FernNavLinkBg";
     insertNode(linkBg);
 
     const linkText = new Text();
     linkText.name = "text";
     linkText.text = "Android 12";
-    linkText.fill = new Color("black");
+    linkText.fill = new Color("#606060");
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
+    linkText.name = "FernNavLinkText";
     insertNode(linkText);
 
     selection.items = [linkBg, linkText];
@@ -30132,19 +30235,24 @@ function createLink() {
 function changeLinkText(link, text = "Link", cb = () => {}) {
     if (!link) return;
 
-    getGroupChildByName(link, 'text', linkText => {
+    getGroupChildByName(link, 'FernNavLinkText', linkText => {
         if (linkText) linkText.text = text.length ? text : "Link";
         cb();
     });
 }
 
-function createNavActiveIndicator({ shadow = false, activeLink, navMenu }) {
+function createNavActiveIndicator({ shadow = false, activeLink, activeColor = "#000", navMenu }) {
     getGroupChildByName(navMenu, activeLink, navActiveLink => {
         try {
             const { width, height } = navActiveLink.localBounds;
+            getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
+                linkText.fill = new Color(activeColor);
+            });
+
             const navActiveIndicator = createBorder({
                 width: width,
-                thickness: 2
+                thickness: 2,
+                color: activeColor
             });
 
             selection.items = [navMenu];
@@ -30218,29 +30326,75 @@ module.exports = navMenuComponent;
 
 /***/ }),
 
-/***/ "./src/Creators/Navbar/components/profileImage.js":
-/*!********************************************************!*\
-  !*** ./src/Creators/Navbar/components/profileImage.js ***!
-  \********************************************************/
+/***/ "./src/Creators/Navbar/components/searchInput.js":
+/*!*******************************************************!*\
+  !*** ./src/Creators/Navbar/components/searchInput.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { Ellipse, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const { insertNode, tagNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-function navProfileImageComponent({ profileImage }) {
-    const dp = new Ellipse();
-    dp.radiusX = 25;
-    dp.radiusY = 25;
-    dp.fill = new ImageFill(profileImage);
-    insertNode(dp);
+const { SceneNode, Rectangle, Text, Color, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const icons = __webpack_require__(/*! ../../../data/icons */ "./src/data/icons.js");
+const { insertNode, createIcon, getPadding } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-    tagNode(dp, { type: "image" });
+function navSearchInputComponent(props) {
+    const searchInputBg = new Rectangle();
+    searchInputBg.resize(460, 45);
+    searchInputBg.fill = new Color("#000", 0.08);
+    searchInputBg.setAllCornerRadii(60);
+    insertNode(searchInputBg);
 
-    return dp;
+    const searchText = new Text();
+    searchText.text = "Type here to search...";
+    searchText.fill = new Color("#000", 0.3);
+    searchText.fontFamily = "Helvetica Neue";
+    searchText.fontSize = 16;
+    searchText.fontStyle = "Medium";
+    searchText.charSpacing = 15;
+    insertNode(searchText);
+
+    const searchIcon = createIcon(icons.search, {
+        fill: "#aaa",
+        size: 18
+    });
+    insertNode(searchIcon);
+
+    selection.items = [searchIcon, searchText];
+    commands.alignVerticalCenter();
+    commands.alignLeft();
+    commands.group();
+    searchIcon.moveInParentCoordinates(0, 1);
+    const searchInputContent = selection.items[0];
+    searchInputContent.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 10
+        }
+    };
+
+    selection.items = [searchInputBg, searchInputContent];
+    commands.alignVerticalCenter();
+    commands.group();
+
+    const searchInputContainer = selection.items[0];
+    searchInputContainer.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: searchInputBg,
+            values: _extends({}, getPadding(16, 12), { right: 40 })
+        }
+    };
+
+    searchInputContainer.name = "FernSearchInput";
+
+    return searchInputContainer;
 }
 
-module.exports = navProfileImageComponent;
+module.exports = navSearchInputComponent;
 
 /***/ }),
 
@@ -30308,19 +30462,23 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, insertNode, getPadding } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const navMenuComponent = __webpack_require__(/*! ./components/menu */ "./src/Creators/Navbar/components/menu.js");
 const navLogoComponent = __webpack_require__(/*! ./components/logo */ "./src/Creators/Navbar/components/logo.js");
-const navProfileImageComponent = __webpack_require__(/*! ./components/profileImage */ "./src/Creators/Navbar/components/profileImage.js");
+const navDpComponent = __webpack_require__(/*! ./components/dp */ "./src/Creators/Navbar/components/dp.js");
 const navSocialsComponent = __webpack_require__(/*! ./components/socials */ "./src/Creators/Navbar/components/socials.js");
+const navSearchInputComponent = __webpack_require__(/*! ./components/searchInput */ "./src/Creators/Navbar/components/searchInput.js");
+const navButtonsComponent = __webpack_require__(/*! ./components/buttons */ "./src/Creators/Navbar/components/buttons.js");
 
 function createNavSlot(props, components = []) {
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
-        "dp": navProfileImageComponent,
-        "socials": navSocialsComponent
+        "dp": navDpComponent,
+        "socials": navSocialsComponent,
+        "search": navSearchInputComponent,
+        "buttons": navButtonsComponent
     };
 
     try {
-        const { width, height, bg, alignment = "left" } = props;
+        const { width, height, container, alignment = "left" } = props;
 
         let slot;
 
@@ -30347,15 +30505,15 @@ function createNavSlot(props, components = []) {
             commands.group();
 
             const slotContent = selection.items[0];
-            // if(content.length > 1){
-            slotContent.layout = {
-                type: SceneNode.LAYOUT_STACK,
-                stack: {
-                    orientation: SceneNode.STACK_HORIZONTAL,
-                    spacings: 30
-                }
-            };
-            // }
+            if (slotContent.children.length > 1) {
+                slotContent.layout = {
+                    type: SceneNode.LAYOUT_STACK,
+                    stack: {
+                        orientation: SceneNode.STACK_HORIZONTAL,
+                        spacings: 30
+                    }
+                };
+            }
             slotContent.name = "FernNavSlotContent";
 
             selection.items = [slotBg, slotContent];
@@ -30371,10 +30529,12 @@ function createNavSlot(props, components = []) {
                 }
             };
 
-            const { y, width } = bg.localBounds;
-            const slotPlacement = { x: 0, y };
+            const { width } = container.localBounds;
+            const { x, y } = container.topLeftInParent;
+            const slotPlacement = { x, y };
+            console.log("Container bounds: ", container);
 
-            if (alignment == "right") slotPlacement.x = width - slot.localBounds.width;
+            if (alignment == "right") slotPlacement.x = width - slot.localBounds.width + x;
 
             placeInParent(slot, slotPlacement);
         }
@@ -30402,7 +30562,8 @@ const defaultNavbarProps = {
     border: true,
     linksPlacement: 'right',
     links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
-    activeLink: "Contact Us",
+    activeLink: "Home",
+    activeColor: "#00A860",
     buttons: ["Get Started"],
     socialMediaIcons: ["Facebook, Twitter, Instagram, Youtube"],
     profile: true,
@@ -30410,6 +30571,33 @@ const defaultNavbarProps = {
 };
 
 module.exports = defaultNavbarProps;
+
+/***/ }),
+
+/***/ "./src/Creators/Navbar/getNavbarComponent.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/Navbar/getNavbarComponent.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { getNodeTag, getFernComponentChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getNavbarComponent(navbar, component) {
+    const props = getNodeTag(navbar);
+
+    if (!props) return null;
+
+    const componentChildrenPathMap = {
+        "leftSlot": "FernNavLeftSlot",
+        "logo": "FernNavLeftSlot/FernNavSlotContent/FernNavLogo",
+        "dp": "FernNavRightSlot/FernNavSlotContent/FernNavDp"
+    };
+
+    return getFernComponentChildByName(navbar, component, componentChildrenPathMap);
+}
+
+module.exports = getNavbarComponent;
 
 /***/ }),
 
@@ -30428,21 +30616,29 @@ const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_requ
 
 const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Navbar/defaultProps.js");
 const assembleNavbar = __webpack_require__(/*! ./assemble */ "./src/Creators/Navbar/assemble.js");
+const getNavbarComponent = __webpack_require__(/*! ./getNavbarComponent */ "./src/Creators/Navbar/getNavbarComponent.js");
 
 async function Navbar(userProps) {
     let props = _extends({}, defaultNavbarProps, userProps || {});
 
-    const logoImage = await getAssetFileFromPath("images/android.png");
-    const profileImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
+    let logoImage = await getAssetFileFromPath("images/android.png");
+    let dpImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
 
     try {
         const oldNavbar = userProps ? selection.items[0] : null;
+        if (oldNavbar) {
+            const logoNode = getNavbarComponent(oldNavbar, "logo");
+            const dpNode = getNavbarComponent(oldNavbar, "dp");
+
+            logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+            dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+        }
 
         editDom(() => {
             try {
                 const navbar = assembleNavbar(props, {
                     logoImage,
-                    profileImage
+                    dpImage
                 });
                 navbar.name = "FernNavbar";
 
@@ -31097,6 +31293,7 @@ module.exports = {
     "filter-alt": "M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z",
     "sort": "M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z",
     "tune": "M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z",
+    "search": "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
     "crop": "M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z",
     "add-to-cart": "M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.13 0-.25-.11-.25-.25z",
     "favorite": "M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z",
@@ -31775,7 +31972,8 @@ const errorDialog = __webpack_require__(/*! ../../../utils/CustomDialogs/Error *
 const Loader = __webpack_require__(/*! ../../../components/Loader */ "./src/components/Loader.jsx");
 const BcImageSearch = __webpack_require__(/*! ./BcImageSearch */ "./src/screens/Elements/Image/BcImageSearch.js");
 
-function Image({ value = "office space", onSelect, onClose }) {
+function Image({ value, onSelect, onClose }) {
+    const searchQuery = value && value.searchQuery && value.searchQuery.length ? value.searchQuery : "office space";
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
     const [loading, setLoading] = React.useState(false);
 
@@ -31796,7 +31994,7 @@ function Image({ value = "office space", onSelect, onClose }) {
     function getLatestPhotos() {
         // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
         // return fetchPhotos(url);
-        return searchUnsplash(value);
+        return searchUnsplash(searchQuery);
     }
 
     function searchUnsplash(q) {
@@ -31868,7 +32066,7 @@ function Image({ value = "office space", onSelect, onClose }) {
             )
         ),
         React.createElement(BcImageSearch, {
-            query: value,
+            query: searchQuery,
             placeholder: "Search for image",
             fetchLatestPhotos: getLatestPhotos,
             searchPhotos: searchUnsplash,
@@ -32527,7 +32725,7 @@ module.exports = Navbar;
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { PLUGIN_ID, ELEMENT_TYPES } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { ELEMENT_TYPES } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const SelectionContext = __webpack_require__(/*! ../../SelectionContext */ "./src/SelectionContext.js");
 const ElementList = __webpack_require__(/*! ./ElementList */ "./src/screens/Elements/ElementList.jsx");
 const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx");
@@ -32535,6 +32733,7 @@ const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/i
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
+const { getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function Elements({ value, subscription, onUpgrade }) {
     const [screen, setScreen] = React.useState("");
@@ -32549,16 +32748,11 @@ function Elements({ value, subscription, onUpgrade }) {
         let goToList = false;
 
         if (!selection || !selection.length) goToList = "No selection items or nothing selected";else {
-            const node = selection[0];
-            let jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
-            console.log("Fancy maps JSON: ", jsonString);
-            if (!jsonString) goToList = "No plugin data";else {
-                try {
-                    jsonString = JSON.parse(jsonString);
-                    if (!jsonString.type || !ELEMENT_TYPES.includes(jsonString.type)) goToList = "Not a map element";
-                } catch (error) {
-                    goToList = "No plugin data";
-                }
+            const props = getNodeTag(selection[0]);
+            console.log("Fancy maps JSON: ", props);
+            if (!props) goToList = "No plugin data";else {
+                const { type } = props;
+                if (!type || !ELEMENT_TYPES.includes(type)) goToList = "Not a map element";
             }
         }
 
@@ -33714,20 +33908,30 @@ function someTime(duration = 10) {
 
 function getGroupChildByName(group, name = "BG", cb = () => {}) {
     return new Promise((res, rej) => {
-        const found = false;
+        try {
+            let found = false;
+            const namePath = name.split("/");
+            name = namePath.shift();
 
-        group.children.forEach(node => {
-            if (node.name == name) {
-                cb(node);
-                res(node);
-                found = true;
-            }
-        });
+            group.children.forEach(node => {
+                if (node.name == name) {
+                    found = true;
 
-        if (found) return;
+                    if (namePath.length == 0) {
+                        cb(node);
+                        res(node);
+                        return;
+                    } else return getGroupChildByName(node, namePath.join("/"), cb);
+                }
+            });
 
-        cb(null);
-        rej();
+            if (found) return;
+
+            cb(null);
+            rej();
+        } catch (error) {
+            console.log("Error fetching group child: ", error);
+        }
     });
 }
 
@@ -33810,7 +34014,41 @@ function insertNode(node) {
 }
 
 function tagNode(node, data) {
+    console.log("Node data: ", data);
     node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+}
+
+function getNodeTag(node) {
+    const jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
+
+    if (jsonString) {
+        try {
+            return JSON.parse(jsonString);
+        } catch (error) {
+            console.log("Error getting node tag: ", error);
+        }
+    }
+
+    return;
+}
+
+function getFernComponentChildByName(component, childName, componentChildrenPathMap) {
+    let child;
+
+    const childPath = componentChildrenPathMap[childName];
+
+    if (!childPath) return console.log(`${childName} component not found.`);
+
+    getGroupChildByName(component, childPath, childFromPath => {
+        child = childFromPath;
+    });
+
+    return child;
+}
+
+function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return { width: srcWidth * ratio, height: srcHeight * ratio };
 }
 
 module.exports = {
@@ -33832,7 +34070,10 @@ module.exports = {
     getPadding,
     createBorder,
     insertNode,
-    tagNode
+    tagNode,
+    getNodeTag,
+    getFernComponentChildByName,
+    calculateAspectRatioFit
 };
 
 /***/ }),

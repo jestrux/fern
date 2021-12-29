@@ -4,6 +4,7 @@ const { editDom, getAssetFileFromPath, placeInParent, tagNode } = require("../..
 
 const defaultNavbarProps = require("./defaultProps");
 const assembleNavbar = require("./assemble");
+const getNavbarComponent = require("./getNavbarComponent");
 
 async function Navbar(userProps){
     let props = {
@@ -11,17 +12,24 @@ async function Navbar(userProps){
         ...(userProps || {})
     };
     
-    const logoImage = await getAssetFileFromPath("images/android.png");
-    const profileImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
+    let logoImage = await getAssetFileFromPath("images/android.png");
+    let dpImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
 
     try {
         const oldNavbar = userProps ? selection.items[0] : null;
+        if(oldNavbar){
+            const logoNode = getNavbarComponent(oldNavbar, "logo");
+            const dpNode = getNavbarComponent(oldNavbar, "dp");
+
+            logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+            dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+        }
         
         editDom(() => {
             try {
                 const navbar = assembleNavbar(props, {
                     logoImage,
-                    profileImage,
+                    dpImage,
                 });
                 navbar.name = "FernNavbar";
 
