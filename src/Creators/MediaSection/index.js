@@ -65,7 +65,7 @@ async function MediaSection(props){
                     oldMediaSection.removeFromParent();
                 }
                 else
-                    placeInParent(media);
+                    placeInParent(media, {x: 0, y: 0});
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
             }

@@ -1,6 +1,6 @@
 const { selection, Color, Rectangle, ImageFill, Shadow } = require("scenegraph");
 const commands = require("commands");
-const { placeInParent, createBorder } = require("../../utils");
+const { placeInParent, createBorder, insertNode } = require("../../utils");
 
 function createNavContainer(props = {}, logoImage){
     let {
@@ -11,13 +11,14 @@ function createNavContainer(props = {}, logoImage){
     let bgRectangle, logo, borderNode;
 
     bgRectangle = new Rectangle();
-    bgRectangle.resize(1920, 70);
+    bgRectangle.resize(1600, 70);
     bgRectangle.fill = new Color(color);
     bgRectangle.strokeEnabled = false;
     bgRectangle.name = "BG";
     if(!shadow){
         borderNode = createBorder({
             top: 71,
+            width: 1600
         });
         borderNode.opacity = 0.1;
     }
@@ -25,12 +26,12 @@ function createNavContainer(props = {}, logoImage){
         bgRectangle.stroke = new Color(color);
         bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
     }
-    selection.insertionParent.addChild(bgRectangle);
+    insertNode(bgRectangle);
     
     logo = new Rectangle();
     logo.resize(163, 25);
     logo.fill = new ImageFill(logoImage);
-    selection.insertionParent.addChild(logo);
+    insertNode(logo);
     
     selection.items = [bgRectangle];
     commands.group();

@@ -1,4 +1,4 @@
-const { placeInParent, createIcon, editDom, base64ArrayBuffer } = require("../utils");
+const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNode } = require("../utils");
 const { PLUGIN_ID } = require("../constants");
 const Button = require("./Button");
 const Navbar = require("./Navbar");
@@ -41,7 +41,7 @@ class Creators {
                                 path = halfStar;
                             
                             const icon = createIcon(path, {fill: color});
-                            selection.insertionParent.addChild(icon);
+                            insertNode(icon);
             
                             icons.push(icon);
                             
@@ -65,7 +65,7 @@ class Creators {
                             roundedRating == 0 ? emptyStar : ratingIconPath, 
                             {fill: color}
                         );
-                        selection.insertionParent.addChild(icon);
+                        insertNode(icon);
     
                         ratingText = new Text();
                         ratingText.text = `${rating.toFixed(1)} ( 20 reviews )`;
@@ -85,7 +85,7 @@ class Creators {
                                 fill: new Color(darkMode ? "rgba(255, 255, 255, 0.7)" : "#6A6A6A")
                             }
                         ];
-                        selection.insertionParent.addChild(ratingText);
+                        insertNode(ratingText);
                         selection.items = [icon, ratingText];
                     }
 
@@ -160,7 +160,7 @@ class Creators {
                 bgRectangle.stroke = new Color(darkMode ? "#1A2637" : "#E5E5E5");
                 bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
             }
-            selection.insertionParent.addChild(bgRectangle);
+            insertNode(bgRectangle);
             
             // selection.items = [bgRectangle];
             // commands.group();
@@ -180,12 +180,10 @@ class Creators {
                         bottomRight: large && !imageInset ? 0 : imageInset ? 8 : 0
                     };
                     imageRectangle.name = "Image";
-                    selection.insertionParent.addChild(imageRectangle);
+                    insertNode(imageRectangle);
                     // group.addChild(imageRectangle);
 
-                    imageRectangle.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify({ 
-                        type: "image", darkMode
-                    }));
+                    tagNode(imageRectangle, {type: "image", darkMode});
 
                     // placeInParent(imageRectangle, {x: imageInset, y: imageInset});
                 } catch (error) {
@@ -202,7 +200,7 @@ class Creators {
             location.fontStyle = "Light";
             // group.addChild(location);
             // placeInParent(location, {x: leftOffset, y: topOffset + 48.5});
-            selection.insertionParent.addChild(location);
+            insertNode(location);
 
             price = new Text();
             price.text = "$65 / night";
@@ -226,7 +224,7 @@ class Creators {
             
             // group.addChild(price);
             // placeInParent(price, {x: leftOffset, y: topOffset + 85});
-            selection.insertionParent.addChild(price);
+            insertNode(price);
 
             // res(group);
             const content = [bgRectangle, location, price];
@@ -263,11 +261,9 @@ class Creators {
                     const card = selection.items[0];
                     card.name = "FernCard";
 
-                    const data = { 
+                    tagNode(card, { 
                         type: "card", shadow, image, darkMode, large, rating
-                    };
-
-                    card.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+                    });
 
                     if(oldCard){
                         placeInParent(card, oldCard.topLeftInParent);

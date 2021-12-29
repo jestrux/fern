@@ -320,20 +320,6 @@ function getGroupChildByName(group, name = "BG", cb = () => {}){
     });
 }
 
-function getCurrentSelection(){
-    return new Promise(res => {
-        editDom((selection) => {
-            let item = null;
-            if(selection.items.length)
-                item = selection.items[0];
-                
-            console.log("Selection bob: ", item);
-                
-            res(item);
-        });
-    });
-}
-
 function createIcon(pathData, defaultOptions = {}){
     const { Path, Color } = require("scenegraph");
 
@@ -395,15 +381,13 @@ function getPadding(px = 4, py = 4){
     }
 }
 
-function createBorder(props = {}){
+function createBorder({
+    top = 0, 
+    width = 1920,
+    color = "black",
+    thickness = 1.5
+}){
     const { Color, Line } = require("scenegraph");
-
-    const {
-        top = 0, 
-        width = 1920,
-        color = "black",
-        thickness = 1.5
-    } = props;
 
     const border = new Line();
     border.strokeEnabled = true;
@@ -412,6 +396,19 @@ function createBorder(props = {}){
     border.setStartEnd(0, top, width, top);
     
     return border;
+}
+
+function insertNode(node){
+    const { selection } = require("scenegraph");
+    let insertionParent = selection.insertionParent;
+    if(selection.focusedArtboard)
+        insertionParent = selection.focusedArtboard;
+
+    insertionParent.addChild(node);
+}
+
+function tagNode(node, data){
+    node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
 
 module.exports = {
@@ -427,10 +424,11 @@ module.exports = {
     base64ArrayBuffer,
     someTime,
     getGroupChildByName,
-    getCurrentSelection,
     fakeValue,
     createIcon,
     getAssetFileFromPath,
     getPadding,
     createBorder,
+    insertNode,
+    tagNode
 }

@@ -1,6 +1,6 @@
 const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode } = require("scenegraph");
 const commands = require("commands");
-const { createIcon } = require("../../utils");
+const { createIcon, insertNode } = require("../../utils");
 
 function createMedia(props, [
     defaultImage, portraitImage, mainImageFill, bottomImageFill
@@ -27,7 +27,7 @@ function createMedia(props, [
         playButtonBg.radiusY = 40;
         playButtonBg.fill = new Color(invertColors ? color : "#fff");
 
-        selection.insertionParent.addChild(playButtonBg);
+        insertNode(playButtonBg);
 
         const playIconNode = createIcon("M8 5v14l11-7z", {
             fill: invertColors ? "#fff" : color,
@@ -39,7 +39,7 @@ function createMedia(props, [
             size: 30,
         });
 
-        selection.insertionParent.addChild(playIconNode);
+        insertNode(playIconNode);
 
         selection.items = [
             playButtonBg, playIconNode
@@ -86,7 +86,7 @@ function createMedia(props, [
         if(cornerRadius)
             bgRectangle.setAllCornerRadii(5);
         
-        selection.insertionParent.addChild(bgRectangle);
+        insertNode(bgRectangle);
 
         if(shadow)
             bgRectangle.shadow = getShadow();
@@ -158,7 +158,7 @@ function createMedia(props, [
         if(cornerRadius)
             bgRectangle.setAllCornerRadii(10);
         
-        selection.insertionParent.addChild(bgRectangle);
+        insertNode(bgRectangle);
 
         if(video){
             const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
@@ -196,7 +196,7 @@ function createMedia(props, [
         bg.radiusY = 246;
         bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
         
-        selection.insertionParent.addChild(bg);
+        insertNode(bg);
 
         if(video){
             selection.items = [bg];

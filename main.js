@@ -29402,6 +29402,56 @@ module.exports = App;
 
 /***/ }),
 
+/***/ "./src/Creators/Button/assembleButton.js":
+/*!***********************************************!*\
+  !*** ./src/Creators/Button/assembleButton.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+
+function assembleButton(buttonComponents, buttonProps) {
+    const [bgRectangle, buttonText, iconNode] = buttonComponents;
+
+    if (iconNode) {
+        selection.items = [iconNode, buttonText];
+        commands.alignLeft();
+        commands.alignVerticalCenter();
+        commands.group();
+
+        const buttonContent = selection.items[0];
+        buttonText.moveInParentCoordinates(iconSize * 1.5, 0);
+
+        selection.items = [bgRectangle, buttonContent];
+        commands.alignHorizontalCenter();
+        commands.alignVerticalCenter();
+        commands.group();
+        buttonText.moveInParentCoordinates(0, -0.5);
+    } else {
+        selection.items = [bgRectangle, buttonText];
+        commands.alignHorizontalCenter();
+        commands.alignVerticalCenter();
+        commands.group();
+    }
+
+    const button = selection.items[0];
+    button.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: bgRectangle,
+            values: buttonProps.padding
+        }
+    };
+
+    return button;
+}
+
+module.exports = assembleButton;
+
+/***/ }),
+
 /***/ "./src/Creators/Button/buttonRoundnessMap.js":
 /*!***************************************************!*\
   !*** ./src/Creators/Button/buttonRoundnessMap.js ***!
@@ -29464,6 +29514,97 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./src/Creators/Button/createButton.js":
+/*!*********************************************!*\
+  !*** ./src/Creators/Button/createButton.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { Color, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+const tinyColor = __webpack_require__(/*! ../../utils/tinycolor */ "./src/utils/tinycolor.js");
+const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
+const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+const assembleButton = __webpack_require__(/*! ./assembleButton */ "./src/Creators/Button/assembleButton.js");
+const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const buttonRoundnessMap = __webpack_require__(/*! ./buttonRoundnessMap */ "./src/Creators/Button/buttonRoundnessMap.js");
+
+function createButton(props) {
+    let {
+        icon,
+        text,
+        size,
+        color,
+        shadow,
+        outlined,
+        roundness
+    } = props;
+
+    if (!text.length) text = "Submit";
+
+    const buttonProps = buttonSizeMap[size];
+    const iconSize = buttonProps.fontSize * 0.8;
+
+    const bgRectangle = new Rectangle();
+    bgRectangle.resize(...buttonProps.size);
+    bgRectangle.fill = new Color(color, outlined ? 0 : 1);
+    bgRectangle.strokeEnabled = true;
+    bgRectangle.strokeWidth = 1.5;
+
+    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness]);
+    bgRectangle.name = "BG";
+    if (!shadow) bgRectangle.stroke = new Color(color);else {
+        bgRectangle.stroke = new Color(color);
+        bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
+    }
+    insertNode(bgRectangle);
+
+    const buttonText = new Text();
+    buttonText.text = text;
+    let textColor = "#FFF";
+    if (outlined) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
+
+    buttonText.fill = new Color(textColor);
+    buttonText.fontFamily = "Helvetica Neue";
+    buttonText.fontSize = buttonProps.fontSize;
+    buttonText.fontStyle = buttonProps.fontStyle;
+
+    insertNode(buttonText);
+
+    let iconNode;
+    if (icon && iconData[icon]) {
+        iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
+        insertNode(iconNode);
+    }
+
+    return assembleButton([bgRectangle, buttonText, iconNode], buttonProps);
+}
+
+module.exports = createButton;
+
+/***/ }),
+
+/***/ "./src/Creators/Button/defaultButtonProps.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/Button/defaultButtonProps.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = {
+    icon: null,
+    text: "Get Started",
+    size: "lg",
+    color: "#333",
+    shadow: false,
+    outlined: false,
+    roundness: "full"
+};
+
+/***/ }),
+
 /***/ "./src/Creators/Button/index.js":
 /*!**************************************!*\
   !*** ./src/Creators/Button/index.js ***!
@@ -29471,124 +29612,24 @@ module.exports = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, placeInParent, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const tinyColor = __webpack_require__(/*! ../../utils/tinycolor */ "./src/utils/tinycolor.js");
-const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
-const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
-const buttonRoundnessMap = __webpack_require__(/*! ./buttonRoundnessMap */ "./src/Creators/Button/buttonRoundnessMap.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-async function Button(props) {
-    let {
-        icon = null,
-        text = "Get Started",
-        size = "lg",
-        color = "#333",
-        shadow = false,
-        outlined = false,
-        roundness = "full"
-    } = props || {};
+const { editDom, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const defaultProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
+const createButton = __webpack_require__(/*! ./createButton */ "./src/Creators/Button/createButton.js");
 
-    if (!text.length) text = "Submit";
-
-    const { Color, Rectangle, Shadow, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
-    const commands = __webpack_require__(/*! commands */ "commands");
-
-    const buttonProps = buttonSizeMap[size];
-    const iconSize = buttonProps.fontSize * 0.8;
-
-    const addText = selection => new Promise(res => {
-        let bgRectangle, buttonText;
-
-        bgRectangle = new Rectangle();
-        bgRectangle.resize(...buttonProps.size);
-        bgRectangle.fill = new Color(color, outlined ? 0 : 1);
-        bgRectangle.strokeEnabled = true;
-        bgRectangle.strokeWidth = 1.5;
-
-        bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness]);
-        bgRectangle.name = "BG";
-        if (!shadow) bgRectangle.stroke = new Color(color);else {
-            bgRectangle.stroke = new Color(color);
-            bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
-        }
-        selection.insertionParent.addChild(bgRectangle);
-
-        // TEXT
-        buttonText = new Text();
-        buttonText.text = text;
-        let textColor = "#FFF";
-        if (outlined) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
-
-        buttonText.fill = new Color(textColor);
-        buttonText.fontFamily = "Helvetica Neue";
-        buttonText.fontSize = buttonProps.fontSize;
-        buttonText.fontStyle = buttonProps.fontStyle;
-
-        selection.insertionParent.addChild(buttonText);
-
-        let content;
-
-        if (icon && iconData[icon]) {
-            const iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
-            selection.insertionParent.addChild(iconNode);
-            content = [bgRectangle, buttonText, iconNode];
-        } else content = [bgRectangle, buttonText];
-
-        res(content);
-    });
+async function Button(userProps) {
+    const props = _extends({}, defaultProps, userProps || {});
 
     try {
         editDom(async selection => {
-            const oldButton = props ? selection.items[0] : null;
+            const oldButton = userProps ? selection.items[0] : null;
 
             try {
-                const group = await addText(selection);
-                const [bgRectangle, buttonText, iconNode] = group;
-
-                if (iconNode) {
-                    selection.items = [iconNode, buttonText];
-                    commands.alignLeft();
-                    commands.alignVerticalCenter();
-                    commands.group();
-
-                    const buttonContent = selection.items[0];
-                    buttonText.moveInParentCoordinates(iconSize * 1.5, 0);
-
-                    selection.items = [bgRectangle, buttonContent];
-                    commands.alignHorizontalCenter();
-                    commands.alignVerticalCenter();
-                    commands.group();
-                    buttonText.moveInParentCoordinates(0, -0.5);
-                } else {
-                    selection.items = [bgRectangle, buttonText];
-                    commands.alignHorizontalCenter();
-                    commands.alignVerticalCenter();
-                    commands.group();
-                }
-
-                const button = selection.items[0];
-                button.layout = {
-                    type: SceneNode.LAYOUT_PADDING,
-                    padding: {
-                        background: bgRectangle,
-                        values: buttonProps.padding
-                    }
-                };
+                const button = createButton(props);
                 button.name = "FernButton";
 
-                const data = {
-                    type: "Button",
-                    size,
-                    color,
-                    shadow,
-                    outlined,
-                    roundness,
-                    icon,
-                    text
-                };
-
-                button.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+                tagNode(button, _extends({ type: "Button" }, props));
 
                 if (oldButton) {
                     placeInParent(button, oldButton.topLeftInParent);
@@ -29616,7 +29657,7 @@ module.exports = Button;
 
 const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { createIcon, insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomImageFill]) {
     let {
@@ -29641,7 +29682,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
         playButtonBg.radiusY = 40;
         playButtonBg.fill = new Color(invertColors ? color : "#fff");
 
-        selection.insertionParent.addChild(playButtonBg);
+        insertNode(playButtonBg);
 
         const playIconNode = createIcon("M8 5v14l11-7z", {
             fill: invertColors ? "#fff" : color,
@@ -29651,7 +29692,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
             size: 30
         });
 
-        selection.insertionParent.addChild(playIconNode);
+        insertNode(playIconNode);
 
         selection.items = [playButtonBg, playIconNode];
         commands.alignHorizontalCenter();
@@ -29693,7 +29734,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
         bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
         if (cornerRadius) bgRectangle.setAllCornerRadii(5);
 
-        selection.insertionParent.addChild(bgRectangle);
+        insertNode(bgRectangle);
 
         if (shadow) bgRectangle.shadow = getShadow();
 
@@ -29755,7 +29796,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
 
         if (cornerRadius) bgRectangle.setAllCornerRadii(10);
 
-        selection.insertionParent.addChild(bgRectangle);
+        insertNode(bgRectangle);
 
         if (video) {
             const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
@@ -29788,7 +29829,7 @@ function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomI
         bg.radiusY = 246;
         bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
 
-        selection.insertionParent.addChild(bg);
+        insertNode(bg);
 
         if (video) {
             selection.items = [bg];
@@ -29943,7 +29984,7 @@ async function MediaSection(props) {
                 if (oldMediaSection) {
                     placeInParent(media, oldMediaSection.topLeftInParent);
                     oldMediaSection.removeFromParent();
-                } else placeInParent(media);
+                } else placeInParent(media, { x: 0, y: 0 });
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
             }
@@ -29957,16 +29998,49 @@ module.exports = MediaSection;
 
 /***/ }),
 
-/***/ "./src/Creators/Navbar/createNavContainer.js":
-/*!***************************************************!*\
-  !*** ./src/Creators/Navbar/createNavContainer.js ***!
-  \***************************************************/
+/***/ "./src/Creators/Navbar/assemble.js":
+/*!*****************************************!*\
+  !*** ./src/Creators/Navbar/assemble.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+
+function assembleNavbar(components) {
+    const [navBackground, navLogo, navMenu] = components;
+
+    selection.items = [navBackground, navMenu];
+    commands.alignRight();
+    navMenu.moveInParentCoordinates(-30, 0);
+
+    selection.items = [navBackground, navLogo];
+    commands.alignLeft();
+    navLogo.moveInParentCoordinates(30, 0);
+
+    selection.items = [navBackground, navLogo, navMenu];
+    commands.alignVerticalCenter();
+
+    commands.group();
+
+    return selection.items[0];
+}
+
+module.exports = assembleNavbar;
+
+/***/ }),
+
+/***/ "./src/Creators/Navbar/createContainer.js":
+/*!************************************************!*\
+  !*** ./src/Creators/Navbar/createContainer.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const { selection, Color, Rectangle, ImageFill, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { placeInParent, createBorder } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { placeInParent, createBorder, insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createNavContainer(props = {}, logoImage) {
     let {
@@ -29977,25 +30051,26 @@ function createNavContainer(props = {}, logoImage) {
     let bgRectangle, logo, borderNode;
 
     bgRectangle = new Rectangle();
-    bgRectangle.resize(1920, 70);
+    bgRectangle.resize(1600, 70);
     bgRectangle.fill = new Color(color);
     bgRectangle.strokeEnabled = false;
     bgRectangle.name = "BG";
     if (!shadow) {
         borderNode = createBorder({
-            top: 71
+            top: 71,
+            width: 1600
         });
         borderNode.opacity = 0.1;
     } else {
         bgRectangle.stroke = new Color(color);
         bgRectangle.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
     }
-    selection.insertionParent.addChild(bgRectangle);
+    insertNode(bgRectangle);
 
     logo = new Rectangle();
     logo.resize(163, 25);
     logo.fill = new ImageFill(logoImage);
-    selection.insertionParent.addChild(logo);
+    insertNode(logo);
 
     selection.items = [bgRectangle];
     commands.group();
@@ -30013,28 +30088,26 @@ module.exports = createNavContainer;
 
 /***/ }),
 
-/***/ "./src/Creators/Navbar/createNavLinks.js":
-/*!***********************************************!*\
-  !*** ./src/Creators/Navbar/createNavLinks.js ***!
-  \***********************************************/
+/***/ "./src/Creators/Navbar/createMenu.js":
+/*!*******************************************!*\
+  !*** ./src/Creators/Navbar/createMenu.js ***!
+  \*******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { selection, Color, Rectangle, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { getPadding, getGroupChildByName, createBorder } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function createLink(props = {}) {
-    const {
-        color = "white"
-    } = props;
-
+function createLink() {
     const linkBg = new Rectangle();
     linkBg.resize(90, 70);
-    linkBg.fill = new Color(color);
+    linkBg.fill = new Color("white", 0);
     linkBg.strokeEnabled = false;
     linkBg.name = "BG";
-    selection.insertionParent.addChild(linkBg);
+    insertNode(linkBg);
 
     const linkText = new Text();
     linkText.name = "text";
@@ -30042,7 +30115,7 @@ function createLink(props = {}) {
     linkText.fill = new Color("black");
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
-    selection.insertionParent.addChild(linkText);
+    insertNode(linkText);
 
     selection.items = [linkBg, linkText];
     commands.alignVerticalCenter();
@@ -30071,7 +30144,34 @@ function changeLinkText(link, text = "Link", cb = () => {}) {
     });
 }
 
-function createNavLinks(props = {}, cb = () => {}) {
+function createNavActiveIndicator({ shadow = false, activeLink, navMenu }) {
+    getGroupChildByName(navMenu, activeLink, navActiveLink => {
+        try {
+            const { width, height } = navActiveLink.localBounds;
+            const navActiveIndicator = createBorder({
+                width: width + 1,
+                thickness: 2
+            });
+
+            selection.items = [navMenu];
+            commands.group();
+            navMenu = selection.items[0];
+            navMenu.addChild(navActiveIndicator);
+            navMenu.name = "FernNavMenu";
+
+            placeInParent(navActiveIndicator, {
+                x: navActiveLink.topLeftInParent.x + 3,
+                y: height - (shadow ? 8 : 8.75)
+            });
+        } catch (error) {
+            console.log("Error creating nav indicator: ", error);
+        }
+    });
+
+    return navMenu;
+}
+
+function createNavMenu(props = {}, cb = () => {}) {
     const {
         links = []
     } = props;
@@ -30097,8 +30197,8 @@ function createNavLinks(props = {}, cb = () => {}) {
 
         selection.items = navLinkNodes;
         commands.group();
-        const navLinks = selection.items[0];
-        navLinks.layout = {
+        let navMenu = selection.items[0];
+        navMenu.layout = {
             type: SceneNode.LAYOUT_STACK,
             stack: {
                 orientation: SceneNode.STACK_HORIZONTAL,
@@ -30106,13 +30206,45 @@ function createNavLinks(props = {}, cb = () => {}) {
             }
         };
 
-        return navLinks;
+        navMenu = selection.items[0];
+
+        if (props.links.includes(props.activeLink)) {
+            navMenu = createNavActiveIndicator(_extends({}, props, {
+                navMenu
+            }));
+        }
+
+        return navMenu;
     } catch (error) {
         console.log("Error creating nav links: ", error);
     }
 }
 
-module.exports = createNavLinks;
+module.exports = createNavMenu;
+
+/***/ }),
+
+/***/ "./src/Creators/Navbar/defaultProps.js":
+/*!*********************************************!*\
+  !*** ./src/Creators/Navbar/defaultProps.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultNavbarProps = {
+    color: "white",
+    shadow: true,
+    border: true,
+    linksPlacement: 'right',
+    links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
+    activeLink: "Contact Us",
+    buttons: ["Get Started"],
+    socialMediaIcons: ["Facebook, Twitter, Instagram, Youtube"],
+    profile: true,
+    search: true
+};
+
+module.exports = defaultNavbarProps;
 
 /***/ }),
 
@@ -30123,66 +30255,31 @@ module.exports = createNavLinks;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const commands = __webpack_require__(/*! commands */ "commands");
-const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, getAssetFileFromPath, someTime, placeInParent, createBorder, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const createNavContainer = __webpack_require__(/*! ./createNavContainer */ "./src/Creators/Navbar/createNavContainer.js");
-const createNavLinks = __webpack_require__(/*! ./createNavLinks */ "./src/Creators/Navbar/createNavLinks.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-async function Navbar(props) {
-    let {
-        color = "white",
-        shadow = true,
-        border = true,
-        linksPlacement = 'right',
-        links = ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
-        activeLink = "Contact Us",
-        buttons = ["Get Started"],
-        socialMediaIcons = ["Facebook, Twitter, Instagram, Youtube"],
-        profile = true,
-        search = true
-    } = props || {};
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+const { editDom, getAssetFileFromPath, someTime, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Navbar/defaultProps.js");
+const createNavContainer = __webpack_require__(/*! ./createContainer */ "./src/Creators/Navbar/createContainer.js");
+const createNavMenu = __webpack_require__(/*! ./createMenu */ "./src/Creators/Navbar/createMenu.js");
+const assembleNavbar = __webpack_require__(/*! ./assemble */ "./src/Creators/Navbar/assemble.js");
+
+async function Navbar(userProps) {
+    let props = _extends({}, defaultNavbarProps, userProps || {});
 
     const logoImage = await getAssetFileFromPath("images/android.png");
 
     try {
-        const oldNavbar = props ? selection.items[0] : null;
-        let navBackground, navLogo, navMenu, navActiveLink, navActiveIndicator;
+        const oldNavbar = userProps ? selection.items[0] : null;
+        let navComponents = [];
 
-        editDom(async selection => {
+        editDom(() => {
             try {
                 const [navBg, logo] = createNavContainer(props, logoImage);
-                const navLinks = createNavLinks({
-                    links
-                });
-
-                navBackground = navBg;
-                navLogo = logo;
-                navMenu = navLinks;
-
-                if (links.includes(activeLink)) {
-                    getGroupChildByName(navLinks, activeLink, node => {
-                        navActiveLink = node;
-                        console.log("Nav Active Link: ", navLinks, links.indexOf(activeLink), navActiveLink);
-
-                        const { width, height } = navActiveLink.localBounds;
-                        navActiveIndicator = createBorder({
-                            width: width + 1,
-                            thickness: 2
-                        });
-
-                        console.log("Created link indicator border: ", navActiveIndicator);
-                        selection.insertionParent.addChild(navActiveIndicator);
-
-                        selection.items = [navMenu, navActiveIndicator];
-                        commands.alignLeft();
-                        commands.alignBottom();
-                        commands.group();
-                        navActiveIndicator.moveInParentCoordinates(navActiveLink.topLeftInParent.x + 3, -1);
-                        navMenu = selection.items[0];
-                    });
-                }
+                const navMenu = createNavMenu(props);
+                navComponents = [navBg, logo, navMenu];
             } catch (error) {
                 console.log("Error creating navbar: ", error);
             }
@@ -30190,43 +30287,17 @@ async function Navbar(props) {
 
         await someTime(0);
 
-        editDom(async selection => {
+        editDom(async () => {
             try {
-                selection.items = [navBackground, navMenu];
-                commands.alignRight();
-                navMenu.moveInParentCoordinates(-30, 0);
-
-                selection.items = [navBackground, navLogo];
-                commands.alignLeft();
-                navLogo.moveInParentCoordinates(30, 0);
-
-                selection.items = [navBackground, navLogo, navMenu];
-                commands.alignVerticalCenter();
-
-                commands.group();
-                const navbar = selection.items[0];
+                const navbar = assembleNavbar(navComponents);
                 navbar.name = "FernNavbar";
 
-                const data = {
-                    type: "Navbar",
-                    color,
-                    shadow,
-                    border,
-                    links,
-                    linksPlacement,
-                    activeLink,
-                    buttons,
-                    profile,
-                    search,
-                    socialMediaIcons
-                };
-
-                navbar.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+                tagNode(navbar, _extends({ type: "Navbar" }, props));
 
                 if (oldNavbar) {
                     placeInParent(navbar, oldNavbar.topLeftInParent);
                     oldNavbar.removeFromParent();
-                } else placeInParent(navbar);
+                } else placeInParent(navbar, { x: 0, y: 0 });
             } catch (error) {
                 console.log("Error creating navbar: ", error);
             }
@@ -30249,7 +30320,7 @@ module.exports = Navbar;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-const { placeInParent, createIcon, editDom, base64ArrayBuffer } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNode } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
@@ -30288,7 +30359,7 @@ class Creators {
                         if (rating > index && rating - index < 1) path = halfStar;
 
                         const icon = createIcon(path, { fill: color });
-                        selection.insertionParent.addChild(icon);
+                        insertNode(icon);
 
                         icons.push(icon);
 
@@ -30305,7 +30376,7 @@ class Creators {
                     const roundedRating = Math.round(rating);
                     const ratingIconPath = roundedRating < outOf ? halfStar : fullStar;
                     const icon = createIcon(roundedRating == 0 ? emptyStar : ratingIconPath, { fill: color });
-                    selection.insertionParent.addChild(icon);
+                    insertNode(icon);
 
                     ratingText = new Text();
                     ratingText.text = `${rating.toFixed(1)} ( 20 reviews )`;
@@ -30322,7 +30393,7 @@ class Creators {
                         length: 13 + reviewCount.toString().length,
                         fill: new Color(darkMode ? "rgba(255, 255, 255, 0.7)" : "#6A6A6A")
                     }];
-                    selection.insertionParent.addChild(ratingText);
+                    insertNode(ratingText);
                     selection.items = [icon, ratingText];
                 }
 
@@ -30398,7 +30469,7 @@ Creators.Card = async function (props) {
             bgRectangle.stroke = new Color(darkMode ? "#1A2637" : "#E5E5E5");
             bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
         }
-        selection.insertionParent.addChild(bgRectangle);
+        insertNode(bgRectangle);
 
         // selection.items = [bgRectangle];
         // commands.group();
@@ -30418,12 +30489,10 @@ Creators.Card = async function (props) {
                     bottomRight: large && !imageInset ? 0 : imageInset ? 8 : 0
                 };
                 imageRectangle.name = "Image";
-                selection.insertionParent.addChild(imageRectangle);
+                insertNode(imageRectangle);
                 // group.addChild(imageRectangle);
 
-                imageRectangle.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify({
-                    type: "image", darkMode
-                }));
+                tagNode(imageRectangle, { type: "image", darkMode });
 
                 // placeInParent(imageRectangle, {x: imageInset, y: imageInset});
             } catch (error) {
@@ -30440,7 +30509,7 @@ Creators.Card = async function (props) {
         location.fontStyle = "Light";
         // group.addChild(location);
         // placeInParent(location, {x: leftOffset, y: topOffset + 48.5});
-        selection.insertionParent.addChild(location);
+        insertNode(location);
 
         price = new Text();
         price.text = "$65 / night";
@@ -30461,7 +30530,7 @@ Creators.Card = async function (props) {
 
         // group.addChild(price);
         // placeInParent(price, {x: leftOffset, y: topOffset + 85});
-        selection.insertionParent.addChild(price);
+        insertNode(price);
 
         // res(group);
         const content = [bgRectangle, location, price];
@@ -30496,11 +30565,9 @@ Creators.Card = async function (props) {
                 const card = selection.items[0];
                 card.name = "FernCard";
 
-                const data = {
+                tagNode(card, {
                     type: "card", shadow, image, darkMode, large, rating
-                };
-
-                card.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+                });
 
                 if (oldCard) {
                     placeInParent(card, oldCard.topLeftInParent);
@@ -33509,19 +33576,6 @@ function getGroupChildByName(group, name = "BG", cb = () => {}) {
     });
 }
 
-function getCurrentSelection() {
-    return new Promise(res => {
-        editDom(selection => {
-            let item = null;
-            if (selection.items.length) item = selection.items[0];
-
-            console.log("Selection bob: ", item);
-
-            res(item);
-        });
-    });
-}
-
 function createIcon(pathData, defaultOptions = {}) {
     const { Path, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
@@ -33575,15 +33629,13 @@ function getPadding(px = 4, py = 4) {
     };
 }
 
-function createBorder(props = {}) {
+function createBorder({
+    top = 0,
+    width = 1920,
+    color = "black",
+    thickness = 1.5
+}) {
     const { Color, Line } = __webpack_require__(/*! scenegraph */ "scenegraph");
-
-    const {
-        top = 0,
-        width = 1920,
-        color = "black",
-        thickness = 1.5
-    } = props;
 
     const border = new Line();
     border.strokeEnabled = true;
@@ -33592,6 +33644,18 @@ function createBorder(props = {}) {
     border.setStartEnd(0, top, width, top);
 
     return border;
+}
+
+function insertNode(node) {
+    const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+    let insertionParent = selection.insertionParent;
+    if (selection.focusedArtboard) insertionParent = selection.focusedArtboard;
+
+    insertionParent.addChild(node);
+}
+
+function tagNode(node, data) {
+    node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
 
 module.exports = {
@@ -33607,12 +33671,13 @@ module.exports = {
     base64ArrayBuffer,
     someTime,
     getGroupChildByName,
-    getCurrentSelection,
     fakeValue,
     createIcon,
     getAssetFileFromPath,
     getPadding,
-    createBorder
+    createBorder,
+    insertNode,
+    tagNode
 };
 
 /***/ }),

@@ -1,18 +1,14 @@
 const { selection, Color, Rectangle, Text, SceneNode } = require("scenegraph");
 const commands = require("commands");
-const { getPadding, getGroupChildByName, createBorder } = require("../../utils");
+const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = require("../../utils");
 
-function createLink(props = {}){
-    const {
-        color = "white"
-    } = props;
-
+function createLink(){
     const linkBg = new Rectangle();
     linkBg.resize(90, 70);
-    linkBg.fill = new Color(color);
+    linkBg.fill = new Color("white", 0);
     linkBg.strokeEnabled = false;
     linkBg.name = "BG";
-    selection.insertionParent.addChild(linkBg);
+    insertNode(linkBg);
 
     const linkText = new Text();
     linkText.name = "text";
@@ -20,7 +16,7 @@ function createLink(props = {}){
     linkText.fill = new Color("black");
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
-    selection.insertionParent.addChild(linkText);
+    insertNode(linkText);
 
     selection.items = [linkBg, linkText];
     commands.alignVerticalCenter();
@@ -50,7 +46,34 @@ function changeLinkText(link, text = "Link", cb = () => {}){
     });
 }
 
-function createNavLinks(props = {}, cb = () => {}){
+function createNavActiveIndicator({ shadow = false, activeLink, navMenu }){
+    getGroupChildByName(navMenu, activeLink, navActiveLink => {
+        try {
+            const { width, height } = navActiveLink.localBounds;
+            const navActiveIndicator = createBorder({
+                width: width + 1,
+                thickness: 2,
+            });
+            
+            selection.items = [navMenu];
+            commands.group();
+            navMenu = selection.items[0];
+            navMenu.addChild(navActiveIndicator);
+            navMenu.name = "FernNavMenu";
+
+            placeInParent(navActiveIndicator, {
+                x: navActiveLink.topLeftInParent.x + 3, 
+                y: height - (shadow ? 8 : 8.75)
+            });
+        } catch (error) {
+            console.log("Error creating nav indicator: ", error);
+        }
+    });
+
+    return navMenu;
+}
+
+function createNavMenu(props = {}, cb = () => {}){
     const {
         links = [],
     } = props;
@@ -76,8 +99,8 @@ function createNavLinks(props = {}, cb = () => {}){
 
         selection.items = navLinkNodes;
         commands.group();
-        const navLinks = selection.items[0];
-        navLinks.layout = {
+        let navMenu = selection.items[0];
+        navMenu.layout = {
             type: SceneNode.LAYOUT_STACK,
             stack: {
                 orientation: SceneNode.STACK_HORIZONTAL,
@@ -85,10 +108,19 @@ function createNavLinks(props = {}, cb = () => {}){
             }
         }
 
-        return navLinks;
+        navMenu = selection.items[0];
+
+        if(props.links.includes(props.activeLink)){
+            navMenu = createNavActiveIndicator({
+                ...props,
+                navMenu
+            });
+        }
+
+        return navMenu;
     } catch (error) {
         console.log("Error creating nav links: ", error);
     }
 }
 
-module.exports = createNavLinks;
+module.exports = createNavMenu;
