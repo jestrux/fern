@@ -4,7 +4,7 @@ const { placeInParent, createBorder, insertNode } = require("../../utils");
 const createNavSlot = require("./createSlot");
 
 function createNavBackground({ width, height, color, shadow }){
-    const bg = new Rectangle();
+    let bg = new Rectangle();
     bg.resize(width, height);
     bg.fill = new Color(color);
     bg.strokeEnabled = false;
