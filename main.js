@@ -29650,6 +29650,689 @@ module.exports = Button;
 
 /***/ }),
 
+/***/ "./src/Creators/FernComponent/assemble.js":
+/*!************************************************!*\
+  !*** ./src/Creators/FernComponent/assemble.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, Rectangle, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent, createBorder, insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function createFernComponentBackground({ width, height, color, shadow }) {
+    let bg = new Rectangle();
+    bg.resize(width, height);
+    bg.fill = new Color(color);
+    bg.strokeEnabled = false;
+    bg.name = "BG";
+    insertNode(bg);
+
+    if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);else {
+        const borderNode = createBorder({ width });
+        borderNode.opacity = 0.1;
+        insertNode(borderNode);
+
+        selection.items = [bg, borderNode];
+        commands.group();
+        bg = selection.items[0];
+        placeInParent(borderNode, { x: 0, y: height });
+    }
+
+    const container = new Rectangle();
+    container.resize(Math.min(width, 1600), height);
+    container.fill = new Color("white", 0);
+    container.strokeEnabled = false;
+    container.name = "Container";
+    insertNode(container);
+
+    selection.items = [bg, container];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+
+    return [bg, container];
+}
+
+function assembleFernComponent(props = {}, images) {
+    props = _extends({}, props, images, {
+        color: "red",
+        width: 1920, height: 800
+    });
+
+    const [bg, container] = createFernComponentBackground(props);
+    props.container = container;
+
+    selection.items = [bg, container];
+    commands.group();
+
+    return selection.items[0];
+}
+
+module.exports = assembleFernComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/FernComponent/defaultProps.js":
+/*!****************************************************!*\
+  !*** ./src/Creators/FernComponent/defaultProps.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultFernComponentProps = {
+    aspectRatio: "landscape",
+    image: true,
+    title: "The mines of Moria",
+    description: "The variants have made changes to the now untainable future.",
+    action: "Read More",
+    roundedCorners: "sm"
+};
+
+module.exports = defaultFernComponentProps;
+
+/***/ }),
+
+/***/ "./src/Creators/FernComponent/index.js":
+/*!*********************************************!*\
+  !*** ./src/Creators/FernComponent/index.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+const defaultComponentProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/FernComponent/defaultProps.js");
+const assembleComponent = __webpack_require__(/*! ./assemble */ "./src/Creators/FernComponent/assemble.js");
+
+async function FernComponent(userProps) {
+    let props = _extends({}, defaultComponentProps, userProps || {});
+
+    let logoImage = await getAssetFileFromPath("images/android.png");
+    let dpImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
+
+    try {
+        const oldComponent = userProps ? selection.items[0] : null;
+        if (oldComponent) {
+            // const logoNode = getComponentComponent(oldComponent, "logo");
+            // const dpNode = getComponentComponent(oldComponent, "dp");
+
+            // logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+            // dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+        }
+
+        editDom(() => {
+            try {
+                const component = assembleComponent(props, {
+                    logoImage,
+                    dpImage
+                });
+                component.name = "FernComponent";
+
+                tagNode(component, _extends({ type: "FernComponent" }, props));
+
+                if (oldComponent) {
+                    placeInParent(component, oldComponent.topLeftInParent);
+                    oldComponent.removeFromParent();
+                } else placeInParent(component, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating component: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = FernComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/assemble.js":
+/*!***************************************!*\
+  !*** ./src/Creators/Grid/assemble.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { SceneNode, selection, Color, Rectangle, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent, insertNode, getPadding } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createGridCards = __webpack_require__(/*! ./createCards */ "./src/Creators/Grid/createCards.js");
+
+function createGridBackground({ width, height, color, shadow, images }) {
+    let bg = new Rectangle();
+    bg.resize(width, height);
+    bg.fill = new Color(color, 0);
+    bg.strokeEnabled = false;
+    bg.name = "BG";
+    insertNode(bg);
+
+    const container = new Rectangle();
+    container.resize(Math.min(width, 1600), height);
+    container.fill = new Color("red");
+    container.strokeEnabled = false;
+
+    insertNode(container);
+
+    selection.items = [bg, container];
+    commands.alignHorizontalCenter();
+
+    return [bg, container];
+}
+
+function assembleGrid(props = {}, images) {
+    props = _extends({}, props, { images,
+        width: 1920, height: 800
+    });
+
+    let [bg, container] = createGridBackground(props);
+    props.container = container;
+    const gridCards = createGridCards(props);
+    container.height = gridCards.localBounds.height + 40;
+
+    selection.items = [container, gridCards];
+    commands.group();
+    commands.alignTop();
+    commands.alignHorizontalCenter();
+    container.fill = new Color("white", 0);
+    selection.items[0].layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: container,
+            values: getPadding(32, 32)
+        }
+    };
+    container = selection.items[0];
+    container.name = "Container";
+
+    bg.height = container.localBounds.height;
+
+    selection.items = [bg, container];
+    commands.alignTop();
+    commands.alignHorizontalCenter();
+    commands.group();
+
+    const grid = selection.items[0];
+    return grid;
+}
+
+module.exports = assembleGrid;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/createCards.js":
+/*!******************************************!*\
+  !*** ./src/Creators/Grid/createCards.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { SceneNode, selection, Color, ImageFill, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getCornerRadius({ cornerRadius, shadow, border }, forImage) {
+    const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+    let radius = radiusMap[cornerRadius];
+    if (forImage && (shadow || border)) radius *= 0.65;
+
+    return Math.max(radius, 0);
+}
+
+function getShadow(shadow) {
+    const shadowPropsMap = {
+        "sm": [0, 1, 3],
+        "md": [1, 2, 5],
+        "lg": [1.5, 3.5, 7]
+    };
+
+    if (!shadow || !Object.keys(shadowPropsMap).includes(shadow)) shadow = "sm";
+
+    const shadowProps = shadowPropsMap[shadow];
+    const shadowOffsets = shadowProps.slice(0, 2);
+    const shadowBlur = shadowProps[2];
+
+    return new Shadow(...shadowOffsets, shadowBlur, new Color("#000", 0.26), true);
+}
+
+function createCard(props) {
+    let {
+        aspectRatio = 'landscape',
+        width = 450,
+        image, title, description,
+        padding,
+        border,
+        shadow
+    } = props;
+
+    if (!shadow && !border) padding = 0;
+
+    width = width - padding * 2;
+
+    let imageHeight = width * 0.65;
+    if (aspectRatio == 'por') imageHeight = width / 0.75;else if (aspectRatio == 'sqr') imageHeight = width * 1;
+
+    const cardImage = new Rectangle();
+    cardImage.resize(width, imageHeight);
+    console.log("Card image: ", image);
+    try {
+        cardImage.fill = image;
+    } catch (error) {
+        cardImage.fill = new ImageFill(image);
+    }
+    cardImage.name = "Image";
+    cardImage.setAllCornerRadii(getCornerRadius(props, true));
+
+    const cardTitle = createText(title, {
+        name: "Title", width, height: 28, type: Text.FIXED_HEIGHT,
+        fontSize: 24, fontStyle: "Medium"
+    });
+
+    const cardDescription = createText(description, {
+        fill: new Color("#4D4D4D"), lineSpacing: 30,
+        name: "Description", width
+    });
+
+    insertNode(cardDescription);
+    insertNode(cardTitle);
+    insertNode(cardImage);
+
+    selection.items = [cardTitle, cardDescription];
+    commands.alignLeft();
+    commands.group();
+
+    const cardText = selection.items[0];
+    cardText.name = "FernGridCardText";
+    cardText.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 6
+        }
+    };
+
+    selection.items = [cardImage, cardText];
+    commands.alignLeft();
+    commands.group();
+
+    const cardContent = selection.items[0];
+    cardContent.name = "FernGridCardContent";
+    cardContent.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 12
+        }
+    };
+
+    const bg = new Rectangle();
+    bg.resize(width, cardContent.localBounds.height);
+    bg.fill = new Color("#fff", padding ? 1 : 0);
+    bg.setAllCornerRadii(getCornerRadius(props));
+
+    if (border && !shadow) {
+        bg.strokeEnabled = true;
+        bg.strokeWidth = 1.5;
+        bg.stroke = new Color("#e0e0e0");
+        bg.name = "FernGridCardBg";
+    }
+
+    if (shadow) bg.shadow = getShadow(shadow);
+
+    insertNode(bg);
+
+    selection.items = [cardContent];
+    commands.bringToFront();
+
+    selection.items = [bg, cardContent];
+    commands.alignVerticalCenter();
+    commands.alignHorizontalCenter();
+    commands.group();
+
+    const card = selection.items[0];
+    card.name = "FernGridCard";
+
+    card.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: bg,
+            values: getPadding(padding, padding)
+        }
+    };
+
+    return card;
+}
+
+function setCardContent(card, content) {
+    const { image, title, description } = content;
+
+    getGroupChildByName(card, "FernGridCardContent/Image", cardImage => {
+        try {
+            cardImage.fill = image;
+        } catch (error) {
+            cardImage.fill = new ImageFill(image);
+        }
+    });
+
+    getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Title", titleNode => {
+        titleNode.text = title;
+    });
+
+    getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Description", descriptionNode => {
+        descriptionNode.text = description;
+    });
+}
+
+function createGridCards(props) {
+    let {
+        data,
+        columns,
+        columnSpacing,
+        rowSpacing,
+        images
+    } = props;
+
+    data = [...data].reverse();
+
+    const { width } = props.container.localBounds;
+    // const cardWidth = (width - 64 - ( columnSpacing * (columns - 1))) / columns;
+    const containerPadding = 64;
+    const totalSpaces = columnSpacing * (columns - 1);
+    const cardWidth = (width - containerPadding - totalSpaces) / columns;
+
+    const card = createCard(_extends({}, props, {
+        width: cardWidth,
+        image: data[0].image,
+        title: data[0].title,
+        description: data[0].description
+    }));
+    tagNode(card, { name: "FernGridCard1" });
+
+    let cards = [card];
+
+    for (let i = 1; i <= data.length - 1; i++) {
+        commands.duplicate();
+        const card = selection.items[0];
+        cards.push(card);
+        card.name = "FernGridCard";
+        setCardContent(card, data[i]);
+        tagNode(card, { name: "FernGridCard" + (i + 1) });
+    }
+
+    const gridRows = [];
+    const rowCount = Math.ceil(data.length / columns);
+    let reversedSlicedCardIndices = [...cards].map((_, i) => i).reverse();
+    reversedSlicedCardIndices = chunkArray(reversedSlicedCardIndices, columns);
+    reversedSlicedCardIndices = reversedSlicedCardIndices.map(a => {
+        const slice = [a.pop()];
+
+        if (a.length) slice.push(a.shift() + 1);
+
+        return slice;
+    });
+
+    for (let index = 0; index < rowCount; index++) {
+        const [firstColumnIndex, lastColumnIndex] = reversedSlicedCardIndices[index];
+        let rowItems;
+        if (lastColumnIndex) rowItems = cards.slice(firstColumnIndex, lastColumnIndex);else rowItems = [cards[firstColumnIndex]];
+
+        selection.items = rowItems;
+        commands.group();
+
+        const row = selection.items[0];
+        row.name = "FernGridRow" + (index + 1);
+
+        if (rowItems.length > 1) {
+            row.layout = {
+                type: SceneNode.LAYOUT_STACK,
+                stack: {
+                    orientation: SceneNode.STACK_HORIZONTAL,
+                    spacings: columnSpacing
+                }
+            };
+        }
+
+        gridRows.push(row);
+    }
+
+    selection.items = gridRows;
+    commands.group();
+
+    const grid = selection.items[0];
+    grid.name = "FernGridRows";
+
+    if (gridRows.length > 1) {
+        grid.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_VERTICAL,
+                spacings: rowSpacing
+            }
+        };
+    }
+
+    return grid;
+}
+
+module.exports = createGridCards;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/defaultProps.js":
+/*!*******************************************!*\
+  !*** ./src/Creators/Grid/defaultProps.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultGridProps = {
+    aspectRatio: "land",
+    overlay: false,
+    showImage: true,
+    showTitle: true,
+    showDescription: true,
+    action: "Read More",
+    shadow: false,
+    border: false,
+    padding: 20,
+    cornerRadius: "md",
+    numberOfRecords: 7,
+    columns: 4,
+    columnSpacing: 20,
+    rowSpacing: 30,
+    data: null
+};
+
+module.exports = defaultGridProps;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/authors.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/Grid/generateData/authors.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ["Geoffrey Bunting", "tatiana", "Jack Shepherd", "James Surowiecki", "Todd Sattersten", "Stephen Moore", "Kerala Taylor", "Matt Higginson", "Niklas Göke", "Carvell Wallace", "Catherine Kapphahn", "Ryan Fan", "ScottCDunn", "Jessie Waddell", "Barack Obama", "ScottCDunn", "Misty L. Heggeness", "Nick Licata", "Tim Denning", "Jessica Wildfire", "Rosie Alderson, PhD", "Carvell Wallace", "Rhiannin Bunney", "Clive Thompson", "Nabil Alouani", "Eric Weiner", "Betsy Hart", "John DeVore", "Ellis Brooks", "Gwen Frisbie-Fulton", "Linda Castrilli", "Ellie Reaves", "Irma McClaurin", "John DeVore", "Paul Greenberg", "Eve Peyser", "Cai Emmons", "Barack Obama", "ScottCDunn", "Kelly Eden", "Jessica Martin", "Alsie Gray", "Justine L", "Alex Mell-Taylor", "Eve Peyser", "Kate Green Tripp", "Philosophy as a Way of Life", "Klipsun Magazine", "Sarah Stankorb", "Amber the Alchemist"];
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/descriptions.js":
+/*!********************************************************!*\
+  !*** ./src/Creators/Grid/generateData/descriptions.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ["The 1989 film remains relevant to young creatives, but why?", "What If Beneath The Great Resignation is a Deeper Existential Truth We Are All Ignoring?", "How Kristy, Mary Anne, Claudia, and even Stacey taught this Dad to live his best life.", "Getting tested for Covid is a social good. It only makes sense for governments to help pay for it.", "More selections this year, but a single book breaks through", "The social media giant’s plans to monetize viral food trends has users licking their lips", "In the era of McMansions, I appreciate modesty, intimacy, and things that last", "Two stories about my first boss.", "Instead, choose a one-word theme", "I’m Going to Write About Writing. Sorry In Advance", "We take a few steps from our beds to remote teaching and remote learning, to four desks in three rooms. In our Queens, New York City…", "Leaders are giving lip service to self-care while upholding conditions that chip away at our mental health", "Apparently, debt cancellation isn’t the most popular topic in Christianity.", "Sometimes the celebration is beyond our capacity", "Archbishop Desmond Tutu was a mentor, a friend, and a moral compass for me and so many others. A universal spirit, Archbishop Tutu was…", "What we do with this holiday is dependent on the choices we make.", "My parents divorced in 1978 when I was two years old. Right on the cusp of an accelerating divorce rate in the U.S. My father, bless his…", "In the last 12 months, Professor Jelani Cobb, a staff writer for the New Yorker, has authored three groundbreaking books on race in…", "If you want loyalty, hire dogs. Humans can come and go as they please", "The truth behind hidden corporate transcripts", "Take a sniff of this Christmas tree chemis-tree", "We approach the time of year when we have all been tricked into linking together the buying of things with the genuine expression of love…", "Increasingly independent lifestyles aren’t good for all of us, and especially not for families.", "Thanks to the phenomenon of “multiples”", "Converting death rays into electricity", "How Thoreau improved my vision", "While some at-home DNA test users get confirmation about who they are, others end up questioning their whole identity.", "9 weeks in 2020. 12 essays. Covid-19.", "I know what you’re thinking, but hear me out, if only so I can tell you about Yatreda, Noah Kalina, and Julie Blackmon", "Someone is benefitting from polarization, and it’s not us.", "10 lessons learned that I never want to lose", "I lost two students last month.", "sista bell hooks,", "I’m no self-help guru but call your friends", "My search for an acre of escape", "Advice from people who achieved some pretty remarkable goals", "I would like to dismiss 2021 as a terrible, no-good, very bad year, a year to be sept away and forgotten as quickly as possible. After all…", "Here’s my annual list of favorite books, music, and movies. Art always sustains and nourishes the soul. But for me, music and storytelling…", "Creation is actually good for you. Do it every day.", "Was bell hooks right about life’s opposites?", "A meditation on what holidays mean", "Roadblocks are everywhere when it comes to an Autistic’s daily life — we really don’t give ourselves enough credit for what we overcome.", "It’s time to think about how they really impact on people", "Examining the philosophy of the adorably cute science YouTube channel", "Maybe you’ll want to read them too, but it’s OK if you don’t.", "A note to myself from the side of the highway", "Philosophy, contra popular opinion (even among some philosophers) makes progress. I have written a whole (free!) book (summarized here)…", "Finding joy in sharing traditional meals with my loved ones.", "It’s an incredible example of careful processing of a dearly loved but also toxic…", "Essential prep for the beginning and end of the new year"];
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/index.js":
+/*!*************************************************!*\
+  !*** ./src/Creators/Grid/generateData/index.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const titles = __webpack_require__(/*! ./titles */ "./src/Creators/Grid/generateData/titles.js");
+const authors = __webpack_require__(/*! ./authors */ "./src/Creators/Grid/generateData/authors.js");
+const descriptions = __webpack_require__(/*! ./descriptions */ "./src/Creators/Grid/generateData/descriptions.js");
+const metas = __webpack_require__(/*! ./metas */ "./src/Creators/Grid/generateData/metas.js");
+const { shuffle } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+function generateData(entries) {
+    const data = Array(50).fill("").map((_, i) => {
+        return {
+            title: titles[i],
+            description: authors[i]
+        };
+    });
+
+    return shuffle(data).slice(0, entries);
+}
+
+module.exports = generateData;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/metas.js":
+/*!*************************************************!*\
+  !*** ./src/Creators/Grid/generateData/metas.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = [["Dec 30", "13 min read", "Life"], ["Dec 30", "5 min read", "The Great Resignation"], ["Dec 29", "15 min read", "Books"], ["Dec 30", "4 min read", "Covid 19"], ["Dec 21", "6 min read", "Diversity"], ["Dec 30", "3 min read", "Business"], ["Dec 29", "7 min read", "Family"], ["Dec 29", "3 min read", "Harry Reid"], ["Dec 30", "6 min read", "New Year"], ["Dec 29", "10 min read", "Writing"], ["Dec 23", "8 min read", "Motherhood"], ["Dec 24", "6 min read", "Work"], ["Dec 25", "5 min read", "Debt"], ["Dec 27", "5 min read", "Personal Essay"], ["Dec 26", "1 min read", "Science"], ["Dec 24", "4 min read", "Christmas"], ["Dec 22", "4 min read", "Women"], ["Dec 24", "5 min read", "Politics"], ["Dec 23", "5 min read", "Work"], ["Dec 20", "6 min read", "Society"], ["Dec 22", "5 min read", "Science"], ["Dec 22", "6 min read", "Christmas"], ["Dec 17", "10 min read", "Parenting"], ["Dec 22", "6 min read", "History"], ["Dec 22", "8 min read", "Science"], ["Dec 20", "5 min read", "Thoreau"], ["Dec 14", "8 min read", "Dna Test"], ["Dec 21", "76 min read", "Covid 19"], ["Dec 18", "15 min read", "Art"], ["Dec 19", "4 min read", "Politics"], ["Dec 16", "6 min read", "Life Lessons"], ["Nov 20", "4 min read", "Teaching"], ["Dec 16", "2 min read", "Bell Hooks"], ["Dec 16", "5 min read", "Friendship"], ["Dec 17", "4 min read", "Climate Change"], ["Dec 18", "7 min read", "New Years Resolutions"], ["Dec 16", "4 min read", "2021"], ["Dec 17", "3 min read"], ["Dec 16", "5 min read", "Addiction"], ["Dec 17", "3 min read", "Self"], ["Dec 17", "5 min read", "Pandemic Diaries"], ["Dec 17", "5 min read", "Mental Health"], ["Dec 15", "4 min read", "Remote Working"], ["Dec 10", "10 min read", "Kurzgesagt"], ["Dec 11", "6 min read", "Books"], ["Dec 13", "3 min read", "Reflections"], ["Dec 16", "9 min read", "Philosophy"], ["Dec 16", "5 min read", "Joy"], ["Dec 16", "6 min read", "One Tree Hill"], ["Dec 17", "8 min read", "Mindfulness"]];
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/titles.js":
+/*!**************************************************!*\
+  !*** ./src/Creators/Grid/generateData/titles.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ["“Learning to Fly” — Kiki’s Delivery Service and the Unchanging Economy", "The Great Exhaustion", "Thirteen Things a Middle-Aged Man Can Learn From the Baby-Sitters Club", "You Shouldn’t Have to Pay $24 for a 2-Pack of At-Home Covid Tests", "The Best Business Book of 2021 (According to Every Other Best-of-2021 List)", "Tiktok Stirs up the Food Industry as It Enters The Kitchen", "An Ode to My Small, Old Home", "Harry Reid and Bananas", "Don’t Set Goals for 2022", "The Reason We May Never Have Another bell hooks, Eve Babitz, or Joan Didion", "Invisible: The Fault Lines of Motherhood", "I Gained Nothing From My Perfect Attendance At Work", "The Very First Sermon Christ Gave Taught Us About The Jubilee", "The Most Melancholy Time of the Year", "My Statement on the Passing of Archbishop Desmond Tutu", "We Create The Magic Of Christmas", "I am Tired of Being a Woman and Mother in the United States of America", "On the Matter of Black Lives", "Company Loyalty Doesn’t Exist", "We Were Always Disposable, and We Can’t Ignore It Anymore", "Exactly What Makes Christmas Trees Smell So Good?", "Christmas…lol.", "In Losing The Village We Abandoned Society’s Parents", "Who Was ‘First’ with a Big Idea? It’s Often Hard To Know", "An Ancient Greek Weapon Could Become the Future of Solar Energy", "The Art of Seeing", "Uncovering Family Secrets Through At-Home DNA Tests", "Scenes From Quarantine", "NFTs Are Critical for the Future of Art", "What If We Aren’t As Divided As They Tell Us We Are?", "An Extended Break From the Rat Race Has Changed My Life", "Things I Wish My Students Knew", "Ode to bell hooks", "My Favorite Podcast Is Talking To You On The Phone For Hours", "Is Anywhere Safe from Climate Change?", "How People Who Kept Their New Year’s Resolutions Did It", "Is Hope a Dirty Word?", "My 2021 End of Year Lists", "How to Get Addicted to Writing", "When the World Feels Dark and Beautiful in the Same Moment", "Holiday Traditions", "The Inferiority Complex", "Can 2022 Please Be The Year We Have Less Meetings?", "The Inescapable Neoliberal Bias Behind ‘Kurzgesagt — In a Nutshell'", "The Best Books I Read in 2021 Are All About Weirdos", "When Life Is Slow, Go Even Slower", "What philosophers think, 2020 edition", "In my Abuela’s Kitchen", "In ‘Drama Queens’ Podcast, ‘One Tree Hill’ Stars Rehash the Making of The Show — the Good, Bad and…", "How to Ground Your Mind, Body, Spirit, and Emotions"];
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/getImages.js":
+/*!****************************************!*\
+  !*** ./src/Creators/Grid/getImages.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { getGroupChildByName, getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getGridImages(grid, { numberOfRecords, columns }) {
+    const images = [];
+
+    const rowCount = Math.ceil(numberOfRecords / columns);
+    for (let index = rowCount; index >= 1; index--) {
+        const pathToCards = `Container/FernGridRows/FernGridRow${index}/FernGridCard`;
+        getGroupChildByName(grid, pathToCards, cards => {
+            cards.forEach(card => {
+                getGroupChildByName(card, "FernGridCardContent/Image", image => {
+                    if (image) images.push(image.fill);else console.log("No image fill found for: ", card);
+                });
+            });
+        }, true);
+    }
+
+    return images.reverse();
+}
+
+module.exports = getGridImages;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/index.js":
+/*!************************************!*\
+  !*** ./src/Creators/Grid/index.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+const generateData = __webpack_require__(/*! ./generateData */ "./src/Creators/Grid/generateData/index.js");
+const defaultGridProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Grid/defaultProps.js");
+const assembleGrid = __webpack_require__(/*! ./assemble */ "./src/Creators/Grid/assemble.js");
+const getGridImages = __webpack_require__(/*! ./getImages */ "./src/Creators/Grid/getImages.js");
+
+async function Grid(userProps) {
+    let props = _extends({}, defaultGridProps, userProps || {});
+
+    const gridImages = await getAssetFileFromPath("images/grid", "jpg", true);
+
+    if (!props.data || !props.data.length) props.data = generateData(props.numberOfRecords);else {
+        const currentImages = getGridImages(selection.items[0], props);
+        gridImages.splice(0, currentImages.length, ...currentImages);
+        // return console.log("Grid images:", currentImages);
+
+        if (props.data.length > props.numberOfRecords) props.data = props.data.slice(0, props.numberOfRecords);else if (props.data.length < props.numberOfRecords) {
+            props.data = [...props.data, ...generateData(props.numberOfRecords - props.data.length)];
+        }
+    }
+
+    props.data = props.data.map((d, i) => {
+        return _extends({}, d, { image: gridImages[i]
+        });
+    });
+
+    try {
+        const oldGrid = userProps ? selection.items[0] : null;
+        if (oldGrid) {
+            // const logoNode = getGridComponent(oldGrid, "logo");
+            // const dpNode = getGridComponent(oldGrid, "dp");
+
+            // logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+            // dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+        }
+
+        editDom(() => {
+            try {
+                const grid = assembleGrid(props, gridImages);
+                grid.name = "FernGrid";
+
+                tagNode(grid, _extends({ type: "Grid" }, props));
+
+                if (oldGrid) {
+                    placeInParent(grid, oldGrid.topLeftInParent);
+                    oldGrid.removeFromParent();
+                } else placeInParent(grid, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating grid: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = Grid;
+
+/***/ }),
+
 /***/ "./src/Creators/MediaSection/createMedia.js":
 /*!**************************************************!*\
   !*** ./src/Creators/MediaSection/createMedia.js ***!
@@ -30675,6 +31358,8 @@ const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.j
 const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
+const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
+const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/Creators/FernComponent/index.js");
 
 class Creators {
 
@@ -30767,7 +31452,9 @@ class Creators {
 
 Creators.Button = Button;
 Creators.Navbar = Navbar;
+Creators.Grid = Grid;
 Creators.MediaSection = MediaSection;
+Creators.FernComponent = FernComponent;
 
 Creators.Card = async function (props) {
     const {
@@ -31027,7 +31714,7 @@ function ButtonGroup({ choices = [], value, onChange }) {
                 { key: index, className: `rounded-xs cursor-pointer py-1 px-2 ${selected ? 'bg-dark-gray text-white' : 'text-dark-gray'}`,
                     onClick: () => onChange(choice, index)
                 },
-                choice.toUpperCase()
+                choice.toString().toUpperCase()
             );
         })
     );
@@ -31262,7 +31949,7 @@ module.exports = {
     "#41A257", // green
     "#FFD0A2", // orange
     "#000000", "#FFFFFF"],
-    ELEMENT_TYPES: ["Button", "Navbar", "MediaSection", "card", "Image"]
+    ELEMENT_TYPES: ["Button", "Navbar", "Grid", "FernComponent", "MediaSection", "card", "Image"]
 };
 
 /***/ }),
@@ -31788,7 +32475,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Navbar', 'MediaSection'].map((element, index) => React.createElement(
+            ['Button', 'Navbar', 'Grid', 'MediaSection'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -31815,6 +32502,459 @@ function ElementList({ onGoToScreen }) {
 }
 
 module.exports = ElementList;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/FernComponent.jsx":
+/*!************************************************!*\
+  !*** ./src/screens/Elements/FernComponent.jsx ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
+const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
+
+function FernComponent({ value, onClose }) {
+    const shadow = value ? value.shadow : false;
+
+    function handleSetShadow(shadow) {
+        Creators.FernComponent(_extends({}, value, { shadow }));
+    }
+
+    return React.createElement(
+        'div',
+        { style: { margin: "0.5rem -12px" } },
+        React.createElement(
+            'div',
+            { className: 'flex items-center px-1' },
+            React.createElement(
+                'span',
+                { className: 'cursor-pointer opacity-65', onClick: onClose },
+                React.createElement(
+                    'svg',
+                    { height: '16', viewBox: '0 0 24 24', width: '24' },
+                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                )
+            ),
+            React.createElement(
+                'h2',
+                { className: 'px-0 text-md ml-1' },
+                'FernComponent'
+            )
+        ),
+        React.createElement(
+            'div',
+            { className: 'px-3' },
+            React.createElement(
+                'div',
+                { className: 'pt-2 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Shadow'
+                    ),
+                    React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
+                )
+            )
+        )
+    );
+}
+
+module.exports = FernComponent;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Grid.jsx":
+/*!***************************************!*\
+  !*** ./src/screens/Elements/Grid.jsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
+const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
+const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+
+function Grid({ value, onClose }) {
+    const shadow = value ? value.shadow : false;
+    const border = value ? value.border : false;
+    const numberOfRecords = value ? value.numberOfRecords : 3;
+    const columns = value ? value.columns : 3;
+    const columnSpacing = value ? value.columnSpacing : 20;
+    const rowSpacing = value ? value.rowSpacing : 30;
+    const aspectRatio = value ? value.aspectRatio : 'landscape';
+    const cornerRadius = value ? value.cornerRadius : 'sm';
+    const overlay = value ? value.overlay : false;
+    const showTitle = value ? value.showTitle : true;
+    const showDescription = value ? value.showDescription : true;
+
+    function handleSetNumberOfRecords(numberOfRecords) {
+        Creators.Grid(_extends({}, value, { numberOfRecords }));
+    }
+
+    function handleSetColumns(columns) {
+        Creators.Grid(_extends({}, value, { columns }));
+    }
+
+    function handleSetColumnSpacing(columnSpacing) {
+        Creators.Grid(_extends({}, value, { columnSpacing }));
+    }
+
+    function handleSetRowSpacing(rowSpacing) {
+        Creators.Grid(_extends({}, value, { rowSpacing }));
+    }
+
+    function handleSetAspectRatio(aspectRatio) {
+        Creators.Grid(_extends({}, value, { aspectRatio }));
+    }
+
+    function handleSetOverlay(overlay) {
+        Creators.Grid(_extends({}, value, { overlay }));
+    }
+
+    function handleSetShowTitle(showTitle) {
+        Creators.Grid(_extends({}, value, { showTitle }));
+    }
+
+    function handleSetShowDescription(showDescription) {
+        Creators.Grid(_extends({}, value, { showDescription }));
+    }
+
+    function handleSetShadow(shadow) {
+        if (shadow == "none") shadow = false;
+        Creators.Grid(_extends({}, value, { shadow }));
+    }
+
+    function handleSetBorder(border) {
+        Creators.Grid(_extends({}, value, { border }));
+    }
+
+    function handleSetCornerRadius(cornerRadius) {
+        Creators.Grid(_extends({}, value, { cornerRadius }));
+    }
+
+    return React.createElement(
+        'div',
+        { style: { margin: "0.5rem -12px" } },
+        React.createElement(
+            'div',
+            { className: 'flex items-center px-1' },
+            React.createElement(
+                'span',
+                { className: 'cursor-pointer opacity-65', onClick: onClose },
+                React.createElement(
+                    'svg',
+                    { height: '16', viewBox: '0 0 24 24', width: '24' },
+                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                )
+            ),
+            React.createElement(
+                'h2',
+                { className: 'px-0 text-md ml-1' },
+                'Grid'
+            )
+        ),
+        React.createElement(
+            'div',
+            { className: 'mt-3 pt-2' },
+            React.createElement(
+                'label',
+                { className: 'flex mb-3 text-sm trakcing-widest px-3 pb-1 border-b' },
+                'GRID PROPS'
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-2' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Number of records'
+                ),
+                React.createElement(
+                    'div',
+                    null,
+                    React.createElement('input', { className: 'w-full', type: 'range', min: '2', max: '20',
+                        value: numberOfRecords,
+                        onChange: e => handleSetNumberOfRecords(parseInt(e.target.value))
+                    })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'flex justify-between opacity-50 px-1' },
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-start' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        '2'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col center-center' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        '11'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-end' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        '20'
+                    )
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-2 flex flex-col items-start' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Columns'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: columns,
+                    choices: [2, 3, 4, 5],
+                    onChange: handleSetColumns
+                })
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Column Space'
+                ),
+                React.createElement(
+                    'div',
+                    null,
+                    React.createElement('input', { className: 'w-full', type: 'range', min: '0', max: '40',
+                        value: columnSpacing,
+                        onChange: e => handleSetColumnSpacing(parseInt(e.target.value))
+                    })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'flex justify-between opacity-50 px-1' },
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-start' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'None'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col center-center' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'Some'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-end' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'Lotsa'
+                    )
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Row Space'
+                ),
+                React.createElement(
+                    'div',
+                    null,
+                    React.createElement('input', { className: 'w-full', type: 'range', min: '0', max: '40',
+                        value: rowSpacing,
+                        onChange: e => handleSetRowSpacing(parseInt(e.target.value))
+                    })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'flex justify-between opacity-50 px-1' },
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-start' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'None'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col center-center' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'Some'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'flex flex-col items-end' },
+                        React.createElement(
+                            'span',
+                            { className: 'mb-1' },
+                            '|'
+                        ),
+                        'Lotsa'
+                    )
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'pt-2 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'flex mt-3 mb-3 text-sm trakcing-widest px-3 pb-1 border-b' },
+                    'CARD PROPS'
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-2 flex flex-col items-start' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Image Crop'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: aspectRatio,
+                    choices: ["land", "por", "sqr"],
+                    onChange: handleSetAspectRatio
+                })
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Overlay'
+                    ),
+                    React.createElement(Toggle, { checked: overlay, onChange: handleSetOverlay })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show Title'
+                    ),
+                    React.createElement(Toggle, { checked: showTitle, onChange: handleSetShowTitle })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show Description'
+                    ),
+                    React.createElement(Toggle, { checked: showDescription, onChange: handleSetShowDescription })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'block text-md' },
+                    'Shadow'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: !shadow ? "none" : shadow,
+                    choices: ["none", "sm", "md", "lg"],
+                    onChange: handleSetShadow
+                })
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Border'
+                    ),
+                    React.createElement(Toggle, { checked: border, onChange: handleSetBorder })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'text-md' },
+                    'Rounded Corners'
+                ),
+                cornerRadius && React.createElement(
+                    'div',
+                    { className: 'mt-1' },
+                    React.createElement(ButtonGroup, {
+                        value: cornerRadius,
+                        choices: ["none", "sm", "md", "lg"],
+                        onChange: handleSetCornerRadius
+                    })
+                )
+            )
+        )
+    );
+}
+
+module.exports = Grid;
 
 /***/ }),
 
@@ -32733,6 +33873,8 @@ const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/i
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
+const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
+const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/screens/Elements/FernComponent.jsx");
 const { getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function Elements({ value, subscription, onUpgrade }) {
@@ -32779,8 +33921,10 @@ function Elements({ value, subscription, onUpgrade }) {
 
     function RenderElement() {
         const uiElements = {
-            Button, Navbar, MediaSection,
-            Card, Image
+            Button, Navbar, Grid,
+            MediaSection,
+            Card, Image,
+            FernComponent
         };
 
         if (ELEMENT_TYPES.includes(screen)) {
@@ -33906,26 +35050,63 @@ function someTime(duration = 10) {
     });
 }
 
-function getGroupChildByName(group, name = "BG", cb = () => {}) {
+function getGroupChildByName(group, name = "BG", cb = () => {}, multiple = false) {
     return new Promise((res, rej) => {
         try {
-            let found = false;
+            let found = false,
+                recurse = false;
             const namePath = name.split("/");
             name = namePath.shift();
 
-            group.children.forEach(node => {
-                if (node.name == name) {
-                    found = true;
-
-                    if (namePath.length == 0) {
-                        cb(node);
-                        res(node);
-                        return;
-                    } else return getGroupChildByName(node, namePath.join("/"), cb);
+            // console.log("Get child: ", group, name);
+            let results = group.children.filter(child => child.name == name);
+            if (results.length && namePath.length > 1) {
+                while (results.length && namePath.length > 1) {
+                    name = namePath.shift();
+                    results = results[0].children.filter(child => child.name == name);
                 }
-            });
+            }
 
-            if (found) return;
+            if (results.length) {
+                if (namePath.length == 1) results = results[0].children.filter(child => child.name == namePath[0]);
+
+                if (!multiple) results = results[0];
+
+                cb(results);
+                res(results);
+
+                return;
+            }
+
+            // group.children.forEach(node => {
+            //     if (node.name == name) {
+            //         if (namePath.length <= 1) {
+            //             found = node;
+            //             recurse = false;
+            //             return;
+            //         }
+            //         else{
+            //             group = node;
+            //             recurse = true;
+            //             return;
+            //         }
+            //     }
+            // });
+
+            // if(recurse){
+            //     console.log("Recursing...", namePath, group);
+            //     return getGroupChildByName(group, namePath.join("/"), cb);
+            // }
+            // else if (found) {
+            //     const actualName = name.split("/").pop();
+            //     const results = group.children.filter(child => child.name == actualName);
+            //     if(results.length > 1) found = results;
+
+            //     cb(found);
+            //     res(found);
+
+            //     return;
+            // }
 
             cb(null);
             rej();
@@ -33970,11 +35151,35 @@ function createIcon(pathData, defaultOptions = {}) {
     }
 }
 
-async function getAssetFileFromPath(path) {
+async function getAssetFileFromPath(path, extensions = "", shuffleResults) {
     try {
         const storage = __webpack_require__(/*! uxp */ "uxp").storage;
         const fs = storage.localFileSystem;
         const pluginFolder = await fs.getPluginFolder();
+
+        if (path.indexOf(".") == -1) {
+            const pathArray = path.split("/");
+            let folders = await pluginFolder.getEntries();
+            let folderName = pathArray.shift();
+            let folder = folders.find(e => e.isFolder && e.name == folderName);
+
+            while (folder && pathArray.length) {
+                folders = await folder.getEntries();
+                folderName = pathArray.shift();
+                folder = folders.find(e => e.isFolder && e.name == folderName);
+            }
+
+            if (!folder) return console.log(`Folder ${pathArray} not found!`);
+
+            const files = await folder.getEntries();
+            if (!extensions.length) return shuffleResults ? shuffle(files) : files;
+
+            extensions = extensions.split("|");
+            const results = files.filter(e => extensions.includes(e.name.split(".").pop()));
+
+            return shuffleResults ? shuffle(results) : results;
+        }
+
         return await pluginFolder.getEntry(path);
     } catch (error) {
         console.log("Error fetching asset: ", error);
@@ -34014,7 +35219,6 @@ function insertNode(node) {
 }
 
 function tagNode(node, data) {
-    console.log("Node data: ", data);
     node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
 
@@ -34051,6 +35255,34 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
     return { width: srcWidth * ratio, height: srcHeight * ratio };
 }
 
+function createText(text = "Acacia Grove | The Right Inn..", props) {
+    const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+    const defaultTextProps = {
+        name: "Text",
+        fill: new Color("#000"),
+        fontSize: 22, fontFamily: "Helvetica Neue", fontStyle: "Light",
+        layoutBox: _extends({
+            type: Text.AUTO_HEIGHT
+        }, props)
+    };
+    props = _extends({}, defaultTextProps, props);
+
+    const textNode = new Text();
+    textNode.text = text;
+    Object.assign(textNode, props);
+
+    return textNode;
+}
+
+function chunkArray(array, size) {
+    var results = [];
+    while (array.length) {
+        results.push(array.splice(0, size));
+    }
+    return results;
+};
+
 module.exports = {
     shuffle,
     downloadImage,
@@ -34073,7 +35305,9 @@ module.exports = {
     tagNode,
     getNodeTag,
     getFernComponentChildByName,
-    calculateAspectRatioFit
+    calculateAspectRatioFit,
+    createText,
+    chunkArray
 };
 
 /***/ }),

@@ -7,6 +7,8 @@ const Image = require("./Image");
 const Button = require('./Button');
 const Navbar = require('./Navbar');
 const MediaSection = require('./MediaSection');
+const Grid = require('./Grid');
+const FernComponent = require('./FernComponent');
 const { getNodeTag } = require('../../utils');
 
 function Elements({value, subscription, onUpgrade}){
@@ -59,8 +61,10 @@ function Elements({value, subscription, onUpgrade}){
 
     function RenderElement(){
         const uiElements = {
-            Button, Navbar, MediaSection,
-            Card, Image
+            Button, Navbar, Grid,
+            MediaSection,
+            Card, Image,
+            FernComponent,
         };
 
         if(ELEMENT_TYPES.includes(screen)){

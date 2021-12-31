@@ -8,7 +8,7 @@ function shuffle(array) {
     return [...array].sort(_ => Math.random() - 0.5);
 }
 
-function createArboard({name, width = 1080, height = 1920, color = "white"}, rootNode, relativeTo){
+function createArboard({ name, width = 1080, height = 1920, color = "white" }, rootNode, relativeTo) {
     const { Color, Artboard } = require("scenegraph");
 
     try {
@@ -17,18 +17,18 @@ function createArboard({name, width = 1080, height = 1920, color = "white"}, roo
         arty.height = height;
         arty.fill = new Color(color);
         arty.name = name;
-    
+
         rootNode.addChild(arty, 0);
-    
-        if(relativeTo){
+
+        if (relativeTo) {
             const { x, y } = relativeTo.boundsInParent;
-            placeInParent(arty, { x: x + arty.width + 350, y});
+            placeInParent(arty, { x: x + arty.width + 350, y });
         }
-        else{
+        else {
             const { x, y } = getTopMostArtboardCoordinates(rootNode, Artboard);
             placeInParent(arty, { x, y: y - height - 120 });
         }
-    
+
         return arty;
     } catch (error) {
         console.log("Error creating artboard: ", error);
@@ -41,14 +41,14 @@ function createArboard({name, width = 1080, height = 1920, color = "white"}, roo
  *
  * @param {url} photoUrl
  */
- async function downloadImage(photoUrl, returnBase64 = false) {
-     try {
+async function downloadImage(photoUrl, returnBase64 = false) {
+    try {
         const photoObj = await xhrBinary(photoUrl);
-        if(returnBase64){
+        if (returnBase64) {
             const previewBase64 = await base64ArrayBuffer(photoObj);
             return `data:image/png;base64,${previewBase64}`;
         }
-        
+
         const storage = require("uxp").storage;
         const fs = storage.localFileSystem;
         const tempFolder = await fs.getTemporaryFolder();
@@ -70,9 +70,9 @@ function createArboard({name, width = 1080, height = 1920, color = "white"}, roo
  */
 async function xhrBinary(url) {
     const res = await fetch(url);
-    if(!res.ok){
+    if (!res.ok) {
         const error = await res.json();
-        if(error.message)
+        if (error.message)
             throw Error(error.message);
         else
             throw Error(res.statusText);
@@ -82,28 +82,28 @@ async function xhrBinary(url) {
     return arr;
 }
 
-function getTopMostArtboardCoordinates(rootNode, Artboard){
+function getTopMostArtboardCoordinates(rootNode, Artboard) {
     // TODO: Add logic for when there are no artboards
     // TODO: Add logic for when you can't add in anymore artboards
 
     const artboards = rootNode.children.filter(node => node instanceof Artboard);
-    const artboardBounds = artboards.map(({globalBounds}) => globalBounds);
+    const artboardBounds = artboards.map(({ globalBounds }) => globalBounds);
 
     let mostLeft, topMost;
 
-    const xPositions = artboardBounds.map(({x}) => x);
+    const xPositions = artboardBounds.map(({ x }) => x);
     mostLeft = Math.min(...xPositions);
 
-    const yPositions = artboardBounds.map(({y}) => y);
+    const yPositions = artboardBounds.map(({ y }) => y);
     topMost = Math.min(...yPositions);
 
-    return {x: mostLeft, y: topMost};
+    return { x: mostLeft, y: topMost };
 }
 
-function placeInParent(node, coords){
+function placeInParent(node, coords) {
     coords = coords || node.parent.topLeftInParent;
     let nodeBounds = node.localBounds;
-    let nodeTopLeft = {x: nodeBounds.x, y: nodeBounds.y};
+    let nodeTopLeft = { x: nodeBounds.x, y: nodeBounds.y };
     node.placeInParentCoordinates(nodeTopLeft, coords);
 }
 
@@ -112,20 +112,20 @@ function placeInParent(node, coords){
  * 
  * @returns {Object} Object containing width and height
  */
- function getDimensions(node) {
+function getDimensions(node) {
     let width, height;
-    switch(node.constructor.name) {
+    switch (node.constructor.name) {
         case "Rectangle":
         case "Polygon":
             width = node.width;
             height = node.height;
             break;
-        case "Ellipse": 
+        case "Ellipse":
             width = node.radiusX * 2;
             height = node.radiusY * 2;
             break;
         case "BooleanGroup": // Selecting arbitrary values for path and boolean group
-        case "Path": 
+        case "Path":
             width = 500;
             height = 500;
             break;
@@ -154,12 +154,12 @@ class storageHelper {
         let dataFolder = await fs.getDataFolder();
         try {
             let returnFile = await dataFolder.getEntry('storage.json');
-            data = JSON.parse((await returnFile.read({format: storage.formats.utf8})).toString());
+            data = JSON.parse((await returnFile.read({ format: storage.formats.utf8 })).toString());
             return returnFile;
         } catch (e) {
-            const file = await dataFolder.createEntry('storage.json', {type: storage.types.file, overwrite: true});
+            const file = await dataFolder.createEntry('storage.json', { type: storage.types.file, overwrite: true });
             if (file.isFile) {
-                await file.write('{}', {append: false});
+                await file.write('{}', { append: false });
                 data = {};
                 return file;
             } else {
@@ -177,7 +177,7 @@ class storageHelper {
     static async get(key, defaultValue) {
         if (!data) {
             const dataFile = await this.init();
-            data = JSON.parse((await dataFile.read({format: storage.formats.utf8})).toString());
+            data = JSON.parse((await dataFile.read({ format: storage.formats.utf8 })).toString());
         }
         if (data[key] === undefined) {
             await this.set(key, defaultValue);
@@ -196,7 +196,7 @@ class storageHelper {
     static async set(key, value) {
         const dataFile = await this.init();
         data[key] = value;
-        return await dataFile.write(JSON.stringify(data), {append: false, format: storage.formats.utf8});
+        return await dataFile.write(JSON.stringify(data), { append: false, format: storage.formats.utf8 });
     }
 
     /**
@@ -214,7 +214,7 @@ class storageHelper {
      */
     static async reset() {
         const dataFile = await this.init();
-        return await dataFile.write('{}', {append: false, format: storage.formats.utf8});
+        return await dataFile.write('{}', { append: false, format: storage.formats.utf8 });
     }
 }
 
@@ -270,7 +270,7 @@ function base64ArrayBuffer(arrayBuffer) {
     return base64
 }
 
-function editDom(cb, wrapWithEditor = true){
+function editDom(cb, wrapWithEditor = true) {
     const invisibleButton = document.createElement("button");
     invisibleButton.innerText = "Invisible button";
     invisibleButton.style.display = "none";
@@ -279,7 +279,7 @@ function editDom(cb, wrapWithEditor = true){
     invisibleButton.addEventListener("click", () => {
         const { editDocument } = require("application");
 
-        if(wrapWithEditor){
+        if (wrapWithEditor) {
             editDocument(async (...args) => {
                 cb(...args);
             });
@@ -295,34 +295,69 @@ function editDom(cb, wrapWithEditor = true){
     }, 200);
 }
 
-function someTime(duration = 10){
+function someTime(duration = 10) {
     return new Promise(res => {
         setTimeout(res, duration);
     });
 }
 
-function getGroupChildByName(group, name = "BG", cb = () => {}){
+function getGroupChildByName(group, name = "BG", cb = () => { }, multiple = false) {
     return new Promise((res, rej) => {
         try {
-            let found = false;
+            let found = false, recurse = false;
             const namePath = name.split("/");
             name = namePath.shift();
 
-            group.children.forEach(node => {
-                if(node.name == name){
-                    found = true;
-
-                    if(namePath.length == 0){
-                        cb(node);
-                        res(node);
-                        return;
-                    }
-                    else
-                        return getGroupChildByName(node, namePath.join("/"), cb);
+            // console.log("Get child: ", group, name);
+            let results = group.children.filter(child => child.name == name);
+            if(results.length && namePath.length > 1){
+                while(results.length && namePath.length > 1){
+                    name = namePath.shift();
+                    results = results[0].children.filter(child => child.name == name);
                 }
-            });
+            }
+            
+            if(results.length){
+                if(namePath.length == 1)
+                    results = results[0].children.filter(child => child.name == namePath[0]);
+                    
+                if(!multiple) results = results[0];
 
-            if(found) return;
+                cb(results);
+                res(results);
+
+                return;
+            }
+            
+            // group.children.forEach(node => {
+            //     if (node.name == name) {
+            //         if (namePath.length <= 1) {
+            //             found = node;
+            //             recurse = false;
+            //             return;
+            //         }
+            //         else{
+            //             group = node;
+            //             recurse = true;
+            //             return;
+            //         }
+            //     }
+            // });
+
+            // if(recurse){
+            //     console.log("Recursing...", namePath, group);
+            //     return getGroupChildByName(group, namePath.join("/"), cb);
+            // }
+            // else if (found) {
+            //     const actualName = name.split("/").pop();
+            //     const results = group.children.filter(child => child.name == actualName);
+            //     if(results.length > 1) found = results;
+
+            //     cb(found);
+            //     res(found);
+
+            //     return;
+            // }
 
             cb(null);
             rej();
@@ -332,7 +367,7 @@ function getGroupChildByName(group, name = "BG", cb = () => {}){
     });
 }
 
-function createIcon(pathData, defaultOptions = {}){
+function createIcon(pathData, defaultOptions = {}) {
     const { Path, Color } = require("scenegraph");
 
     const options = {
@@ -345,10 +380,10 @@ function createIcon(pathData, defaultOptions = {}){
     try {
         const icon = new Path();
         icon.pathData = pathData;
-        if(options.strokeJoins)
+        if (options.strokeJoins)
             icon.strokeJoins = options.strokeJoins;
-        
-        if(options.stroke && options.stroke.length && options.stroke != "none"){
+
+        if (options.stroke && options.stroke.length && options.stroke != "none") {
             icon.stroke = new Color(options.stroke);
             icon.strokeWidth = options.strokeWidth;
             icon.strokeEnabled = true;
@@ -356,18 +391,18 @@ function createIcon(pathData, defaultOptions = {}){
         else
             icon.strokeEnabled = false;
 
-        if(options.fill && options.fill.length && options.fill != "none")
+        if (options.fill && options.fill.length && options.fill != "none")
             icon.fill = new Color(options.fill);
 
-        if(options.size){
-            const {width, height} = icon.localBounds;
+        if (options.size) {
+            const { width, height } = icon.localBounds;
             const aspectRatio = width / height;
-            if(width > height)
+            if (width > height)
                 icon.resize(options.size, options.size / aspectRatio);
             else
-            icon.resize(options.size * aspectRatio, options.size);
+                icon.resize(options.size * aspectRatio, options.size);
         }
-        
+
         return icon;
     } catch (error) {
         console.log("Error with path: ", error);
@@ -375,18 +410,43 @@ function createIcon(pathData, defaultOptions = {}){
     }
 }
 
-async function getAssetFileFromPath(path){
+async function getAssetFileFromPath(path, extensions = "", shuffleResults) {
     try {
         const storage = require("uxp").storage;
         const fs = storage.localFileSystem;
         const pluginFolder = await fs.getPluginFolder();
+
+        if (path.indexOf(".") == -1) {
+            const pathArray = path.split("/");
+            let folders = await pluginFolder.getEntries();
+            let folderName = pathArray.shift();
+            let folder = folders.find(e => e.isFolder && e.name == folderName);
+
+            while (folder && pathArray.length) {
+                folders = await folder.getEntries();
+                folderName = pathArray.shift();
+                folder = folders.find(e => e.isFolder && e.name == folderName);
+            }
+
+            if (!folder) return console.log(`Folder ${pathArray} not found!`);
+
+            const files = await folder.getEntries();
+            if (!extensions.length)
+                return shuffleResults ? shuffle(files) : files;
+
+            extensions = extensions.split("|");
+            const results = files.filter(e => extensions.includes(e.name.split(".").pop()));
+
+            return shuffleResults ? shuffle(results) : results;
+        }
+
         return await pluginFolder.getEntry(path);
     } catch (error) {
         console.log("Error fetching asset: ", error);
     }
 }
 
-function getPadding(px = 4, py = 4){
+function getPadding(px = 4, py = 4) {
     return {
         bottom: py, top: py,
         left: px, right: px,
@@ -394,11 +454,11 @@ function getPadding(px = 4, py = 4){
 }
 
 function createBorder({
-    top = 0, 
+    top = 0,
     width = 1920,
     color = "black",
     thickness = 1.5
-}){
+}) {
     const { Color, Line } = require("scenegraph");
 
     const border = new Line();
@@ -406,28 +466,27 @@ function createBorder({
     border.stroke = new Color(color);
     border.strokeWidth = thickness;
     border.setStartEnd(0, top, width, top);
-    
+
     return border;
 }
 
-function insertNode(node){
+function insertNode(node) {
     const { selection } = require("scenegraph");
     let insertionParent = selection.insertionParent;
-    if(selection.focusedArtboard)
+    if (selection.focusedArtboard)
         insertionParent = selection.focusedArtboard;
 
     insertionParent.addChild(node);
 }
 
-function tagNode(node, data){
-    console.log("Node data: ", data);
+function tagNode(node, data) {
     node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
 
-function getNodeTag(node){
+function getNodeTag(node) {
     const jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
 
-    if (jsonString){
+    if (jsonString) {
         try {
             return JSON.parse(jsonString);
         } catch (error) {
@@ -438,14 +497,14 @@ function getNodeTag(node){
     return;
 }
 
-function getFernComponentChildByName(component, childName, componentChildrenPathMap){
+function getFernComponentChildByName(component, childName, componentChildrenPathMap) {
     let child;
 
     const childPath = componentChildrenPathMap[childName];
-    
-    if(!childPath)
+
+    if (!childPath)
         return console.log(`${childName} component not found.`);
-    
+
     getGroupChildByName(component, childPath, childFromPath => {
         child = childFromPath;
     });
@@ -455,8 +514,40 @@ function getFernComponentChildByName(component, childName, componentChildrenPath
 
 function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
     var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-    return { width: srcWidth*ratio, height: srcHeight*ratio };
- }
+    return { width: srcWidth * ratio, height: srcHeight * ratio };
+}
+
+function createText(text = "Acacia Grove | The Right Inn..", props) {
+    const { Text, Color } = require("scenegraph");
+
+    const defaultTextProps = {
+        name: "Text",
+        fill: new Color("#000"),
+        fontSize: 22, fontFamily: "Helvetica Neue", fontStyle: "Light",
+        layoutBox: {
+            type: Text.AUTO_HEIGHT,
+            ...props,
+        }
+    };
+    props = {
+        ...defaultTextProps,
+        ...props
+    };
+
+    const textNode = new Text();
+    textNode.text = text;
+    Object.assign(textNode, props);
+
+    return textNode;
+}
+
+function chunkArray(array, size) {
+    var results = [];
+    while (array.length) {
+        results.push(array.splice(0, size));
+    }
+    return results;
+};
 
 module.exports = {
     shuffle,
@@ -480,5 +571,7 @@ module.exports = {
     tagNode,
     getNodeTag,
     getFernComponentChildByName,
-    calculateAspectRatioFit
+    calculateAspectRatioFit,
+    createText,
+    chunkArray
 }

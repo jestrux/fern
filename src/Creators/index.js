@@ -3,11 +3,15 @@ const { PLUGIN_ID } = require("../constants");
 const Button = require("./Button");
 const Navbar = require("./Navbar");
 const MediaSection = require("./MediaSection");
+const Grid = require("./Grid");
+const FernComponent = require("./FernComponent");
 
 class Creators {
     static Button = Button
     static Navbar = Navbar
+    static Grid = Grid
     static MediaSection = MediaSection
+    static FernComponent = FernComponent
     
     static Rating(selection, props = {}){
         const {
