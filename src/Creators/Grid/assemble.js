@@ -1,7 +1,13 @@
 const { SceneNode, selection, Color, Rectangle, Shadow } = require("scenegraph");
 const commands = require("commands");
 const { placeInParent, insertNode, getPadding } = require("../../utils");
-const createGridCards = require("./createCards");
+let createGridCards; // = require("./createCards");
+
+try {
+    createGridCards = require("./createCards");
+} catch (error) {
+    console.log("Error loading assembler: ", error);
+}
 
 function createGridBackground({ width, height, color, shadow, images }){
     let bg = new Rectangle();

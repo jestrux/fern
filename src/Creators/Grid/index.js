@@ -15,8 +15,10 @@ async function Grid(userProps){
 
     const gridImages = await getAssetFileFromPath("images/grid", "jpg", true);
 
-    if(!props.data || !props.data.length) 
+    if(!props.data || !props.data.length || props.refreshData){
         props.data = generateData(props.numberOfRecords);
+        delete props.refreshData;
+    }
     else{
         const currentImages = getGridImages(selection.items[0], props);
         gridImages.splice(0, currentImages.length, ...currentImages);

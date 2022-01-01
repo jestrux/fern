@@ -2,6 +2,13 @@ const defaultGridProps = {
     aspectRatio: "land",
     overlay: false,
     showImage: true,
+    showRating: true,
+    rating: {
+        darkMode: false,
+        format: "icons",
+        color: "#FF385C",
+    },
+    showPrice: true,
     showTitle: true,
     showDescription: true,
     action: "Read More",

@@ -29806,7 +29806,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { SceneNode, selection, Color, Rectangle, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, insertNode, getPadding } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const createGridCards = __webpack_require__(/*! ./createCards */ "./src/Creators/Grid/createCards.js");
+let createGridCards; // = require("./createCards");
+
+try {
+    createGridCards = __webpack_require__(/*! ./createCards */ "./src/Creators/Grid/createCards.js");
+} catch (error) {
+    console.log("Error loading assembler: ", error);
+}
 
 function createGridBackground({ width, height, color, shadow, images }) {
     let bg = new Rectangle();
@@ -29869,6 +29875,140 @@ module.exports = assembleGrid;
 
 /***/ }),
 
+/***/ "./src/Creators/Grid/components/rating/index.js":
+/*!******************************************************!*\
+  !*** ./src/Creators/Grid/components/rating/index.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { SceneNode, selection, Color, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createIcon, placeInParent, createText, getPadding } = __webpack_require__(/*! ../../../../utils */ "./src/utils/index.js");
+const starPaths = __webpack_require__(/*! ./starPaths */ "./src/Creators/Grid/components/rating/starPaths.js");
+
+function gridRatingComponent(props = {}) {
+    const {
+        rating = 3.2,
+        outOf = 5,
+        color,
+        format = "text",
+        reviewCount = 20,
+        darkMode = false
+    } = props;
+
+    let ratingText;
+
+    if (format == "icons") {
+        const icons = [];
+
+        Array(outOf).fill(2).map((n, i) => {
+            const index = outOf - i;
+            let star = rating > index && rating - index >= 1 ? "full" : "empty";
+            if (rating > index && rating - index < 1) star = "half";
+
+            const icon = createIcon(starPaths[star], { fill: color ? color : "#F7CD42", size: 16 });
+            icon.name = "FernRatingStar";
+            insertNode(icon);
+
+            icons.push(icon);
+        });
+
+        selection.items = icons;
+    } else {
+        const roundedRating = Math.round(rating);
+        const ratingIconPath = starPaths[roundedRating < outOf ? "half" : "full"];
+        const icon = createIcon(roundedRating == 0 ? emptyStar : ratingIconPath, { fill: color ? color : "#FF385C", size: 16 });
+        icon.name = "FernRatingStar";
+
+        ratingText = createText(`${rating.toFixed(1)} ( 20 reviews )`, {
+            name: "FernRatingText",
+            fill: new Color(darkMode ? "#FFF" : "#4D4D4D"),
+            fontStyle: "Regular", fontSize: 16,
+            type: Text.POINT, height: 24,
+            styleRanges: [{ fontStyle: "Medium", length: 3 }, {
+                fontStyle: "Regular",
+                length: 13 + reviewCount.toString().length,
+                fill: new Color(darkMode ? "rgba(255, 255, 255, 0.7)" : "#6A6A6A")
+            }]
+        });
+        insertNode(ratingText);
+        insertNode(icon);
+        selection.items = [icon, ratingText];
+    }
+
+    commands.alignVerticalCenter();
+    commands.alignLeft();
+    commands.group();
+
+    const ratingNode = selection.items[0];
+    ratingNode.name = "FernRating";
+
+    ratingNode.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 6
+        },
+        padding: {
+            values: _extends({}, getPadding(0, 0), { bottom: 2 })
+        }
+    };
+
+    return ratingNode;
+}
+
+module.exports = gridRatingComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/components/rating/starPaths.js":
+/*!**********************************************************!*\
+  !*** ./src/Creators/Grid/components/rating/starPaths.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const starPaths = {
+    "empty": "M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z",
+    "half": "M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4V6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z",
+    "full": "M12,17.27L18.18,21l-1.64-7.03L22,9.24l-7.19-0.61L12,2L9.19,8.63L2,9.24l5.46,4.73L5.82,21L12,17.27z"
+};
+
+module.exports = starPaths;
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/components/rating/updateRating.js":
+/*!*************************************************************!*\
+  !*** ./src/Creators/Grid/components/rating/updateRating.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { getGroupChildByName } = __webpack_require__(/*! ../../../../utils */ "./src/utils/index.js");
+const starPaths = __webpack_require__(/*! ./starPaths */ "./src/Creators/Grid/components/rating/starPaths.js");
+
+function updateRating(ratingNode, rating, { format }) {
+    if (format == "icons") {
+        getGroupChildByName(ratingNode, "FernRatingStar", starNodes => {
+            starNodes.reverse().forEach((starNode, index) => {
+                let star = rating > index && rating - index >= 1 ? "full" : "empty";
+                if (rating > index && rating - index < 1) star = "half";
+
+                starNode.pathData = starPaths[star];
+                starNode.resize(16, 16);
+            });
+        }, true);
+    }
+}
+
+module.exports = updateRating;
+
+/***/ }),
+
 /***/ "./src/Creators/Grid/createCards.js":
 /*!******************************************!*\
   !*** ./src/Creators/Grid/createCards.js ***!
@@ -29881,6 +30021,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { SceneNode, selection, Color, LinearGradient, ImageFill, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const gridRatingComponent = __webpack_require__(/*! ./components/rating */ "./src/Creators/Grid/components/rating/index.js");
+const updateRating = __webpack_require__(/*! ./components/rating/updateRating */ "./src/Creators/Grid/components/rating/updateRating.js");
 
 function getGradient({ aspectRatio, imageHeight }) {
     const gradient = new LinearGradient();
@@ -29923,15 +30065,21 @@ function createCard(props) {
     let {
         aspectRatio = 'landscape',
         width = 450,
-        image, title, description,
         padding,
         border,
         shadow,
         overlay,
+        showRating,
+        showPrice,
         showTitle,
         showDescription,
-        spaceAroundImage
+        spaceAroundImage,
+        data
     } = props;
+
+    const {
+        image, title, description, price, rating
+    } = data;
 
     if (!shadow && !border && !overlay) padding = 0;
 
@@ -29953,21 +30101,35 @@ function createCard(props) {
     cardImage.cornerRadii = {
         topLeft: imageBorderRadius,
         topRight: imageBorderRadius,
-        bottomLeft: spaceAroundImage ? imageBorderRadius : 0,
-        bottomRight: spaceAroundImage ? imageBorderRadius : 0
+        bottomLeft: spaceAroundImage || overlay ? imageBorderRadius : 0,
+        bottomRight: spaceAroundImage || overlay ? imageBorderRadius : 0
     };
 
     let cardText,
         cardTitle,
+        priceText,
         cardDescription,
         textNodes = [];
+
+    if (showPrice) {
+        priceText = createText("$" + price, {
+            name: "Price",
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
+            type: Text.POINT,
+            fontSize: 18, fontStyle: "Bold"
+        });
+
+        insertNode(priceText);
+        textNodes.push(priceText);
+    }
 
     if (showTitle) {
         cardTitle = createText(title, {
             name: "Title",
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2),
-            height: showDescription ? 28 : null,
-            type: showDescription ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT,
+            height: showDescription || showPrice ? 21 : null,
+            type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT,
             fontSize: 18, fontStyle: "Medium"
         });
     }
@@ -29977,7 +30139,8 @@ function createCard(props) {
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
-            fill: new Color("#6D6D6D"), fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#6D6D6D"),
+            fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2)
         });
 
@@ -29988,6 +30151,13 @@ function createCard(props) {
     if (cardTitle) {
         insertNode(cardTitle);
         textNodes.push(cardTitle);
+    }
+
+    if (showRating) {
+        textNodes.push(gridRatingComponent(_extends({}, props.rating, {
+            darkMode: overlay,
+            rating
+        })));
     }
 
     insertNode(cardImage);
@@ -30001,24 +30171,30 @@ function createCard(props) {
         cardText.name = "FernGridCardText";
     }
 
-    if (showTitle && showDescription) {
-        cardText.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_VERTICAL,
-                spacings: 0
-            }
-        };
+    let cardContent;
 
-        if (!spaceAroundImage) {
-            cardText.layout = _extends({}, cardText.layout, {
-                padding: {
-                    values: _extends({}, getPadding(padding, padding), { top: padding - 16 })
+    if (!cardText) {
+        selection.items = [cardImage];
+        commands.group();
+        cardContent = selection.items[0];
+    } else {
+        if (textNodes.length > 1) {
+            cardText.layout = {
+                type: SceneNode.LAYOUT_STACK,
+                stack: {
+                    orientation: SceneNode.STACK_VERTICAL,
+                    spacings: 7
                 }
-            });
-        }
-    } else if (!showDescription || !showTitle) {
-        if (!spaceAroundImage) {
+            };
+
+            if (!spaceAroundImage && !overlay) {
+                cardText.layout = _extends({}, cardText.layout, {
+                    padding: {
+                        values: _extends({}, getPadding(padding, padding), { top: padding - 16 })
+                    }
+                });
+            }
+        } else if (!spaceAroundImage && !overlay) {
             cardText.layout = {
                 type: SceneNode.LAYOUT_PADDING,
                 padding: {
@@ -30026,54 +30202,46 @@ function createCard(props) {
                 }
             };
         }
-    }
 
-    let cardContent;
+        if (overlay) {
+            let scrim = new Rectangle();
+            scrim.resize(width, imageHeight);
+            scrim.fill = new Color("#000");
+            scrim.name = "FernGridCardScrim";
+            scrim.fill = getGradient(_extends({}, props, { imageHeight }));
 
-    if (!cardText) {
-        selection.items = [cardImage];
-        commands.group();
-        cardContent = selection.items[0];
-    } else if (overlay) {
-        let scrim = new Rectangle();
-        scrim.resize(width, imageHeight);
-        scrim.fill = new Color("#000");
-        scrim.name = "FernGridCardScrim";
-        scrim.fill = getGradient(_extends({}, props, { imageHeight }));
+            insertNode(scrim);
+            scrim.setAllCornerRadii(getCornerRadius(props));
 
-        insertNode(scrim);
-        scrim.setAllCornerRadii(getCornerRadius(props));
+            selection.items = [cardImage, scrim, cardText];
+            commands.alignLeft();
+            commands.alignBottom();
+            commands.group();
 
-        if (showTitle) cardTitle.fill = new Color("#fff");
-        if (showDescription) cardDescription.fill = new Color("#fff", 0.8);
+            cardContent = selection.items[0];
 
-        selection.items = [cardImage, scrim, cardText];
-        commands.alignLeft();
-        commands.alignBottom();
-        commands.group();
+            selection.items = [cardText];
+            commands.bringToFront();
 
-        cardContent = selection.items[0];
+            let bottomPadding = padding;
+            if (!showDescription && !showPrice) bottomPadding = cardText.localBounds.height;
 
-        selection.items = [cardText];
-        commands.bringToFront();
-        cardText.moveInParentCoordinates(padding, -padding);
-    } else {
-        selection.items = [cardImage, cardText];
-        commands.alignLeft();
-        commands.group();
+            cardText.moveInParentCoordinates(padding, -bottomPadding);
+        } else {
+            selection.items = [cardImage, cardText];
+            commands.alignLeft();
+            commands.group();
 
-        // if(!spaceAroundImage)
-        //     cardText.moveInParentCoordinates(padding, padding);
+            cardContent = selection.items[0];
 
-        cardContent = selection.items[0];
-
-        cardContent.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_VERTICAL,
-                spacings: 12
-            }
-        };
+            cardContent.layout = {
+                type: SceneNode.LAYOUT_STACK,
+                stack: {
+                    orientation: SceneNode.STACK_VERTICAL,
+                    spacings: 12
+                }
+            };
+        }
     }
 
     cardContent.name = "FernGridCardContent";
@@ -30119,7 +30287,7 @@ function createCard(props) {
 }
 
 function setCardContent(card, content, props) {
-    const { image, title, description } = content;
+    const { rating, image, title, description, price } = content;
     const descriptionArray = description.split(" ");
     const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
 
@@ -30131,6 +30299,12 @@ function setCardContent(card, content, props) {
         }
     });
 
+    if (props.showRating) {
+        getGroupChildByName(card, "FernGridCardContent/FernGridCardText/FernRating", ratingNode => {
+            if (ratingNode) updateRating(ratingNode, rating, props.rating);
+        });
+    }
+
     if (props.showTitle) {
         getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Title", titleNode => {
             titleNode.text = title;
@@ -30140,6 +30314,12 @@ function setCardContent(card, content, props) {
     if (props.showDescription) {
         getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Description", descriptionNode => {
             descriptionNode.text = descriptionText;
+        });
+    }
+
+    if (props.showPrice) {
+        getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Price", priceNode => {
+            priceNode.text = "$" + price;
         });
     }
 }
@@ -30163,9 +30343,7 @@ function createGridCards(props) {
 
     const card = createCard(_extends({}, props, {
         width: cardWidth,
-        image: data[0].image,
-        title: data[0].title,
-        description: data[0].description
+        data: data[0]
     }));
     tagNode(card, { name: "FernGridCard1" });
 
@@ -30250,6 +30428,13 @@ const defaultGridProps = {
     aspectRatio: "land",
     overlay: false,
     showImage: true,
+    showRating: true,
+    rating: {
+        darkMode: false,
+        format: "icons",
+        color: "#FF385C"
+    },
+    showPrice: true,
     showTitle: true,
     showDescription: true,
     action: "Read More",
@@ -30302,14 +30487,19 @@ const titles = __webpack_require__(/*! ./titles */ "./src/Creators/Grid/generate
 const authors = __webpack_require__(/*! ./authors */ "./src/Creators/Grid/generateData/authors.js");
 const descriptions = __webpack_require__(/*! ./descriptions */ "./src/Creators/Grid/generateData/descriptions.js");
 const metas = __webpack_require__(/*! ./metas */ "./src/Creators/Grid/generateData/metas.js");
-const { shuffle } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const { shuffle, randomBetween } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
 function generateData(entries) {
     const data = Array(50).fill("").map((_, i) => {
+        const randomPrice = Math.floor(randomBetween(95, 2000));
+        const randomRating = randomBetween(1, 5).toFixed(1);
+
         return {
             title: titles[i],
             // description: descriptions[i],
-            description: authors[i]
+            description: authors[i],
+            price: randomPrice.toLocaleString(),
+            rating: randomRating
         };
     });
 
@@ -30396,7 +30586,10 @@ async function Grid(userProps) {
 
     const gridImages = await getAssetFileFromPath("images/grid", "jpg", true);
 
-    if (!props.data || !props.data.length) props.data = generateData(props.numberOfRecords);else {
+    if (!props.data || !props.data.length || props.refreshData) {
+        props.data = generateData(props.numberOfRecords);
+        delete props.refreshData;
+    } else {
         const currentImages = getGridImages(selection.items[0], props);
         gridImages.splice(0, currentImages.length, ...currentImages);
         // return console.log("Grid images:", currentImages);
@@ -31810,23 +32003,31 @@ module.exports = SelectionContext;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
-function ButtonGroup({ choices = [], value, onChange }) {
+function ButtonGroup(_ref) {
+    let { choices = [], onChange } = _ref,
+        props = _objectWithoutProperties(_ref, ["choices", "onChange"]);
+
     return React.createElement(
         "div",
         { className: "inline-flex border bg-white rounded-xs overflow-hidden",
             style: { padding: "0.1rem" }
         },
         choices.map((choice, index) => {
-            const selected = value == choice;
+            const isObject = typeof choice == "object";
+            const label = isObject ? choice.label : choice;
+            const value = isObject ? choice.value : choice;
+            const selected = props.value == value;
 
             return React.createElement(
                 "span",
-                { key: index, className: `rounded-xs cursor-pointer py-1 px-2 ${selected ? 'bg-dark-gray text-white' : 'text-dark-gray'}`,
-                    onClick: () => onChange(choice, index)
+                { key: index, className: `cursor-pointer py-1 px-2 ${index < choices.length - 1 && `border-r`} ${selected ? 'bg-dark-gray text-white' : 'text-dark-gray'}`,
+                    onClick: () => onChange(value, index)
                 },
-                choice.toString().toUpperCase()
+                label.toString().toUpperCase()
             );
         })
     );
@@ -32700,16 +32901,23 @@ const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./s
 function Grid({ value, onClose }) {
     const numberOfRecords = value ? value.numberOfRecords : 3;
     const columns = value ? value.columns : 3;
+    const columnChoices = [{ label: 'TWO', value: 2 }, { label: 'THREE', value: 3 }, { label: 'FOUR', value: 4 }, { label: 'FIVE', value: 5 }];
     const columnSpacing = value ? value.columnSpacing : 20;
     const rowSpacing = value ? value.rowSpacing : 30;
     const aspectRatio = value ? value.aspectRatio : 'landscape';
     const overlay = value ? value.overlay : false;
+    const showRating = value ? value.showRating : true;
     const showTitle = value ? value.showTitle : true;
     const showDescription = value ? value.showDescription : true;
+    const showPrice = value ? value.showPrice : true;
     const shadow = value ? value.shadow : false;
     const border = value ? value.border : false;
     const spaceAroundImage = value ? value.spaceAroundImage : false;
     const cornerRadius = value ? value.cornerRadius : 'sm';
+
+    function refreshData() {
+        Creators.Grid(_extends({}, value, { refreshData: true }));
+    }
 
     function handleSetNumberOfRecords(numberOfRecords) {
         Creators.Grid(_extends({}, value, { numberOfRecords }));
@@ -32735,12 +32943,20 @@ function Grid({ value, onClose }) {
         Creators.Grid(_extends({}, value, { overlay }));
     }
 
+    function handleSetShowRating(showRating) {
+        Creators.Grid(_extends({}, value, { showRating }));
+    }
+
     function handleSetShowTitle(showTitle) {
         Creators.Grid(_extends({}, value, { showTitle }));
     }
 
     function handleSetShowDescription(showDescription) {
         Creators.Grid(_extends({}, value, { showDescription }));
+    }
+
+    function handleSetShowPrice(showPrice) {
+        Creators.Grid(_extends({}, value, { showPrice }));
     }
 
     function handleSetShadow(shadow) {
@@ -32783,19 +32999,34 @@ function Grid({ value, onClose }) {
         ),
         React.createElement(
             'div',
-            { className: 'mt-3 pt-2' },
+            { className: 'mt-2' },
             React.createElement(
                 'label',
-                { className: 'flex mb-3 text-sm trakcing-widest px-3 pb-1 border-b' },
+                { className: 'text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26' },
                 'GRID PROPS'
             ),
             React.createElement(
                 'div',
                 { className: 'px-3 mt-2' },
                 React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Number of records'
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'mb-1 text-md' },
+                        'Grid data'
+                    ),
+                    React.createElement(
+                        'span',
+                        { className: 'cursor-pointer bg-gray rounded-full flex center-center', style: { width: "22px", height: "22px", marginTop: "4px" },
+                            onClick: refreshData
+                        },
+                        React.createElement(
+                            'svg',
+                            { width: '14px', viewBox: '0 0 24 24' },
+                            React.createElement('path', { fill: 'none', stroke: '#555', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' })
+                        )
+                    )
                 ),
                 React.createElement(
                     'div',
@@ -32846,11 +33077,11 @@ function Grid({ value, onClose }) {
                 React.createElement(
                     'label',
                     { className: 'mb-1 text-md' },
-                    'Columns'
+                    'No. of columns'
                 ),
                 React.createElement(ButtonGroup, {
                     value: columns,
-                    choices: [2, 3, 4, 5],
+                    choices: columnChoices,
                     onChange: handleSetColumns
                 })
             ),
@@ -32859,8 +33090,8 @@ function Grid({ value, onClose }) {
                 { className: 'px-3 mt-3' },
                 React.createElement(
                     'label',
-                    { className: 'mb-1 text-md' },
-                    'Column Space'
+                    { className: 'text-md' },
+                    'Column space'
                 ),
                 React.createElement(
                     'div',
@@ -32869,40 +33100,6 @@ function Grid({ value, onClose }) {
                         value: columnSpacing,
                         onChange: e => handleSetColumnSpacing(parseInt(e.target.value))
                     })
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'flex justify-between opacity-50 px-1' },
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-start' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'None'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col center-center' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'Some'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-end' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'Lotsa'
-                    )
                 )
             ),
             React.createElement(
@@ -32910,8 +33107,8 @@ function Grid({ value, onClose }) {
                 { className: 'px-3 mt-3' },
                 React.createElement(
                     'label',
-                    { className: 'mb-1 text-md' },
-                    'Row Space'
+                    { className: 'text-md' },
+                    'Row space'
                 ),
                 React.createElement(
                     'div',
@@ -32920,105 +33117,29 @@ function Grid({ value, onClose }) {
                         value: rowSpacing,
                         onChange: e => handleSetRowSpacing(parseInt(e.target.value))
                     })
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'flex justify-between opacity-50 px-1' },
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-start' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'None'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col center-center' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'Some'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-end' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        'Lotsa'
-                    )
                 )
             ),
             React.createElement(
                 'div',
-                { className: 'pt-2 mt-3' },
+                { className: 'mt-3' },
                 React.createElement(
                     'label',
-                    { className: 'flex mt-3 mb-3 text-sm trakcing-widest px-3 pb-1 border-b' },
+                    { className: 'text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26' },
                     'CARD PROPS'
                 )
             ),
             React.createElement(
                 'div',
-                { className: 'px-3 mt-2 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Image Crop'
-                ),
-                React.createElement(ButtonGroup, {
-                    value: aspectRatio,
-                    choices: ["land", "por", "sqr"],
-                    onChange: handleSetAspectRatio
-                })
-            ),
-            React.createElement(
-                'div',
-                { className: 'px-3 mt-3' },
+                { className: 'px-3 pt-1 mt-3' },
                 React.createElement(
                     'div',
                     { className: 'flex items-center justify-between' },
                     React.createElement(
                         'label',
                         { className: 'text-md' },
-                        'Overlay'
+                        'Overlay Text'
                     ),
                     React.createElement(Toggle, { checked: overlay, onChange: handleSetOverlay })
-                )
-            ),
-            React.createElement(
-                'div',
-                { className: 'px-3 mt-3' },
-                React.createElement(
-                    'div',
-                    { className: 'flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-md' },
-                        'Show Title'
-                    ),
-                    React.createElement(Toggle, { checked: showTitle, onChange: handleSetShowTitle })
-                )
-            ),
-            React.createElement(
-                'div',
-                { className: 'px-3 mt-3' },
-                React.createElement(
-                    'div',
-                    { className: 'flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-md' },
-                        'Show Description'
-                    ),
-                    React.createElement(Toggle, { checked: showDescription, onChange: handleSetShowDescription })
                 )
             ),
             React.createElement(
@@ -33049,27 +33170,13 @@ function Grid({ value, onClose }) {
                     React.createElement(Toggle, { checked: border, onChange: handleSetBorder })
                 )
             ),
-            (shadow || border) && React.createElement(
-                'div',
-                { className: 'px-3 mt-3' },
-                React.createElement(
-                    'div',
-                    { className: 'flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-md' },
-                        'Space Around Image'
-                    ),
-                    React.createElement(Toggle, { checked: spaceAroundImage, onChange: handleSetSpaceAroundImage })
-                )
-            ),
             React.createElement(
                 'div',
                 { className: 'px-3 mt-3' },
                 React.createElement(
                     'label',
                     { className: 'text-md' },
-                    'Rounded Corners'
+                    'Rounded corners'
                 ),
                 cornerRadius && React.createElement(
                     'div',
@@ -33079,6 +33186,108 @@ function Grid({ value, onClose }) {
                         choices: ["none", "sm", "md", "lg"],
                         onChange: handleSetCornerRadius
                     })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'mt-2' },
+                React.createElement(
+                    'label',
+                    { className: 'text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26' },
+                    'CARD IMAGE'
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-2 flex flex-col items-start' },
+                React.createElement(
+                    'label',
+                    { className: 'mb-1 text-md' },
+                    'Aspect ratio'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: aspectRatio,
+                    choices: ["land", "por", "sqr"],
+                    onChange: handleSetAspectRatio
+                })
+            ),
+            (shadow || border) && React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Space around'
+                    ),
+                    React.createElement(Toggle, { checked: spaceAroundImage, onChange: handleSetSpaceAroundImage })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'mt-1' },
+                React.createElement(
+                    'label',
+                    { className: 'text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26' },
+                    'CARD CONTENT'
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show rating'
+                    ),
+                    React.createElement(Toggle, { checked: showRating, onChange: handleSetShowRating })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show title'
+                    ),
+                    React.createElement(Toggle, { checked: showTitle, onChange: handleSetShowTitle })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show description'
+                    ),
+                    React.createElement(Toggle, { checked: showDescription, onChange: handleSetShowDescription })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Show price'
+                    ),
+                    React.createElement(Toggle, { checked: showPrice, onChange: handleSetShowPrice })
                 )
             )
         )
@@ -35392,7 +35601,7 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     const defaultTextProps = {
         name: "Text",
         fill: new Color("#000"),
-        fontSize: 22, fontFamily: "Helvetica Neue", fontStyle: "Light",
+        fontSize: 20, fontFamily: "Helvetica Neue", fontStyle: "Light",
         layoutBox: _extends({
             type: Text.AUTO_HEIGHT
         }, props)
@@ -35413,6 +35622,10 @@ function chunkArray(array, size) {
     }
     return results;
 };
+
+function randomBetween(min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
 
 module.exports = {
     shuffle,
@@ -35438,7 +35651,8 @@ module.exports = {
     getFernComponentChildByName,
     calculateAspectRatioFit,
     createText,
-    chunkArray
+    chunkArray,
+    randomBetween
 };
 
 /***/ }),

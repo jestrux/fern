@@ -1,6 +1,8 @@
 const { SceneNode, selection, Color, LinearGradient, ImageFill, Rectangle, Shadow, Text } = require("scenegraph");
 const commands = require("commands");
 const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode } = require("../../utils");
+const gridRatingComponent = require("./components/rating");
+const updateRating = require("./components/rating/updateRating");
 
 function getGradient({aspectRatio, imageHeight}){
     const gradient = new LinearGradient();
@@ -57,15 +59,21 @@ function createCard(props){
     let { 
         aspectRatio = 'landscape', 
         width = 450,
-        image, title, description,
         padding,
         border,
         shadow,
         overlay,
+        showRating,
+        showPrice,
         showTitle,
         showDescription,
         spaceAroundImage,
+        data
     } = props;
+
+    const {
+        image, title, description, price, rating
+    } = data;
 
     if(!shadow && !border && !overlay) padding = 0;
     
@@ -90,18 +98,31 @@ function createCard(props){
     cardImage.cornerRadii = {
         topLeft: imageBorderRadius, 
         topRight: imageBorderRadius, 
-        bottomLeft: spaceAroundImage ? imageBorderRadius : 0,
-        bottomRight: spaceAroundImage ? imageBorderRadius : 0
+        bottomLeft: spaceAroundImage || overlay ? imageBorderRadius : 0,
+        bottomRight: spaceAroundImage || overlay ? imageBorderRadius : 0
     };
 
-    let cardText, cardTitle, cardDescription, textNodes = [];
+    let cardText, cardTitle, priceText, cardDescription, textNodes = [];
+    
+    if(showPrice){
+        priceText = createText("$" + price, {
+            name: "Price", 
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
+            type: Text.POINT, 
+            fontSize: 18, fontStyle: "Bold", 
+        });
+
+        insertNode(priceText);
+        textNodes.push(priceText);
+    }
 
     if(showTitle){
         cardTitle = createText(title, {
             name: "Title", 
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"), 
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
-            height: showDescription ? 28 : null, 
-            type: showDescription ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT, 
+            height: showDescription || showPrice ? 21 : null, 
+            type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT, 
             fontSize: 18, fontStyle: "Medium", 
         });
     }
@@ -111,7 +132,8 @@ function createCard(props){
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
-            fill: new Color("#6D6D6D"), fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
+            fill: overlay ? new Color("#fff", 0.8) : new Color("#6D6D6D"), 
+            fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
         });
     
@@ -122,6 +144,14 @@ function createCard(props){
     if(cardTitle){
         insertNode(cardTitle);
         textNodes.push(cardTitle);
+    }
+
+    if(showRating){
+        textNodes.push(gridRatingComponent({
+            ...props.rating,
+            darkMode: overlay,
+            rating,
+        }));
     }
 
     insertNode(cardImage);
@@ -135,35 +165,6 @@ function createCard(props){
         cardText.name = "FernGridCardText";
     }
 
-    if(showTitle && showDescription){
-        cardText.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_VERTICAL,
-                spacings: 0
-            },
-        };
-
-        if(!spaceAroundImage){
-            cardText.layout = {
-                ...cardText.layout,
-                padding: {
-                    values: {...getPadding(padding, padding), top: padding - 16}
-                }
-            }
-        }
-    }
-    else if(!showDescription || !showTitle){
-        if(!spaceAroundImage){
-            cardText.layout = {
-                type: SceneNode.LAYOUT_PADDING,
-                padding: {
-                    values: {...getPadding(padding, padding), top: padding - 16}
-                }
-            };
-        }
-    }
-
     let cardContent;
 
     if(!cardText){
@@ -171,49 +172,75 @@ function createCard(props){
         commands.group();
         cardContent = selection.items[0];
     }
-    else if(overlay){
-        let scrim = new Rectangle();
-        scrim.resize(width, imageHeight);
-        scrim.fill = new Color("#000");
-        scrim.name = "FernGridCardScrim";
-        scrim.fill = getGradient({...props, imageHeight});
-
-        insertNode(scrim);
-        scrim.setAllCornerRadii(getCornerRadius(props));
-
-        if(showTitle)
-            cardTitle.fill = new Color("#fff");
-        if(showDescription)
-            cardDescription.fill = new Color("#fff", 0.8);
-
-        selection.items = [cardImage, scrim, cardText];
-        commands.alignLeft();
-        commands.alignBottom();
-        commands.group();
-
-        cardContent = selection.items[0];
-
-        selection.items = [cardText];
-        commands.bringToFront();
-        cardText.moveInParentCoordinates(padding, -padding);
-    }
     else{
-        selection.items = [cardImage, cardText];
-        commands.alignLeft();
-        commands.group();
+        if(textNodes.length > 1){
+            cardText.layout = {
+                type: SceneNode.LAYOUT_STACK,
+                stack: {
+                    orientation: SceneNode.STACK_VERTICAL,
+                    spacings: 7
+                },
+            };
+    
+            if(!spaceAroundImage && !overlay){
+                cardText.layout = {
+                    ...cardText.layout,
+                    padding: {
+                        values: {...getPadding(padding, padding), top: padding - 16}
+                    }
+                }
+            }
+        }
+        else if(!spaceAroundImage && !overlay){
+            cardText.layout = {
+                type: SceneNode.LAYOUT_PADDING,
+                padding: {
+                    values: {...getPadding(padding, padding), top: padding - 16}
+                }
+            };
+        }
 
-        // if(!spaceAroundImage)
-        //     cardText.moveInParentCoordinates(padding, padding);
+        if(overlay){
+            let scrim = new Rectangle();
+            scrim.resize(width, imageHeight);
+            scrim.fill = new Color("#000");
+            scrim.name = "FernGridCardScrim";
+            scrim.fill = getGradient({...props, imageHeight});
+    
+            insertNode(scrim);
+            scrim.setAllCornerRadii(getCornerRadius(props));
+    
+            selection.items = [cardImage, scrim, cardText];
+            commands.alignLeft();
+            commands.alignBottom();
+            commands.group();
+    
+            cardContent = selection.items[0];
+    
+            selection.items = [cardText];
+            commands.bringToFront();
 
-        cardContent = selection.items[0];
+            let bottomPadding = padding;
+            if(!showDescription && !showPrice) 
+                bottomPadding = cardText.localBounds.height;
 
-        cardContent.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_VERTICAL,
-                spacings: 12
-            },
-        };
+            cardText.moveInParentCoordinates(padding, -bottomPadding);
+        }
+        else{
+            selection.items = [cardImage, cardText];
+            commands.alignLeft();
+            commands.group();
+    
+            cardContent = selection.items[0];
+    
+            cardContent.layout = {
+                type: SceneNode.LAYOUT_STACK,
+                stack: {
+                    orientation: SceneNode.STACK_VERTICAL,
+                    spacings: 12
+                },
+            };
+        }
     }
 
     cardContent.name = "FernGridCardContent";
@@ -260,7 +287,7 @@ function createCard(props){
 }
 
 function setCardContent(card, content, props){
-    const { image, title, description } = content;
+    const { rating, image, title, description, price } = content;
     const descriptionArray = description.split(" ");
     const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
 
@@ -272,6 +299,13 @@ function setCardContent(card, content, props){
         }
     });
 
+    if(props.showRating){
+        getGroupChildByName(card, "FernGridCardContent/FernGridCardText/FernRating", ratingNode => {
+            if(ratingNode)
+                updateRating(ratingNode, rating, props.rating)
+        });
+    }
+
     if(props.showTitle){
         getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Title", titleNode => {
             titleNode.text = title;
@@ -281,6 +315,12 @@ function setCardContent(card, content, props){
     if(props.showDescription){
         getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Description", descriptionNode => {
             descriptionNode.text = descriptionText;
+        });
+    }
+
+    if(props.showPrice){
+        getGroupChildByName(card, "FernGridCardContent/FernGridCardText/Price", priceNode => {
+            priceNode.text = "$" + price;
         });
     }
 }
@@ -305,9 +345,7 @@ function createGridCards(props){
     const card = createCard({
         ...props,
         width: cardWidth,
-        image: data[0].image,
-        title: data[0].title,
-        description: data[0].description,
+        data: data[0],
     });
     tagNode(card, {name: "FernGridCard1"});
 

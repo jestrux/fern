@@ -523,7 +523,7 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     const defaultTextProps = {
         name: "Text",
         fill: new Color("#000"),
-        fontSize: 22, fontFamily: "Helvetica Neue", fontStyle: "Light",
+        fontSize: 20, fontFamily: "Helvetica Neue", fontStyle: "Light",
         layoutBox: {
             type: Text.AUTO_HEIGHT,
             ...props,
@@ -549,6 +549,10 @@ function chunkArray(array, size) {
     return results;
 };
 
+function randomBetween(min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
 module.exports = {
     shuffle,
     downloadImage,
@@ -573,5 +577,6 @@ module.exports = {
     getFernComponentChildByName,
     calculateAspectRatioFit,
     createText,
-    chunkArray
+    chunkArray,
+    randomBetween
 }
