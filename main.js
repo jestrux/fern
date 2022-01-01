@@ -30101,8 +30101,8 @@ function createCard(props) {
     cardImage.cornerRadii = {
         topLeft: imageBorderRadius,
         topRight: imageBorderRadius,
-        bottomLeft: spaceAroundImage || overlay ? imageBorderRadius : 0,
-        bottomRight: spaceAroundImage || overlay ? imageBorderRadius : 0
+        bottomLeft: !border && !shadow || spaceAroundImage || overlay ? imageBorderRadius : 0,
+        bottomRight: !border && !shadow || spaceAroundImage || overlay ? imageBorderRadius : 0
     };
 
     let cardText,
