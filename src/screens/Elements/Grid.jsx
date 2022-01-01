@@ -30,7 +30,8 @@ function Grid({value, onClose}){
     }
 
     function handleSetNumberOfRecords(numberOfRecords){
-        Creators.Grid({...value, numberOfRecords});
+        const newColumnCount = numberOfRecords < columns ? numberOfRecords : columns;
+        Creators.Grid({...value, numberOfRecords, columns: newColumnCount});
     }
 
     function handleSetColumns(columns){

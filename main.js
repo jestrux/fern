@@ -32920,7 +32920,8 @@ function Grid({ value, onClose }) {
     }
 
     function handleSetNumberOfRecords(numberOfRecords) {
-        Creators.Grid(_extends({}, value, { numberOfRecords }));
+        const newColumnCount = numberOfRecords < columns ? numberOfRecords : columns;
+        Creators.Grid(_extends({}, value, { numberOfRecords, columns: newColumnCount }));
     }
 
     function handleSetColumns(columns) {
