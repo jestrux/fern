@@ -4,17 +4,18 @@ const Toggle = require('../../components/Toggle');
 const ButtonGroup = require('../../components/ButtonGroup');
 
 function Grid({value, onClose}){
-    const shadow = value ? value.shadow : false;
-    const border = value ? value.border : false;
     const numberOfRecords = value ? value.numberOfRecords : 3;
     const columns = value ? value.columns : 3;
     const columnSpacing = value ? value.columnSpacing : 20;
     const rowSpacing = value ? value.rowSpacing : 30;
     const aspectRatio = value ? value.aspectRatio : 'landscape';
-    const cornerRadius = value ? value.cornerRadius : 'sm';
     const overlay = value ? value.overlay : false;
     const showTitle = value ? value.showTitle : true;
     const showDescription = value ? value.showDescription : true;
+    const shadow = value ? value.shadow : false;
+    const border = value ? value.border : false;
+    const spaceAroundImage = value ? value.spaceAroundImage : false;
+    const cornerRadius = value ? value.cornerRadius : 'sm';
 
     function handleSetNumberOfRecords(numberOfRecords){
         Creators.Grid({...value, numberOfRecords});
@@ -55,6 +56,10 @@ function Grid({value, onClose}){
 
     function handleSetBorder(border){
         Creators.Grid({...value, border});
+    }
+
+    function handleSetSpaceAroundImage(spaceAroundImage){
+        Creators.Grid({...value, spaceAroundImage});
     }
 
     function handleSetCornerRadius(cornerRadius){
@@ -208,13 +213,25 @@ function Grid({value, onClose}){
                     />
                 </div>
 
-                <div className="px-3 mt-3">
-                    <div className="flex items-center justify-between">
-                        <label className="text-md">Border</label>
-                        
-                        <Toggle checked={border} onChange={handleSetBorder} />
+                { !shadow &&
+                    <div className="px-3 mt-3">
+                        <div className="flex items-center justify-between">
+                            <label className="text-md">Border</label>
+                            
+                            <Toggle checked={border} onChange={handleSetBorder} />
+                        </div>
                     </div>
-                </div>
+                }
+
+                { (shadow || border) &&
+                    <div className="px-3 mt-3">
+                        <div className="flex items-center justify-between">
+                            <label className="text-md">Space Around Image</label>
+                            
+                            <Toggle checked={spaceAroundImage} onChange={handleSetSpaceAroundImage} />
+                        </div>
+                    </div>
+                }
 
                 <div className="px-3 mt-3">
                     <label className="text-md">Rounded Corners</label>

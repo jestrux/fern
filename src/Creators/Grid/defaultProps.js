@@ -8,6 +8,7 @@ const defaultGridProps = {
     shadow: false,
     border: false,
     padding: 20,
+    spaceAroundImage: false,
     cornerRadius: "md",
     numberOfRecords: 7,
     columns: 4, 
