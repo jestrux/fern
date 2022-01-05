@@ -1,7 +1,7 @@
 const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNode } = require("../utils");
-const { PLUGIN_ID } = require("../constants");
 const Button = require("./Button");
 const Navbar = require("./Navbar");
+const Footer = require("./Footer");
 const MediaSection = require("./MediaSection");
 const Grid = require("./Grid");
 const FernComponent = require("./FernComponent");
@@ -9,6 +9,7 @@ const FernComponent = require("./FernComponent");
 class Creators {
     static Button = Button
     static Navbar = Navbar
+    static Footer = Footer
     static Grid = Grid
     static MediaSection = MediaSection
     static FernComponent = FernComponent

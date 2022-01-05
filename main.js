@@ -29794,6 +29794,416 @@ module.exports = FernComponent;
 
 /***/ }),
 
+/***/ "./src/Creators/Footer/assemble.js":
+/*!*****************************************!*\
+  !*** ./src/Creators/Footer/assemble.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { SceneNode, selection, Color, Rectangle } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent, createBorder, insertNode, getPadding, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createFooterSlot = __webpack_require__(/*! ./createSlot */ "./src/Creators/Footer/createSlot.js");
+
+function createFooterBackground({ width, height, color }) {
+    let bg = new Rectangle();
+    bg.resize(width, height);
+    bg.fill = new Color(color);
+    bg.strokeEnabled = false;
+    insertNode(bg);
+
+    const borderNode = createBorder({ width });
+    borderNode.opacity = 0.1;
+    insertNode(borderNode);
+
+    selection.items = [bg, borderNode];
+    commands.group();
+    bg = selection.items[0];
+    placeInParent(borderNode, { x: 0, y: 0 });
+    bg.name = "BG";
+
+    return bg;
+}
+
+function assembleFooter(props = {}, images) {
+    props = _extends({}, props, images, {
+        width: 1920, height: 70
+    });
+
+    const bg = createFooterBackground(props);
+
+    const slot2 = createFooterSlot(props, ["menu"]);
+    const slot3 = createFooterSlot(props, ["menu"]);
+    const slot4 = createFooterSlot(props, ["menu"]);
+    const slot5 = createFooterSlot(props, ["menu"]);
+
+    const leftSlot = createFooterSlot(props, ["logo", "socials"]);
+    leftSlot.name = "FernFooterLeftSlot";
+
+    const slots = [leftSlot, slot2, slot3, slot4, slot5];
+    const slotsWrapperPadding = 30;
+    const spaceBetweenSlots = 30;
+
+    try {
+        const totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
+        const containerWidth = 1600;
+        const availableWidth = containerWidth - totalSpaceBetweenSlots - slotsWrapperPadding * 2;
+        const slotWidth = availableWidth / slots.length;
+
+        console.log("Slot width: ", slotWidth);
+
+        slots.forEach(slot => {
+            getGroupChildByName(slot, "FernFooterSlotBg", slotBg => {
+                slotBg.resize(slotWidth, slot.localBounds.height);
+            });
+        });
+    } catch (error) {
+        console.log("Error updating slot width: ", error);
+    }
+
+    selection.items = slots;
+    commands.group();
+
+    const container = selection.items[0];
+    container.name = "Container";
+    container.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: spaceBetweenSlots
+        },
+        padding: {
+            values: getPadding(slotsWrapperPadding, 0)
+        }
+    };
+
+    const footerHeight = container.localBounds.height;
+    const footerBgWhiteSpace = bg.localBounds.width - container.localBounds.width;
+    const footerBgHorizontalPadding = footerBgWhiteSpace / 2;
+    bg.resize(bg.localBounds.width - footerBgWhiteSpace, footerHeight);
+    container.fill = new Color("red");
+
+    selection.items = [bg, container];
+    commands.group();
+
+    const footer = selection.items[0];
+
+    footer.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: bg,
+            values: getPadding(footerBgHorizontalPadding, 60)
+        }
+    };
+
+    return footer;
+}
+
+module.exports = assembleFooter;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/components/logo.js":
+/*!************************************************!*\
+  !*** ./src/Creators/Footer/components/logo.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { Rectangle, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { insertNode, calculateAspectRatioFit } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+function footerLogoComponent({ logoImage }) {
+    const logo = new Rectangle();
+    logo.resize(163, 25);
+    logo.name = "FernFooterLogo";
+
+    try {
+        logo.fill = logoImage;
+    } catch (error) {
+        logo.fill = new ImageFill(logoImage);
+    }
+
+    if (logo.fill.naturalWidth) {
+        const { naturalWidth, naturalHeight } = logo.fill;
+        const { width, height } = calculateAspectRatioFit(naturalWidth, naturalHeight, 160, 50);
+        logo.resize(width, height);
+    }
+
+    insertNode(logo);
+
+    return logo;
+}
+
+module.exports = footerLogoComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/components/menu.js":
+/*!************************************************!*\
+  !*** ./src/Creators/Footer/components/menu.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { selection, Color, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createText } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+function createLink(text = "FernNavLinkText") {
+    const linkText = createText(text, {
+        name: text,
+        fill: new Color("#606060"),
+        fontSize: 16,
+        type: Text.POINT
+    });
+
+    insertNode(linkText);
+
+    return linkText;
+}
+
+function footerMenuComponent(props = {}) {
+    const {
+        links = []
+    } = props;
+
+    const linkItems = [...links];
+    linkItems.reverse();
+
+    try {
+        const linkNode = createLink(linkItems[0]);
+        linkNode.name = linkItems[0];
+        const navLinkNodes = [linkNode];
+        selection.items = [linkNode];
+
+        for (let i = 1; i < links.length; i++) {
+            commands.duplicate();
+            const newLink = selection.items[0];
+            selection.items = [newLink];
+            navLinkNodes.push(newLink);
+            newLink.name = linkItems[i];
+            newLink.text = linkItems[i];
+        }
+
+        selection.items = navLinkNodes;
+        commands.group();
+        let footerMenu = selection.items[0];
+        footerMenu.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_VERTICAL,
+                spacings: 24
+            }
+        };
+
+        footerMenu = selection.items[0];
+
+        return footerMenu;
+    } catch (error) {
+        console.log("Error creating footer links: ", error);
+    }
+}
+
+module.exports = footerMenuComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/createSlot.js":
+/*!*******************************************!*\
+  !*** ./src/Creators/Footer/createSlot.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { selection, SceneNode, Rectangle, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent, insertNode, getPadding } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const footerMenuComponent = __webpack_require__(/*! ./components/menu */ "./src/Creators/Footer/components/menu.js");
+const footerLogoComponent = __webpack_require__(/*! ./components/logo */ "./src/Creators/Footer/components/logo.js");
+const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/createIcons */ "./src/Creators/SocialMediaIcons/createIcons.js");
+
+function createFooterSlot(props, components = []) {
+    const componentMap = {
+        "logo": footerLogoComponent,
+        "menu": footerMenuComponent,
+        "socials": createSocialMediaIcons
+    };
+
+    try {
+        const { width, height, alignment = "left" } = props;
+
+        let slot;
+
+        const slotBg = new Rectangle();
+        slotBg.resize(width / 2, height);
+        slotBg.name = "FernFooterSlotBg";
+        insertNode(slotBg);
+
+        if (components.length) {
+            const content = components.reverse().map(component => {
+                return componentMap[component](props);
+            });
+
+            selection.items = content;
+            commands.group();
+
+            const slotContent = selection.items[0];
+            if (slotContent.children.length > 1) {
+                slotContent.layout = {
+                    type: SceneNode.LAYOUT_STACK,
+                    stack: {
+                        orientation: SceneNode.STACK_VERTICAL,
+                        spacings: 50
+                    }
+                };
+            }
+            slotContent.name = "FernFooterSlotContent";
+
+            if (alignment == "left") {
+                selection.items = content;
+                commands.alignLeft();
+
+                selection.items = [slotBg, slotContent];
+                commands.alignLeft();
+            } else {
+                selection.items = content;
+                commands.alignRight();
+
+                selection.items = [slotBg, slotContent];
+                commands.alignRight();
+            }
+
+            slotBg.resize(slotContent.localBounds.width, slotContent.localBounds.height);
+
+            selection.items = [slotBg, slotContent];
+            commands.group();
+
+            slot = selection.items[0];
+
+            placeInParent(slot, { x: 0, y: 0 });
+        }
+
+        slot.name = "FernFooterSlot";
+
+        return slot;
+    } catch (error) {
+        console.log("Error creating slot: ", error);
+    }
+}
+
+module.exports = createFooterSlot;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/defaultProps.js":
+/*!*********************************************!*\
+  !*** ./src/Creators/Footer/defaultProps.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultFooterProps = {
+    color: "white",
+    shadow: true,
+    border: true,
+    linksPlacement: 'right',
+    links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
+    activeLink: "Home",
+    activeColor: "#00A860",
+    buttons: ["Get Started"],
+    socialMediaIcons: ["facebook", "twitter", "instagram"],
+    profile: true,
+    search: true
+};
+
+module.exports = defaultFooterProps;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/getFooterComponent.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/Footer/getFooterComponent.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { getNodeTag, getFernComponentChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getFooterComponent(navbar, component) {
+    const props = getNodeTag(navbar);
+
+    if (!props) return null;
+
+    const componentChildrenPathMap = {
+        "leftSlot": "Container/FernFooterLeftSlot",
+        "logo": "Container/FernFooterLeftSlot/FernFooterSlotContent/FernFooterLogo"
+    };
+
+    return getFernComponentChildByName(navbar, component, componentChildrenPathMap);
+}
+
+module.exports = getFooterComponent;
+
+/***/ }),
+
+/***/ "./src/Creators/Footer/index.js":
+/*!**************************************!*\
+  !*** ./src/Creators/Footer/index.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+const defaultFooterProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Footer/defaultProps.js");
+const assembleFooter = __webpack_require__(/*! ./assemble */ "./src/Creators/Footer/assemble.js");
+const getFooterComponent = __webpack_require__(/*! ./getFooterComponent */ "./src/Creators/Footer/getFooterComponent.js");
+
+async function Footer(userProps) {
+    let props = _extends({}, defaultFooterProps, userProps || {});
+
+    let logoImage = await getAssetFileFromPath("images/android.png");
+
+    try {
+        const oldFooter = userProps ? selection.items[0] : null;
+        if (oldFooter) {
+            const logoNode = getFooterComponent(oldFooter, "logo");
+
+            logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+        }
+
+        editDom(() => {
+            try {
+                const footer = assembleFooter(props, { logoImage });
+                footer.name = "FernFooter";
+
+                tagNode(footer, _extends({ type: "Footer" }, props));
+
+                if (oldFooter) {
+                    placeInParent(footer, oldFooter.topLeftInParent);
+                    oldFooter.removeFromParent();
+                } else placeInParent(footer, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating footer: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = Footer;
+
+/***/ }),
+
 /***/ "./src/Creators/Grid/assemble.js":
 /*!***************************************!*\
   !*** ./src/Creators/Grid/assemble.js ***!
@@ -31386,56 +31796,6 @@ module.exports = navSearchInputComponent;
 
 /***/ }),
 
-/***/ "./src/Creators/Navbar/components/socials.js":
-/*!***************************************************!*\
-  !*** ./src/Creators/Navbar/components/socials.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createIcon } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
-
-function navSocialsComponent({
-    socialIcons = ["facebook", "twitter", "instagram"]
-}) {
-    // https://simpleicons.org/
-    const iconPaths = {
-        "facebook": "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z",
-        "twitter": "M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z",
-        "instagram": "M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z",
-        "linkedIn": "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z",
-        "youtube": "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z",
-        "tiktok": "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"
-    };
-
-    const icons = Object.values(socialIcons).reverse().map(socialMedia => {
-        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: "#888" });
-        insertNode(icon);
-        return icon;
-    });
-
-    selection.items = icons;
-    commands.alignVerticalCenter();
-    commands.group();
-
-    const iconGroup = selection.items[0];
-    iconGroup.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-            orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 24
-        }
-    };
-
-    return iconGroup;
-}
-
-module.exports = navSocialsComponent;
-
-/***/ }),
-
 /***/ "./src/Creators/Navbar/createSlot.js":
 /*!*******************************************!*\
   !*** ./src/Creators/Navbar/createSlot.js ***!
@@ -31451,16 +31811,16 @@ const { placeInParent, insertNode, getPadding } = __webpack_require__(/*! ../../
 const navMenuComponent = __webpack_require__(/*! ./components/menu */ "./src/Creators/Navbar/components/menu.js");
 const navLogoComponent = __webpack_require__(/*! ./components/logo */ "./src/Creators/Navbar/components/logo.js");
 const navDpComponent = __webpack_require__(/*! ./components/dp */ "./src/Creators/Navbar/components/dp.js");
-const navSocialsComponent = __webpack_require__(/*! ./components/socials */ "./src/Creators/Navbar/components/socials.js");
 const navSearchInputComponent = __webpack_require__(/*! ./components/searchInput */ "./src/Creators/Navbar/components/searchInput.js");
 const navButtonsComponent = __webpack_require__(/*! ./components/buttons */ "./src/Creators/Navbar/components/buttons.js");
+const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/createIcons */ "./src/Creators/SocialMediaIcons/createIcons.js");
 
 function createNavSlot(props, components = []) {
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
         "dp": navDpComponent,
-        "socials": navSocialsComponent,
+        "socials": createSocialMediaIcons,
         "search": navSearchInputComponent,
         "buttons": navButtonsComponent
     };
@@ -31553,7 +31913,7 @@ const defaultNavbarProps = {
     activeLink: "Home",
     activeColor: "#00A860",
     buttons: ["Get Started"],
-    socialMediaIcons: ["Facebook, Twitter, Instagram, Youtube"],
+    socialMediaIcons: ["facebook", "twitter", "instagram"],
     profile: true,
     search: true
 };
@@ -31649,6 +32009,56 @@ module.exports = Navbar;
 
 /***/ }),
 
+/***/ "./src/Creators/SocialMediaIcons/createIcons.js":
+/*!******************************************************!*\
+  !*** ./src/Creators/SocialMediaIcons/createIcons.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function createSocialMediaIcons({
+    socialMediaIcons = ["facebook", "twitter", "instagram"]
+}) {
+    // https://simpleicons.org/
+    const iconPaths = {
+        "facebook": "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z",
+        "twitter": "M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z",
+        "instagram": "M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z",
+        "linkedIn": "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z",
+        "youtube": "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z",
+        "tiktok": "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"
+    };
+
+    const icons = socialMediaIcons.reverse().map(socialMedia => {
+        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: "#888" });
+        insertNode(icon);
+        return icon;
+    });
+
+    selection.items = icons;
+    commands.alignVerticalCenter();
+    commands.group();
+
+    const iconGroup = selection.items[0];
+    iconGroup.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 24
+        }
+    };
+
+    return iconGroup;
+}
+
+module.exports = createSocialMediaIcons;
+
+/***/ }),
+
 /***/ "./src/Creators/index.js":
 /*!*******************************!*\
   !*** ./src/Creators/index.js ***!
@@ -31659,9 +32069,9 @@ module.exports = Navbar;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNode } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
-const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
+const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/Creators/FernComponent/index.js");
@@ -31757,6 +32167,7 @@ class Creators {
 
 Creators.Button = Button;
 Creators.Navbar = Navbar;
+Creators.Footer = Footer;
 Creators.Grid = Grid;
 Creators.MediaSection = MediaSection;
 Creators.FernComponent = FernComponent;
@@ -32262,7 +32673,7 @@ module.exports = {
     "#41A257", // green
     "#FFD0A2", // orange
     "#000000", "#FFFFFF"],
-    ELEMENT_TYPES: ["Button", "Navbar", "Grid", "FernComponent", "MediaSection", "card", "Image"]
+    ELEMENT_TYPES: ["Button", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
 };
 
 /***/ }),
@@ -32788,7 +33199,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Navbar', 'Grid', 'MediaSection'].map((element, index) => React.createElement(
+            ['Button', 'Navbar', 'Footer', 'Grid', 'MediaSection'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -32881,6 +33292,176 @@ function FernComponent({ value, onClose }) {
 }
 
 module.exports = FernComponent;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Footer/Links.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Footer/Links.jsx ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
+
+function FooterLinks({ links, onChange }) {
+    const [linkBeingEdited, setLinkBeingEdited] = React.useState(null);
+    function handleSetLinks(links) {
+        onChange(links);
+    }
+
+    function handleLinkTextChanged(e) {
+        e.preventDefault();
+        const form = e.target;
+        const newValue = form.elements[0].value;
+
+        if (links[linkBeingEdited] != newValue) {
+            const newLinks = [...links];
+            newLinks.splice(linkBeingEdited, 1, newValue);
+            onChange(newLinks);
+        } else setLinkBeingEdited(null);
+    }
+
+    function handleMoveLink(e, linkIndex) {
+        const isLastItem = linkIndex === links.length - 1;
+        const { shiftKey, altKey } = e;
+        const leap = shiftKey ? 3 : 1;
+        let newIndex = isLastItem || altKey ? linkIndex - leap : linkIndex + leap;
+
+        // clamp
+        newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
+        console.log("New index: ", newIndex);
+
+        const newLinks = [...links];
+        const link = newLinks.splice(linkIndex, 1)[0];
+        newLinks.splice(newIndex, 0, link);
+
+        onChange(newLinks);
+    }
+
+    return React.createElement(
+        'div',
+        { className: 'pt-2 mt-3' },
+        React.createElement(
+            'div',
+            { className: 'flex items-center justify-between px-3' },
+            React.createElement(
+                'label',
+                { className: 'text-md' },
+                'Links'
+            ),
+            React.createElement(Toggle, { checked: links, onChange: handleSetLinks })
+        ),
+        links && React.createElement(
+            'div',
+            { className: '-mx-12pxs mt-1' },
+            React.createElement(
+                'div',
+                { className: 'bg-white' },
+                links.map((link, index) => {
+                    const editting = linkBeingEdited === index;
+
+                    return React.createElement(
+                        'div',
+                        { key: index, className: 'parent bg-white py-2 px-3 border-b border-light-gray flex items-center' },
+                        editting && React.createElement(
+                            'form',
+                            { action: '#', className: 'flex-1 bg-gray', onSubmit: handleLinkTextChanged },
+                            React.createElement('input', {
+                                autoFocus: true,
+                                className: 'w-full',
+                                defaultValue: link,
+                                name: 'link',
+                                'uxp-quiet': 'true',
+                                onKeyDown: e => e.key == 'Escape' ? setLinkBeingEdited(null) : null
+                            })
+                        ),
+                        !editting && React.createElement(
+                            React.Fragment,
+                            null,
+                            React.createElement(
+                                'h5',
+                                { className: 'flex-1 text-base font-normal cursor-pointer',
+                                    onClick: () => setLinkBeingEdited(index)
+                                },
+                                link
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'visible-on-parent-hover cursor-pointer rounded-full bg-light-gray flex center-center',
+                                    style: { width: "20px", height: "20px" },
+                                    onClick: e => handleMoveLink(e, index)
+                                },
+                                React.createElement(
+                                    'svg',
+                                    { width: '14px', height: '14px', viewBox: '0 0 24 24' },
+                                    React.createElement('polygon', { points: '13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01' })
+                                )
+                            )
+                        )
+                    );
+                })
+            )
+        )
+    );
+}
+
+module.exports = FooterLinks;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Footer/index.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Footer/index.jsx ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../../Creators */ "./src/Creators/index.js");
+const FooterLinks = __webpack_require__(/*! ./Links */ "./src/screens/Elements/Footer/Links.jsx");
+
+function Footer({ value, onClose }) {
+    const [links, setLinks] = React.useState(value ? value.links : []);
+
+    function handleSetLinks(links) {
+        setLinks(links);
+        Creators.Footer(_extends({}, value, { links }));
+    }
+
+    return React.createElement(
+        'div',
+        { style: { margin: "0.5rem -12px" } },
+        React.createElement(
+            'div',
+            { className: 'flex items-center px-1' },
+            React.createElement(
+                'span',
+                { className: 'cursor-pointer opacity-65', onClick: onClose },
+                React.createElement(
+                    'svg',
+                    { height: '16', viewBox: '0 0 24 24', width: '24' },
+                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                )
+            ),
+            React.createElement(
+                'h2',
+                { className: 'px-0 text-md ml-1' },
+                'Footer'
+            )
+        ),
+        React.createElement(FooterLinks, {
+            links: links,
+            activeLink: value.activeLink,
+            onChange: handleSetLinks
+        })
+    );
+}
+
+module.exports = Footer;
 
 /***/ }),
 
@@ -34213,6 +34794,7 @@ const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx"
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
+const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/screens/Elements/FernComponent.jsx");
@@ -34262,7 +34844,8 @@ function Elements({ value, subscription, onUpgrade }) {
 
     function RenderElement() {
         const uiElements = {
-            Button, Navbar, Grid,
+            Button,
+            Navbar, Footer, Grid,
             MediaSection,
             Card, Image,
             FernComponent

@@ -1,4 +1,4 @@
-const defaultNavbarProps = {
+const defaultFooterProps = {
     color: "white",
     shadow: true,
     border: true,
@@ -12,4 +12,4 @@ const defaultNavbarProps = {
     search: true,
 };
 
-module.exports = defaultNavbarProps;
+module.exports = defaultFooterProps;

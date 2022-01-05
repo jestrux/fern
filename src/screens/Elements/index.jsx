@@ -6,6 +6,7 @@ const Card = require("./Card");
 const Image = require("./Image");
 const Button = require('./Button');
 const Navbar = require('./Navbar');
+const Footer = require('./Footer');
 const MediaSection = require('./MediaSection');
 const Grid = require('./Grid');
 const FernComponent = require('./FernComponent');
@@ -61,7 +62,8 @@ function Elements({value, subscription, onUpgrade}){
 
     function RenderElement(){
         const uiElements = {
-            Button, Navbar, Grid,
+            Button, 
+            Navbar, Footer, Grid,
             MediaSection,
             Card, Image,
             FernComponent,

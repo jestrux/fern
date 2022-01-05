@@ -4,16 +4,16 @@ const { placeInParent, insertNode, getPadding } = require("../../utils");
 const navMenuComponent = require("./components/menu");
 const navLogoComponent = require("./components/logo");
 const navDpComponent = require("./components/dp");
-const navSocialsComponent = require("./components/socials");
 const navSearchInputComponent = require("./components/searchInput");
 const navButtonsComponent = require("./components/buttons");
+const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 
 function createNavSlot(props, components = []){
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
         "dp": navDpComponent,
-        "socials": navSocialsComponent,
+        "socials": createSocialMediaIcons,
         "search": navSearchInputComponent,
         "buttons": navButtonsComponent,
     }
