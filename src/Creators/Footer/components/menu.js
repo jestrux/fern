@@ -2,6 +2,21 @@ const { selection, Color, Text, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const { insertNode, createText } = require("../../../utils");
 
+function createSectionTitle(text = "Quick Links"){
+    const linkText = createText(text, {
+        name: text,
+        fill: new Color("#606060"),
+        fontStyle: "Bold",
+        fontSize: 13,
+        type: Text.POINT,
+        textTransform: "uppercase"
+    });
+    
+    insertNode(linkText);
+
+    return linkText;
+}
+
 function createLink(text = "FernNavLinkText"){
     const linkText = createText(text, {
         name: text,
@@ -38,7 +53,8 @@ function footerMenuComponent(props = {}){
             newLink.text = linkItems[i];
         }
 
-        selection.items = navLinkNodes;
+        const sectionTitle = createSectionTitle();
+        selection.items = [...navLinkNodes, sectionTitle];
         commands.group();
         let footerMenu = selection.items[0];
         footerMenu.layout = {

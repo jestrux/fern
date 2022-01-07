@@ -1,15 +1,36 @@
 const { selection, SceneNode, Rectangle, Color } = require("scenegraph");
 const commands = require("commands");
-const { placeInParent, insertNode, getPadding } = require("../../utils");
+const { placeInParent, insertNode, getPadding, createText } = require("../../utils");
 const footerMenuComponent = require("./components/menu");
 const footerLogoComponent = require("./components/logo");
 const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
+const footerSubscribeComponent = require("./components/subscribe");
+
+function footerAboutUsComponent({
+    aboutUs = "Making the world a better place through constructing elegant hierarchies."
+}){
+    const linkText = createText(aboutUs, {
+        name: "FernFooterAboutUs",
+        fill: new Color("#606060"),
+        fontSize: 16,
+        width: 290,
+        lineSpacing: 28,
+        fontStyle: "Regular",
+        // type: Text.POINT,
+    });
+    
+    insertNode(linkText);
+
+    return linkText;
+}
 
 function createFooterSlot(props, components = []){
     const componentMap = {
         "logo": footerLogoComponent,
-        "menu": footerMenuComponent,
+        "about": footerAboutUsComponent,
         "socials": createSocialMediaIcons,
+        "menu": footerMenuComponent,
+        "subscribe": footerSubscribeComponent,
     }
 
     try {
@@ -36,7 +57,7 @@ function createFooterSlot(props, components = []){
                     type: SceneNode.LAYOUT_STACK,
                     stack: {
                         orientation: SceneNode.STACK_VERTICAL,
-                        spacings: 50
+                        spacings: 30
                     }
                 };
             }

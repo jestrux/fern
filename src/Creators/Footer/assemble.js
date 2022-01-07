@@ -31,29 +31,33 @@ function assembleFooter(props = {}, images){
 
     const bg = createFooterBackground(props);
 
+    const slot5 = createFooterSlot(props, [ "subscribe" ]);
     const slot2 = createFooterSlot(props, [ "menu" ]);
     const slot3 = createFooterSlot(props, [ "menu" ]);
     const slot4 = createFooterSlot(props, [ "menu" ]);
-    const slot5 = createFooterSlot(props, [ "menu" ]);
 
     const leftSlot = createFooterSlot(props, [
-        "logo", "socials",
+        "logo", "about", "socials",
     ]);
     leftSlot.name = "FernFooterLeftSlot";
 
     const slots = [leftSlot, slot2, slot3, slot4, slot5];
     const slotsWrapperPadding = 30;
-    const spaceBetweenSlots = 30;
+    const spaceBetweenSlots = 100;
 
     try {
         const totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
+        const usedSlotSpace = leftSlot.localBounds.width + slot5.localBounds.width;
         const containerWidth = 1600;
-        const availableWidth = (containerWidth - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
-        const slotWidth = availableWidth / slots.length;
+        const availableWidth = (containerWidth - usedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
+        // const availableWidth = (containerWidth - usedSlotSpace - totalSpaceBetweenSlots);
+
+        const resizableSlots = [slot2, slot3, slot4];
+        const slotWidth = availableWidth / resizableSlots.length;
 
         console.log("Slot width: ", slotWidth);
 
-        slots.forEach(slot => {
+        resizableSlots.forEach(slot => {
             getGroupChildByName(slot, "FernFooterSlotBg", slotBg => {
                 slotBg.resize(slotWidth, slot.localBounds.height);
             });
@@ -79,23 +83,27 @@ function assembleFooter(props = {}, images){
     };
     
     const footerHeight = container.localBounds.height;
-    const footerBgWhiteSpace = bg.localBounds.width - container.localBounds.width;
-    const footerBgHorizontalPadding = footerBgWhiteSpace / 2;
-    bg.resize(bg.localBounds.width - footerBgWhiteSpace, footerHeight);
-    container.fill = new Color("red");
+    // const footerBgWhiteSpace = bg.localBounds.width - container.localBounds.width;
+    // const footerBgHorizontalPadding = Math.floor(footerBgWhiteSpace / 2);
+    // container.fill = new Color("red");
+    // bg.resize(bg.localBounds.width - footerBgWhiteSpace, footerHeight);
+    bg.resize(bg.localBounds.width, footerHeight + 120);
+    // console.log("Footer bg padding: ", Math.floor(footerBgHorizontalPadding));
 
     selection.items = [bg, container];
+    commands.alignVerticalCenter();
+    commands.alignHorizontalCenter();
     commands.group();
 
     const footer = selection.items[0];
 
-    footer.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: bg,
-            values: getPadding(footerBgHorizontalPadding, 60),
-        }
-    };
+    // footer.layout = {
+    //     type: SceneNode.LAYOUT_PADDING,
+    //     padding: {
+    //         background: bg,
+    //         values: getPadding(footerBgHorizontalPadding, 60),
+    //     }
+    // };
 
     return footer;
 }
