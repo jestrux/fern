@@ -25,6 +25,8 @@ function Grid({value, onClose}){
     const spaceAroundImage = value ? value.spaceAroundImage : false;
     const cornerRadius = value ? value.cornerRadius : 'sm';
 
+    const rowCount = Math.ceil(numberOfRecords / columns);
+
     function refreshData(){
         Creators.Grid({...value, refreshData: true});
     }
@@ -158,15 +160,17 @@ function Grid({value, onClose}){
                     </div>
                 </div>
 
-                <div className="px-3 mt-3">
-                    <label className="text-md">Row space</label>
-                    <div>
-                        <input className="w-full" type="range" min="0" max="40"
-                            value={rowSpacing}
-                            onChange={(e) => handleSetRowSpacing(parseInt(e.target.value))}
-                        />
+                { rowCount > 1 &&
+                    <div className="px-3 mt-3">
+                        <label className="text-md">Row space</label>
+                        <div>
+                            <input className="w-full" type="range" min="0" max="40"
+                                value={rowSpacing}
+                                onChange={(e) => handleSetRowSpacing(parseInt(e.target.value))}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div className="mt-3">
                     <label className="text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26">
