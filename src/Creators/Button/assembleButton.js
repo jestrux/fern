@@ -11,6 +11,7 @@ function assembleButton(buttonComponents, buttonProps){
         commands.group();
 
         const buttonContent = selection.items[0];
+        const iconSize = buttonProps.fontSize * 0.8;
         buttonText.moveInParentCoordinates(iconSize * 1.5, 0);
 
         selection.items = [bgRectangle, buttonContent];
