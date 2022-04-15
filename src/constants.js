@@ -8,5 +8,5 @@ module.exports = {
         "#000000", 
         "#FFFFFF"
     ],
-    ELEMENT_TYPES: ["Button", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
+    ELEMENT_TYPES: ["Button", "Input", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
 }

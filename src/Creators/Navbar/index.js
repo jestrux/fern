@@ -12,7 +12,8 @@ async function Navbar(userProps){
         ...(userProps || {})
     };
     
-    let logoImage = await getAssetFileFromPath("images/android.png");
+    // let logoImage = await getAssetFileFromPath(props.color == "white" ? "images/android-white.png" : "images/android.png");
+    let logoImage = await getAssetFileFromPath("images/android-white.png");
     let dpImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
 
     try {

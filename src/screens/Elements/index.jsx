@@ -4,6 +4,7 @@ const SelectionContext = require('../../SelectionContext');
 const ElementList = require('./ElementList');
 const Card = require("./Card");
 const Image = require("./Image");
+const Input = require('./Input');
 const Button = require('./Button');
 const Navbar = require('./Navbar');
 const Footer = require('./Footer');
@@ -62,7 +63,7 @@ function Elements({value, subscription, onUpgrade}){
 
     function RenderElement(){
         const uiElements = {
-            Button, 
+            Button, Input,
             Navbar, Footer, Grid,
             MediaSection,
             Card, Image,

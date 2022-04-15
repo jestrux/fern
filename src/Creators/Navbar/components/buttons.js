@@ -3,18 +3,18 @@ const commands = require("commands");
 
 const createButton = require("../../Button/createButton");
 
-function navButtonsComponent({activeColor}){
+function navButtonsComponent({color, activeColor}){
     const button1 = createButton({
         text: "Get Started",
-        size: "sm",
+        size: "md",
         color: activeColor,
         roundness: "md"
     });
 
     const button2 = createButton({
         text: "Sign In",
-        size: "sm",
-        color: "#555",
+        size: "md",
+        color: color,
         link: true,
         underline: true,
     });

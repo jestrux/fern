@@ -4,11 +4,12 @@ const iconData = require("../../data/icons");
 
 const IconList = ({
     icons = iconData, 
-    iconSize=20, 
+    iconSize=20,
+    iconNames,
     selectedColor="#fff",
     showEmptyIcon = false, centerIcons = false, selectedIcon, onChange,
 }) => {
-    const iconNames = Object.keys(icons);
+    if(!iconNames) iconNames = Object.keys(icons);
     // function handleAssetColorChanged(color){
     //     if(!color) return;
 

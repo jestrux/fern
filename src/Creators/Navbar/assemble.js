@@ -3,17 +3,18 @@ const commands = require("commands");
 const { placeInParent, createBorder, insertNode } = require("../../utils");
 const createNavSlot = require("./createSlot");
 
-function createNavBackground({ width, height, color, shadow }){
+function createNavBackground({ width, height, backgroundColor, color, border, shadow }){
+    console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
     let bg = new Rectangle();
     bg.resize(width, height);
-    bg.fill = new Color(color);
+    bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
     bg.strokeEnabled = false;
     bg.name = "BG";
     insertNode(bg);
 
     if(shadow)
         bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
-    else{
+    else if(border){
         const borderNode = createBorder({ width });
         borderNode.opacity = 0.1;
         insertNode(borderNode);
@@ -25,7 +26,8 @@ function createNavBackground({ width, height, color, shadow }){
     }
 
     const container = new Rectangle();
-    container.resize(Math.min(width, 1600), height);
+    const containerWidth = 1400 // 1600;
+    container.resize(Math.min(width, containerWidth), height);
     container.fill = new Color("white", 0);
     container.strokeEnabled = false;
     container.name = "Container";
@@ -41,7 +43,9 @@ function createNavBackground({ width, height, color, shadow }){
 function assembleNavbar(props = {}, images){
     props = {
         ...props, ...images,
-        width: 1920, height: 70,
+        width: 1600,
+        // width: 1920,
+        height: 70,
     };
 
     const [bg, container] = createNavBackground(props);
@@ -49,14 +53,14 @@ function assembleNavbar(props = {}, images){
 
     const leftSlotContent = [
         "logo",
-        "menu", "buttons"
+        // "menu", "buttons"
     ];
     const leftSlot = createNavSlot(props, leftSlotContent);
     leftSlot.name = "FernNavLeftSlot";
 
     const rightSlotContent = [
-        "search", "socials", "dp",
-        // "menu", "buttons"
+        // "search", "socials", "dp",
+        "menu", //"buttons"
     ];
 
     const rightSlot = createNavSlot({ ...props, alignment: "right" }, rightSlotContent);

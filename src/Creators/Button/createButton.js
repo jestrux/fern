@@ -7,8 +7,9 @@ const { insertNode, createIcon } = require("../../utils");
 const assembleButton = require("./assembleButton");
 const buttonSizeMap = require("./buttonSizeMap");
 const buttonRoundnessMap = require("./buttonRoundnessMap");
+const defaultButtonProps = require("./defaultButtonProps");
 
-function createButton(props){
+function createButton(props = {}){
     let {
         icon,
         text,
@@ -19,12 +20,21 @@ function createButton(props){
         link,
         underline,
         roundness
-    } = props;
+    } = {...defaultButtonProps, ...props};
 
-    if(!text.length) text = "Submit";
+    if(!text && !text.length && !icon && !icon.length) text = "Submit";
+
+    let iconScaleFactor = 0.9;
+    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit'];
+    const mediumIcons = ['cocktail'];
+    if(icon){
+        if(icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
+        if(mediumIcons.includes(icon)) iconScaleFactor = 0.76;
+        if(largeIcons.includes(icon)) iconScaleFactor = 0.65;
+    }
 
     const buttonProps = buttonSizeMap[size];
-    const iconSize = buttonProps.fontSize * 0.8;
+    const iconSize = buttonProps.fontSize * iconScaleFactor;
 
     const bgRectangle = new Rectangle();
     bgRectangle.resize(...buttonProps.size);
@@ -40,22 +50,26 @@ function createButton(props){
         bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
         
     insertNode(bgRectangle);
-
-    const buttonText = new Text();
-    buttonText.text = text;
+    
+    let buttonText;
     let textColor = "#FFF";
     if(outlined || link)
         textColor = color;
     else
         textColor = tinyColor(color).isLight() ? "black" : "white";
-
-    buttonText.fill = new Color(textColor);
-    buttonText.fontFamily = "Helvetica Neue";
-    buttonText.fontSize = buttonProps.fontSize;
-    buttonText.fontStyle = buttonProps.fontStyle;
-    buttonText.underline = underline;
+        
+    if(text && text.length){
+        buttonText = new Text();
+        buttonText.text = text;
     
-    insertNode(buttonText);
+        buttonText.fill = new Color(textColor);
+        buttonText.fontFamily = "Helvetica Neue";
+        buttonText.fontSize = buttonProps.fontSize;
+        buttonText.fontStyle = buttonProps.fontStyle;
+        buttonText.underline = underline;
+        
+        insertNode(buttonText);
+    }
 
     let iconNode;
     if(icon && iconData[icon]){
@@ -65,7 +79,7 @@ function createButton(props){
 
     return assembleButton(
         [bgRectangle, buttonText, iconNode],
-        buttonProps
+        {...buttonProps, iconSize, iconScaleFactor}
     );
 }
 

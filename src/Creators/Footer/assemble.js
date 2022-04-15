@@ -26,34 +26,71 @@ function createFooterBackground({ width, height, color }){
 function assembleFooter(props = {}, images){
     props = {
         ...props, ...images,
-        width: 1920, height: 70,
+        width: 1600, //1920, 
+        height: 70, 
+        // socialMediaIcons: [
+        //     "facebook",
+        //     "twitter", 
+        //     "instagram", 
+        //     // "linkedIn", 
+        //     // "youtube",
+        //     "tiktok",
+        // ]
     };
 
     const bg = createFooterBackground(props);
+    
+    const slotDefinitions = [
+        ["logo", "about", "socials"],
+        ["menu"],
+        ["menu"],
+        ["menu"],
+        // ["menu"],
+        // ["menu"],
+        ["subscribe"],
+    ];
 
-    const slot5 = createFooterSlot(props, [ "subscribe" ]);
-    const slot2 = createFooterSlot(props, [ "menu" ]);
-    const slot3 = createFooterSlot(props, [ "menu" ]);
-    const slot4 = createFooterSlot(props, [ "menu" ]);
+    const slots = Array(slotDefinitions);
 
-    const leftSlot = createFooterSlot(props, [
-        "logo", "about", "socials",
-    ]);
-    leftSlot.name = "FernFooterLeftSlot";
-
-    const slots = [leftSlot, slot2, slot3, slot4, slot5];
+    for (let index = slotDefinitions.length - 1; index >= 0; index--) {
+        slots[index] = createFooterSlot(props, slotDefinitions[index]);
+    }
+    
     const slotsWrapperPadding = 30;
-    const spaceBetweenSlots = 100;
+    let spaceBetweenSlots = 180;
 
     try {
-        const totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
-        const usedSlotSpace = leftSlot.localBounds.width + slot5.localBounds.width;
-        const containerWidth = 1600;
-        const availableWidth = (containerWidth - usedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
-        // const availableWidth = (containerWidth - usedSlotSpace - totalSpaceBetweenSlots);
+        const fixedSlotSpace = [...slots].filter((_, index) => {
+            const slot = slotDefinitions[index];
+            return slot.length > 0 && slot[0] != "menu";
+        })
+        .reduce((agg, slot) => agg + slot.localBounds.width, 0);
+        console.log("Fixed slot space: ", fixedSlotSpace);
 
-        const resizableSlots = [slot2, slot3, slot4];
-        const slotWidth = availableWidth / resizableSlots.length;
+        const resizableSlots = [...slots].filter((_, index) => {
+            const slot = slotDefinitions[index];
+            return slot.length == 1 && slot[0] == "menu";
+        });
+
+        const containerWidth = 1400; //1600;
+
+        let totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
+        let availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
+        let slotWidth = availableWidth / resizableSlots.length;
+
+        while(slotWidth < 100 && spaceBetweenSlots > 0){
+            spaceBetweenSlots -= 5;
+            totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
+            availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
+            slotWidth = availableWidth / resizableSlots.length;
+        }
+
+        while(slotWidth > 200){
+            spaceBetweenSlots += 5;
+            totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
+            availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
+            slotWidth = availableWidth / resizableSlots.length;
+        }
 
         console.log("Slot width: ", slotWidth);
 

@@ -1,15 +1,18 @@
 const defaultNavbarProps = {
-    color: "white",
-    shadow: true,
-    border: true,
-    linksPlacement: 'right',
+    backgroundColor: "transparent",
+    // backgroundColor: "white",
+    color: "#eee",
+    // color: "#606060",
+    activeColor: "#17FD9B",
+    shadow: false,
+    border: false,
     links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
     activeLink: "Home",
-    activeColor: "#00A860",
     buttons: ["Get Started"],
     socialMediaIcons: ["facebook", "twitter", "instagram"],
     profile: true,
     search: true,
+    showIndicator: false
 };
 
 module.exports = defaultNavbarProps;

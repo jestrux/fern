@@ -2,7 +2,7 @@ const { selection, Color, Rectangle, Text, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = require("../../../utils");
 
-function createLink(){
+function createLink(props){
     const linkBg = new Rectangle();
     linkBg.resize(90, 70);
     linkBg.fill = new Color("white", 0);
@@ -13,9 +13,10 @@ function createLink(){
     const linkText = new Text();
     linkText.name = "text";
     linkText.text = "Android 12";
-    linkText.fill = new Color("#606060");
+    linkText.fill = new Color(props.color);
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
+    linkText.fontStyle = "Medium";
     linkText.name = "FernNavLinkText";
     insertNode(linkText);
 
@@ -47,7 +48,7 @@ function changeLinkText(link, text = "Link", cb = () => {}){
     });
 }
 
-function createNavActiveIndicator({ shadow = false, activeLink, activeColor = "#000", navMenu }){
+function createNavActiveIndicator({ shadow = false, showIndicator, activeLink, activeColor = "#000", navMenu }){
     getGroupChildByName(navMenu, activeLink, navActiveLink => {
         try {
             const { width, height } = navActiveLink.localBounds;
@@ -55,22 +56,24 @@ function createNavActiveIndicator({ shadow = false, activeLink, activeColor = "#
                 linkText.fill = new Color(activeColor);
             });
 
-            const navActiveIndicator = createBorder({
-                width: width,
-                thickness: 2,
-                color: activeColor
-            });
-            
-            selection.items = [navMenu];
-            commands.group();
-            navMenu = selection.items[0];
-            navMenu.addChild(navActiveIndicator);
-            navMenu.name = "FernNavMenu";
-
-            placeInParent(navActiveIndicator, {
-                x: navActiveLink.topLeftInParent.x, 
-                y: height - (shadow ? 8 : 8.75)
-            });
+            if(showIndicator){
+                const navActiveIndicator = createBorder({
+                    width: width,
+                    thickness: 2,
+                    color: activeColor
+                });
+                
+                selection.items = [navMenu];
+                commands.group();
+                navMenu = selection.items[0];
+                navMenu.addChild(navActiveIndicator);
+                navMenu.name = "FernNavMenu";
+    
+                placeInParent(navActiveIndicator, {
+                    x: navActiveLink.topLeftInParent.x, 
+                    y: height - (shadow ? 8 : 8.75)
+                });
+            }
         } catch (error) {
             console.log("Error creating nav indicator: ", error);
         }
@@ -88,7 +91,7 @@ function navMenuComponent(props = {}, cb = () => {}){
     linkItems.reverse();
 
     try {
-        const linkNode = createLink();
+        const linkNode = createLink(props);
         changeLinkText(linkNode, linkItems[0]);
         linkNode.name = linkItems[0];
         const navLinkNodes = [linkNode];
@@ -110,7 +113,7 @@ function navMenuComponent(props = {}, cb = () => {}){
             type: SceneNode.LAYOUT_STACK,
             stack: {
                 orientation: SceneNode.STACK_HORIZONTAL,
-                spacings: 20
+                spacings: 30
             }
         }
 

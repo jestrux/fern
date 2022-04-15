@@ -7,13 +7,13 @@ const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 const footerSubscribeComponent = require("./components/subscribe");
 
 function footerAboutUsComponent({
-    aboutUs = "Making the world a better place through constructing elegant hierarchies."
+    aboutUs = "Making the world a better place by making very elegant visual hierarchies."
 }){
     const linkText = createText(aboutUs, {
         name: "FernFooterAboutUs",
         fill: new Color("#606060"),
         fontSize: 16,
-        width: 290,
+        width: 310,
         lineSpacing: 28,
         fontStyle: "Regular",
         // type: Text.POINT,

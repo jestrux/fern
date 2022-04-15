@@ -53,8 +53,13 @@ function footerMenuComponent(props = {}){
             newLink.text = linkItems[i];
         }
 
-        const sectionTitle = createSectionTitle();
-        selection.items = [...navLinkNodes, sectionTitle];
+        if(props.showLinkTitles){
+            const sectionTitle = createSectionTitle();
+            selection.items = [...navLinkNodes, sectionTitle];
+        }
+        else
+            selection.items = navLinkNodes;
+            
         commands.group();
         let footerMenu = selection.items[0];
         footerMenu.layout = {
