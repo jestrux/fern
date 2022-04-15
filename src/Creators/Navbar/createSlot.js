@@ -9,6 +9,8 @@ const navButtonsComponent = require("./components/buttons");
 const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 
 function createNavSlot(props, components = []){
+    props.iconOpacity = props.inActiveOpacity;
+
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
@@ -54,7 +56,7 @@ function createNavSlot(props, components = []){
                     type: SceneNode.LAYOUT_STACK,
                     stack: {
                         orientation: SceneNode.STACK_HORIZONTAL,
-                        spacings: 30
+                        spacings: 24
                     }
                 };
             }

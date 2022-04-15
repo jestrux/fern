@@ -374,6 +374,7 @@ function createIcon(pathData, defaultOptions = {}) {
         fill: "#555",
         stroke: "none",
         strokeWidth: 2,
+        opacity: 1,
         ...defaultOptions,
     };
 
@@ -384,7 +385,7 @@ function createIcon(pathData, defaultOptions = {}) {
             icon.strokeJoins = options.strokeJoins;
 
         if (options.stroke && options.stroke.length && options.stroke != "none") {
-            icon.stroke = new Color(options.stroke);
+            icon.stroke = new Color(options.stroke, options.opacity);
             icon.strokeWidth = options.strokeWidth;
             icon.strokeEnabled = true;
         }
@@ -392,7 +393,7 @@ function createIcon(pathData, defaultOptions = {}) {
             icon.strokeEnabled = false;
 
         if (options.fill && options.fill.length && options.fill != "none")
-            icon.fill = new Color(options.fill);
+            icon.fill = new Color(options.fill, options.opacity);
 
         if (options.size) {
             const { width, height } = icon.localBounds;
@@ -553,6 +554,18 @@ function randomBetween(min, max) {
     return Math.random() * (max - min + 1) + min;
 }
 
+function getIconSizeFromTextSize(icon, textSize) {
+    let iconScaleFactor = 0.9;
+    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit', 'chevron-right'];
+    const mediumIcons = ['cocktail'];
+
+    if(icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
+    if(mediumIcons.includes(icon)) iconScaleFactor = 0.76;
+    if(largeIcons.includes(icon)) iconScaleFactor = 0.65;
+    
+    return textSize * iconScaleFactor;
+}
+
 module.exports = {
     shuffle,
     downloadImage,
@@ -578,5 +591,6 @@ module.exports = {
     calculateAspectRatioFit,
     createText,
     chunkArray,
-    randomBetween
+    randomBetween,
+    getIconSizeFromTextSize
 }

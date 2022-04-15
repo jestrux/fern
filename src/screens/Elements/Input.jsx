@@ -8,21 +8,17 @@ function Input({ value, onClose }) {
   const [inputValue, setInputValue] = React.useState(
     value ? value.inputValue : ""
   );
+  const [width, setWidth] = React.useState(
+    value ? value.width : 388
+  );
   const [placeholder, setPlaceholder] = React.useState(
     value ? value.placeholder : ""
   );
   const [label, setLabel] = React.useState(value ? value.label : "");
   const shadow = value ? value.shadow : false;
-  const roundness = value ? value.roundness : "xs";
+  const roundness = value ? value.roundness : "normal";
+  const size = value ? value.size : "xs";
   const icon = value ? value.icon : null;
-
-  function handleSetShadow(shadow) {
-    Creators.Input({ ...value, shadow });
-  }
-
-  function handleSetRoundness(roundness) {
-    Creators.Input({ ...value, roundness });
-  }
 
   function handleSetLabel(label) {
     label = label ? "Email Address" : label;
@@ -156,7 +152,9 @@ function Input({ value, onClose }) {
         <div className="flex items-center justify-between mt-3 pt-2">
           <label className="text-md">Shadow</label>
 
-          <Toggle checked={shadow} onChange={handleSetShadow} />
+          <Toggle checked={shadow}
+            onChange={shadow => Creators.Input({ ...value, shadow })}
+          />
         </div>
 
         <div className="pt-1 mt-3 flex flex-col items-start">
@@ -164,9 +162,39 @@ function Input({ value, onClose }) {
 
           <ButtonGroup
             value={roundness}
-            choices={["none", "sm", "md", "lg", "full"]}
-            onChange={handleSetRoundness}
+            choices={["none", "normal", "full"]}
+            onChange={roundness => Creators.Input({ ...value, roundness })}
           />
+        </div>
+
+        <div className="pt-1 mt-3 flex flex-col items-start">
+          <label className="mb-1 text-md">Size</label>
+
+          <ButtonGroup
+            value={size}
+            choices={["md", "lg"]}
+            onChange={size => Creators.Input({ ...value, size })}
+          />
+        </div>
+
+        <div className="pt-2 mt-3 flex flex-col items-start">
+          <label className="mb-1 text-md">Width</label>
+
+          <form
+            className="w-full"
+            onSubmit={e => {
+              e.preventDefault();
+              Creators.Input({ ...value, width });
+            }}
+          >
+            <input
+              className="m-0 w-full"
+              type="number"
+              placeholder="Set input width here..."
+              value={width}
+              onChange={e => setWidth(e.target.value)}
+            />
+          </form>
         </div>
       </div>
     </div>

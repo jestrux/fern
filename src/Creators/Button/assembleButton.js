@@ -7,12 +7,19 @@ function assembleButton(buttonComponents, buttonProps){
     if(iconNode){
         if(buttonText){
             selection.items = [iconNode, buttonText];
-            commands.alignLeft();
+            if(buttonProps.iconPlacement == "right")
+                commands.alignRight();
+            else
+                commands.alignLeft();
+
             commands.alignVerticalCenter();
             commands.group();
     
             const buttonContent = selection.items[0];
-            buttonText.moveInParentCoordinates(buttonProps.iconSize + 10, 0);
+
+            let iconSpacing = buttonProps.iconSize + 10;
+            if(buttonProps.iconPlacement == "right") iconSpacing *= -1;
+            buttonText.moveInParentCoordinates(iconSpacing, 0);
     
             selection.items = [bgRectangle, buttonContent];
             commands.alignHorizontalCenter()

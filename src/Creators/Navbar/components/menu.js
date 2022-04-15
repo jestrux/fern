@@ -13,7 +13,7 @@ function createLink(props){
     const linkText = new Text();
     linkText.name = "text";
     linkText.text = "Android 12";
-    linkText.fill = new Color(props.color);
+    linkText.fill = new Color(props.color, props.inActiveOpacity);
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
     linkText.fontStyle = "Medium";

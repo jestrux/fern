@@ -3,37 +3,57 @@ const commands = require("commands");
 
 const createButton = require("../../Button/createButton");
 
-function navButtonsComponent({color, activeColor}){
-    const button1 = createButton({
-        text: "Get Started",
-        size: "md",
-        color: activeColor,
-        roundness: "md"
-    });
+function navButtonsComponent({color, activeColor,
+    buttons = ["Sign In", "Get Started"],
+    mainButtonStyle = "fill"
+}){
+    let button1, button2;
 
-    const button2 = createButton({
-        text: "Sign In",
-        size: "md",
-        color: color,
-        link: true,
-        underline: true,
-    });
+    if(buttons.length == 2){
+        button1 = createButton({
+            text: buttons[1],
+            size: "sm",
+            color: activeColor,
+            outlined: mainButtonStyle == "outline",
+            roundness: "md"
+        });
     
-    selection.items = [button1, button2];
+        button2 = createButton({
+            text: buttons[0],
+            size: "sm",
+            color: color,
+            link: true,
+            underline: true,
+        });
+    }
+    else{
+        button1 = createButton({
+            text: buttons[0],
+            size: "sm",
+            color: activeColor,
+            outlined: mainButtonStyle == "outline",
+            roundness: "md"
+        });
+    }
+    
+    selection.items = buttons.length == 2 ? [button1, button2] : [button1];
     commands.alignVerticalCenter();
     commands.group();
     
-    const buttons = selection.items[0];
-    buttons.name = "FernNavButtons";
-    buttons.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-            orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 6
-        }
-    };
+    const buttonNodes = selection.items[0];
+    buttonNodes.name = "FernNavButtons";
 
-    return buttons;
+    if(buttons.length == 2){
+        buttonNodes.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_HORIZONTAL,
+                spacings: 4
+            }
+        };
+    }
+
+    return buttonNodes;
 }
 
 module.exports = navButtonsComponent;

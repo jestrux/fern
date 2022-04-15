@@ -29417,12 +29417,16 @@ function assembleButton(buttonComponents, buttonProps) {
     if (iconNode) {
         if (buttonText) {
             selection.items = [iconNode, buttonText];
-            commands.alignLeft();
+            if (buttonProps.iconPlacement == "right") commands.alignRight();else commands.alignLeft();
+
             commands.alignVerticalCenter();
             commands.group();
 
             const buttonContent = selection.items[0];
-            buttonText.moveInParentCoordinates(buttonProps.iconSize + 10, 0);
+
+            let iconSpacing = buttonProps.iconSize + 10;
+            if (buttonProps.iconPlacement == "right") iconSpacing *= -1;
+            buttonText.moveInParentCoordinates(iconSpacing, 0);
 
             selection.items = [bgRectangle, buttonContent];
             commands.alignHorizontalCenter();
@@ -29482,26 +29486,37 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = {
-    "sm": {
+    "xs": {
         size: [82, 38],
         fontSize: 14,
         fontStyle: "Regular",
         padding: {
             bottom: 10,
-            left: 16,
-            right: 16,
+            left: 14,
+            right: 14,
             top: 10
+        }
+    },
+    "sm": {
+        size: [82, 38],
+        fontSize: 17,
+        fontStyle: "Regular",
+        padding: {
+            bottom: 13,
+            top: 13,
+            left: 16,
+            right: 16
         }
     },
     "md": {
         size: [82, 38],
-        fontSize: 20,
+        fontSize: 22,
         fontStyle: "Regular",
         padding: {
-            bottom: 14,
+            bottom: 16,
             left: 24,
             right: 24,
-            top: 14
+            top: 16
         }
     },
     "lg": {
@@ -29532,7 +29547,7 @@ const { Color, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */
 
 const tinyColor = __webpack_require__(/*! ../../utils/tinycolor */ "./src/utils/tinycolor.js");
 const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
-const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createIcon, getIconSizeFromTextSize } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const assembleButton = __webpack_require__(/*! ./assembleButton */ "./src/Creators/Button/assembleButton.js");
 const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
@@ -29541,6 +29556,7 @@ const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./sr
 
 function createButton(props = {}) {
     let {
+        iconPlacement,
         icon,
         text,
         size,
@@ -29554,17 +29570,8 @@ function createButton(props = {}) {
 
     if (!text && !text.length && !icon && !icon.length) text = "Submit";
 
-    let iconScaleFactor = 0.9;
-    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit'];
-    const mediumIcons = ['cocktail'];
-    if (icon) {
-        if (icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
-        if (mediumIcons.includes(icon)) iconScaleFactor = 0.76;
-        if (largeIcons.includes(icon)) iconScaleFactor = 0.65;
-    }
-
     const buttonProps = buttonSizeMap[size];
-    const iconSize = buttonProps.fontSize * iconScaleFactor;
+    const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
 
     const bgRectangle = new Rectangle();
     bgRectangle.resize(...buttonProps.size);
@@ -29578,9 +29585,17 @@ function createButton(props = {}) {
 
     insertNode(bgRectangle);
 
-    let buttonText;
+    let buttonText,
+        iconNode,
+        showIcon = icon && iconData[icon];
+
     let textColor = "#FFF";
     if (outlined || link) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
+
+    if (showIcon) {
+        iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
+        if (iconPlacement == "right") insertNode(iconNode);
+    }
 
     if (text && text.length) {
         buttonText = new Text();
@@ -29595,13 +29610,9 @@ function createButton(props = {}) {
         insertNode(buttonText);
     }
 
-    let iconNode;
-    if (icon && iconData[icon]) {
-        iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
-        insertNode(iconNode);
-    }
+    if (showIcon && iconPlacement != 'right') insertNode(iconNode);
 
-    return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, { iconSize, iconScaleFactor }));
+    return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, { iconPlacement, iconSize }));
 }
 
 module.exports = createButton;
@@ -29617,14 +29628,15 @@ module.exports = createButton;
 
 module.exports = {
     icon: null,
+    iconPlacement: "right",
     text: "Get Started",
-    size: "lg",
+    size: "md",
     color: "#333",
     shadow: false,
     outlined: false,
     link: false,
     underline: false,
-    roundness: "full"
+    roundness: "md"
 };
 
 /***/ }),
@@ -29854,7 +29866,7 @@ function assembleFooter(props = {}, images) {
     props = _extends({}, props, images, {
         width: 1600, //1920, 
         height: 70
-        // socialMediaIcons: [
+        // icons: [
         //     "facebook",
         //     "twitter", 
         //     "instagram", 
@@ -30131,7 +30143,7 @@ function footerSubscribeComponent(props = {}) {
     // color: subscribeColor,
     // icon: "send",
     text: "subscribe",
-    size: subscribeInset ? "sm" : "md",
+    size: subscribeInset ? "xs" : "sm",
     roundness: subscribeRoundness
   });
 
@@ -30143,7 +30155,7 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  if (subscribeInset) button.moveInParentCoordinates(-6, 0);
+  if (subscribeInset) button.moveInParentCoordinates(-5, 0);
 
   const subscribeText = createText(subscribeMessage, {
     name: "FernFooterSubscribeText",
@@ -30166,7 +30178,7 @@ function footerSubscribeComponent(props = {}) {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 24
+        spacings: 20
       }
     };
   }
@@ -31317,56 +31329,65 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { Color, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
 const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
-const { insertNode, createIcon, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createIcon, createText, getIconSizeFromTextSize } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const assembleInput = __webpack_require__(/*! ./assembleInput */ "./src/Creators/Input/assembleInput.js");
 const defaultInputProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Input/defaultProps.js");
+const inputSizeMap = __webpack_require__(/*! ./inputSizeMap */ "./src/Creators/Input/inputSizeMap.js");
 const inputRoundnessMap = __webpack_require__(/*! ./inputRoundnessMap */ "./src/Creators/Input/inputRoundnessMap.js");
 
 function createInput(props = {}) {
     let {
         icon,
         iconColor,
+        iconOpacity,
+        backgroundColor,
+        borderColor,
         color,
         label,
         placeholder,
+        placeholderOpacity,
         inputValue,
+        size,
         roundness,
         width
     } = _extends({}, defaultInputProps, props);
 
-    const padding = {
-        bottom: 14, top: 14,
-        left: 14, right: 12
-    };
+    const inputProps = inputSizeMap[size];
+    const padding = inputProps.padding;
 
-    if (roundness == "full") padding.left = padding.left + 4;
+    if (roundness == "full") {
+        padding.left = padding.left + 4;
+        padding.right = padding.right + 4;
+    }
 
-    const iconSize = icon && iconData[icon] ? 20 : 0;
+    const iconSize = icon && iconData[icon] ? getIconSizeFromTextSize(icon, inputProps.fontSize) : 0;
+
     const bgRectangle = new Rectangle();
     bgRectangle.resize(82, 150);
-    bgRectangle.fill = new Color("#fff");
-    bgRectangle.stroke = new Color("#888");
+    bgRectangle.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
+    bgRectangle.stroke = new Color(borderColor ? borderColor : "#888");
     bgRectangle.strokeEnabled = true;
     bgRectangle.strokeWidth = 1;
     // bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
 
-    bgRectangle.setAllCornerRadii(inputRoundnessMap[roundness] || 0);
+    bgRectangle.setAllCornerRadii((["none", "full"].includes(roundness) ? inputRoundnessMap[roundness] : inputProps.cornerRadius) || 0);
     bgRectangle.name = "BG";
 
     insertNode(bgRectangle);
 
     const text = inputValue && inputValue.length ? inputValue : placeholder;
     const inputText = createText(text + " ", {
-        fill: new Color(color, inputValue && inputValue.length ? 1 : 0.3),
+        fill: new Color(color, inputValue && inputValue.length ? 1 : placeholderOpacity),
         width: width - ((iconSize > 0 ? iconSize + 10 : 0) + padding.left + padding.right),
-        fontStyle: "Regular"
+        fontSize: inputProps.fontSize,
+        fontStyle: inputProps.fontStyle
     });
     insertNode(inputText);
 
     let iconNode;
     if (icon && iconData[icon]) {
-        iconNode = createIcon(iconData[icon], { fill: iconColor, size: iconSize });
+        iconNode = createIcon(iconData[icon], { fill: iconColor, size: iconSize, opacity: iconOpacity });
         insertNode(iconNode);
     }
 
@@ -31400,12 +31421,16 @@ module.exports = createInput;
 const defaultInputProps = {
     icon: null,
     iconColor: "#ACACAC",
+    iconOpacity: 1,
+    backgroundColor: "#fff",
     color: "#333",
     inputValue: "",
     // label: "Email Address",
     placeholder: "Enter email here...",
+    placeholderOpacity: 0.3,
     shadow: false,
-    roundness: "sm",
+    roundness: "normal",
+    size: "md",
     width: 388
 };
 
@@ -31469,6 +31494,40 @@ module.exports = {
     "md": 6,
     "lg": 10,
     "full": 999
+};
+
+/***/ }),
+
+/***/ "./src/Creators/Input/inputSizeMap.js":
+/*!********************************************!*\
+  !*** ./src/Creators/Input/inputSizeMap.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = {
+    "md": {
+        size: [82, 38],
+        fontSize: 20,
+        fontStyle: "Regular",
+        labelFontSize: 17,
+        cornerRadius: 6,
+        padding: {
+            bottom: 12, top: 12,
+            left: 12, right: 12
+        }
+    },
+    "lg": {
+        size: [101, 48],
+        fontSize: 22,
+        fontStyle: "Medium",
+        labelFontSize: 20,
+        cornerRadius: 6,
+        padding: {
+            bottom: 16, top: 16,
+            left: 16, right: 16
+        }
+    }
 };
 
 /***/ }),
@@ -31876,18 +31935,30 @@ function assembleNavbar(props = {}, images) {
     const [bg, container] = createNavBackground(props);
     props.container = container;
 
-    const leftSlotContent = ["logo"];
-    const leftSlot = createNavSlot(props, leftSlotContent);
+    const leftSlot = createNavSlot(props, ["logo"]
+    // "menu",
+    // "socials",
+    );
     leftSlot.name = "FernNavLeftSlot";
 
-    const rightSlotContent = [
-    // "search", "socials", "dp",
-    "menu"];
+    const middleSlot = createNavSlot(props, [
+    // "logo",
+    "menu"]
+    // "socials"
+    );
+    middleSlot.name = "FernNavMiddleSlot";
 
-    const rightSlot = createNavSlot(_extends({}, props, { alignment: "right" }), rightSlotContent);
+    const rightSlot = createNavSlot(_extends({}, props, { alignment: "right" }), [
+    // "search",
+    // "dp",
+    // "menu",
+    "socials", "buttons"]);
     rightSlot.name = "FernNavRightSlot";
 
-    selection.items = [bg, container, leftSlot, rightSlot];
+    selection.items = [leftSlot, middleSlot, rightSlot];
+    commands.distributeHorizontal();
+
+    selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
     commands.group();
 
     return selection.items[0];
@@ -31909,37 +31980,56 @@ const commands = __webpack_require__(/*! commands */ "commands");
 
 const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src/Creators/Button/createButton.js");
 
-function navButtonsComponent({ color, activeColor }) {
-    const button1 = createButton({
-        text: "Get Started",
-        size: "md",
-        color: activeColor,
-        roundness: "md"
-    });
+function navButtonsComponent({ color, activeColor,
+    buttons = ["Sign In", "Get Started"],
+    mainButtonStyle = "fill"
+}) {
+    let button1, button2;
 
-    const button2 = createButton({
-        text: "Sign In",
-        size: "md",
-        color: color,
-        link: true,
-        underline: true
-    });
+    if (buttons.length == 2) {
+        button1 = createButton({
+            text: buttons[1],
+            size: "sm",
+            color: activeColor,
+            outlined: mainButtonStyle == "outline",
+            roundness: "md"
+        });
 
-    selection.items = [button1, button2];
+        button2 = createButton({
+            text: buttons[0],
+            size: "sm",
+            color: color,
+            link: true,
+            underline: true
+        });
+    } else {
+        button1 = createButton({
+            text: buttons[0],
+            size: "sm",
+            color: activeColor,
+            outlined: mainButtonStyle == "outline",
+            roundness: "md"
+        });
+    }
+
+    selection.items = buttons.length == 2 ? [button1, button2] : [button1];
     commands.alignVerticalCenter();
     commands.group();
 
-    const buttons = selection.items[0];
-    buttons.name = "FernNavButtons";
-    buttons.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-            orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 6
-        }
-    };
+    const buttonNodes = selection.items[0];
+    buttonNodes.name = "FernNavButtons";
 
-    return buttons;
+    if (buttons.length == 2) {
+        buttonNodes.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_HORIZONTAL,
+                spacings: 4
+            }
+        };
+    }
+
+    return buttonNodes;
 }
 
 module.exports = navButtonsComponent;
@@ -32038,7 +32128,7 @@ function createLink(props) {
     const linkText = new Text();
     linkText.name = "text";
     linkText.text = "Android 12";
-    linkText.fill = new Color(props.color);
+    linkText.fill = new Color(props.color, props.inActiveOpacity);
     linkText.fontFamily = "Helvetica Neue";
     linkText.fontSize = 16;
     linkText.fontStyle = "Medium";
@@ -32166,65 +32256,29 @@ module.exports = navMenuComponent;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const { SceneNode, Rectangle, Text, Color, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const icons = __webpack_require__(/*! ../../../data/icons */ "./src/data/icons.js");
 const { insertNode, createIcon, getPadding } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const createInput = __webpack_require__(/*! ../../Input/createInput */ "./src/Creators/Input/createInput.js");
 
-function navSearchInputComponent(props) {
-    const searchInputBg = new Rectangle();
-    searchInputBg.resize(460, 45);
-    searchInputBg.fill = new Color("#000", 0.08);
-    searchInputBg.setAllCornerRadii(60);
-    insertNode(searchInputBg);
-
-    const searchText = new Text();
-    searchText.text = "Type here to search...";
-    searchText.fill = new Color("#000", 0.3);
-    searchText.fontFamily = "Helvetica Neue";
-    searchText.fontSize = 16;
-    searchText.fontStyle = "Medium";
-    searchText.charSpacing = 15;
-    insertNode(searchText);
-
-    const searchIcon = createIcon(icons.search, {
-        fill: "#aaa",
-        size: 18
+function navSearchInputComponent({ color }) {
+    const searchInput = createInput({
+        icon: "search",
+        placeholder: "Type here to search",
+        roundness: "full",
+        width: 250,
+        backgroundColor: "transparent",
+        placeholderOpacity: 0.4,
+        iconColor: color,
+        iconOpacity: 0.6,
+        borderColor: color,
+        color
     });
-    insertNode(searchIcon);
 
-    selection.items = [searchIcon, searchText];
-    commands.alignVerticalCenter();
-    commands.alignLeft();
-    commands.group();
-    searchIcon.moveInParentCoordinates(0, 1);
-    const searchInputContent = selection.items[0];
-    searchInputContent.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-            orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 10
-        }
-    };
+    searchInput.name = "FernSearchInput";
 
-    selection.items = [searchInputBg, searchInputContent];
-    commands.alignVerticalCenter();
-    commands.group();
-
-    const searchInputContainer = selection.items[0];
-    searchInputContainer.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: searchInputBg,
-            values: _extends({}, getPadding(16, 12), { right: 40 })
-        }
-    };
-
-    searchInputContainer.name = "FernSearchInput";
-
-    return searchInputContainer;
+    return searchInput;
 }
 
 module.exports = navSearchInputComponent;
@@ -32251,6 +32305,8 @@ const navButtonsComponent = __webpack_require__(/*! ./components/buttons */ "./s
 const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/createIcons */ "./src/Creators/SocialMediaIcons/createIcons.js");
 
 function createNavSlot(props, components = []) {
+    props.iconOpacity = props.inActiveOpacity;
+
     const componentMap = {
         "logo": navLogoComponent,
         "menu": navMenuComponent,
@@ -32293,7 +32349,7 @@ function createNavSlot(props, components = []) {
                     type: SceneNode.LAYOUT_STACK,
                     stack: {
                         orientation: SceneNode.STACK_HORIZONTAL,
-                        spacings: 30
+                        spacings: 24
                     }
                 };
             }
@@ -32342,14 +32398,19 @@ module.exports = createNavSlot;
 const defaultNavbarProps = {
     backgroundColor: "transparent",
     // backgroundColor: "white",
-    color: "#eee",
-    // color: "#606060",
-    activeColor: "#17FD9B",
+    color: "white",
+    // color: "black",
+    // activeColor: "#17FD9B",
+    inActiveOpacity: 0.5,
+    activeColor: "white",
     shadow: false,
     border: false,
     links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
     activeLink: "Home",
-    buttons: ["Get Started"],
+    buttons: [
+    // "Sign In", 
+    "Get Started"],
+    mainButtonStyle: "outline",
     socialMediaIcons: ["facebook", "twitter", "instagram"],
     profile: true,
     search: true,
@@ -32460,7 +32521,9 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createSocialMediaIcons({
-    socialMediaIcons = ["facebook", "twitter", "instagram"]
+    icons = ["facebook", "twitter", "instagram"],
+    color = "#888",
+    iconOpacity = 1
 }) {
     // https://simpleicons.org/
     const iconPaths = {
@@ -32472,13 +32535,13 @@ function createSocialMediaIcons({
         "tiktok": "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"
     };
 
-    const icons = socialMediaIcons.reverse().map(socialMedia => {
-        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: "#888" });
+    const iconNodes = icons.reverse().map(socialMedia => {
+        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: color, opacity: iconOpacity });
         insertNode(icon);
         return icon;
     });
 
-    selection.items = icons;
+    selection.items = iconNodes;
     commands.alignVerticalCenter();
     commands.group();
 
@@ -33129,6 +33192,8 @@ module.exports = {
 
 module.exports = {
     "add": "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+    "arrow-right": "M15,5l-1.41,1.41L18.17,11H2V13h16.17l-4.59,4.59L15,19l7-7L15,5z",
+    "arrow-right-thin": "M22 12l-4-4v3H3v2h15v3z",
     "add-circle": "M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
     "account-circle": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z",
     "account-box": "M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z",
@@ -33141,6 +33206,7 @@ module.exports = {
     "check": "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z",
     "check-circle": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z",
     "check-all": "M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z",
+    "chevron-right": "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
     "play": "M8 5v14l11-7z",
     "play-circle": "M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M9.5,16.5v-9l7,4.5L9.5,16.5z",
     "play-circle-outline": "M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
@@ -33220,6 +33286,7 @@ const IconList = __webpack_require__(/*! ../../components/IconPicker/IconList */
 
 function Button({ value, onClose }) {
     const [text, setText] = React.useState(value ? value.text : "Submit");
+    const iconPlacement = value ? value.iconPlacement : "left";
     const size = value ? value.size : "sm";
     const color = value ? value.color : "#000";
     const shadow = value ? value.shadow : false;
@@ -33247,9 +33314,16 @@ function Button({ value, onClose }) {
         Creators.Button(_extends({}, value, { roundness }));
     }
 
-    function handleSetIcon(icon) {
-        if (icon == true) icon = "add";
-        Creators.Button(_extends({}, value, { icon }));
+    function handleSetIcon(newValue) {
+        let icon = newValue,
+            iconPlacement = value.iconPlacement;
+        if (["left", "right", "none"].includes(newValue)) {
+            if (newValue == "none") icon = null;else {
+                icon = value.icon && value.icon.length ? value.icon : "add";
+                iconPlacement = newValue;
+            }
+        };
+        Creators.Button(_extends({}, value, { icon, iconPlacement }));
     }
 
     return React.createElement(
@@ -33287,11 +33361,15 @@ function Button({ value, onClose }) {
                         { className: 'text-md' },
                         'Icon'
                     ),
-                    React.createElement(Toggle, { checked: icon, onChange: handleSetIcon })
+                    React.createElement(ButtonGroup, {
+                        value: icon ? iconPlacement : "none",
+                        choices: ["none", "left", "right"],
+                        onChange: handleSetIcon
+                    })
                 ),
                 icon && React.createElement(
                     'div',
-                    { className: '-mx-12px p-2 mt-1 bg-white overflow-y-auto', style: { maxHeight: "140px" } },
+                    { className: '-mx-12px p-2 mt-1 bg-white overflow-y-auto' },
                     React.createElement(IconList, {
                         onChange: handleSetIcon
                     })
@@ -33326,7 +33404,7 @@ function Button({ value, onClose }) {
                 ),
                 React.createElement(ButtonGroup, {
                     value: size,
-                    choices: ["sm", "md", "lg"],
+                    choices: ["xs", "sm", "md", "lg"],
                     onChange: handleSetSize
                 })
             ),
@@ -34617,19 +34695,13 @@ const IconList = __webpack_require__(/*! ../../components/IconPicker/IconList */
 
 function Input({ value, onClose }) {
   const [inputValue, setInputValue] = React.useState(value ? value.inputValue : "");
+  const [width, setWidth] = React.useState(value ? value.width : 388);
   const [placeholder, setPlaceholder] = React.useState(value ? value.placeholder : "");
   const [label, setLabel] = React.useState(value ? value.label : "");
   const shadow = value ? value.shadow : false;
-  const roundness = value ? value.roundness : "xs";
+  const roundness = value ? value.roundness : "normal";
+  const size = value ? value.size : "xs";
   const icon = value ? value.icon : null;
-
-  function handleSetShadow(shadow) {
-    Creators.Input(_extends({}, value, { shadow }));
-  }
-
-  function handleSetRoundness(roundness) {
-    Creators.Input(_extends({}, value, { roundness }));
-  }
 
   function handleSetLabel(label) {
     label = label ? "Email Address" : label;
@@ -34791,7 +34863,9 @@ function Input({ value, onClose }) {
           { className: "text-md" },
           "Shadow"
         ),
-        React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
+        React.createElement(Toggle, { checked: shadow,
+          onChange: shadow => Creators.Input(_extends({}, value, { shadow }))
+        })
       ),
       React.createElement(
         "div",
@@ -34803,9 +34877,49 @@ function Input({ value, onClose }) {
         ),
         React.createElement(ButtonGroup, {
           value: roundness,
-          choices: ["none", "sm", "md", "lg", "full"],
-          onChange: handleSetRoundness
+          choices: ["none", "normal", "full"],
+          onChange: roundness => Creators.Input(_extends({}, value, { roundness }))
         })
+      ),
+      React.createElement(
+        "div",
+        { className: "pt-1 mt-3 flex flex-col items-start" },
+        React.createElement(
+          "label",
+          { className: "mb-1 text-md" },
+          "Size"
+        ),
+        React.createElement(ButtonGroup, {
+          value: size,
+          choices: ["md", "lg"],
+          onChange: size => Creators.Input(_extends({}, value, { size }))
+        })
+      ),
+      React.createElement(
+        "div",
+        { className: "pt-2 mt-3 flex flex-col items-start" },
+        React.createElement(
+          "label",
+          { className: "mb-1 text-md" },
+          "Width"
+        ),
+        React.createElement(
+          "form",
+          {
+            className: "w-full",
+            onSubmit: e => {
+              e.preventDefault();
+              Creators.Input(_extends({}, value, { width }));
+            }
+          },
+          React.createElement("input", {
+            className: "m-0 w-full",
+            type: "number",
+            placeholder: "Set input width here...",
+            value: width,
+            onChange: e => setWidth(e.target.value)
+          })
+        )
       )
     )
   );
@@ -36720,7 +36834,8 @@ function createIcon(pathData, defaultOptions = {}) {
     const options = _extends({
         fill: "#555",
         stroke: "none",
-        strokeWidth: 2
+        strokeWidth: 2,
+        opacity: 1
     }, defaultOptions);
 
     try {
@@ -36729,12 +36844,12 @@ function createIcon(pathData, defaultOptions = {}) {
         if (options.strokeJoins) icon.strokeJoins = options.strokeJoins;
 
         if (options.stroke && options.stroke.length && options.stroke != "none") {
-            icon.stroke = new Color(options.stroke);
+            icon.stroke = new Color(options.stroke, options.opacity);
             icon.strokeWidth = options.strokeWidth;
             icon.strokeEnabled = true;
         } else icon.strokeEnabled = false;
 
-        if (options.fill && options.fill.length && options.fill != "none") icon.fill = new Color(options.fill);
+        if (options.fill && options.fill.length && options.fill != "none") icon.fill = new Color(options.fill, options.opacity);
 
         if (options.size) {
             const { width, height } = icon.localBounds;
@@ -36885,6 +37000,18 @@ function randomBetween(min, max) {
     return Math.random() * (max - min + 1) + min;
 }
 
+function getIconSizeFromTextSize(icon, textSize) {
+    let iconScaleFactor = 0.9;
+    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit', 'chevron-right'];
+    const mediumIcons = ['cocktail'];
+
+    if (icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
+    if (mediumIcons.includes(icon)) iconScaleFactor = 0.76;
+    if (largeIcons.includes(icon)) iconScaleFactor = 0.65;
+
+    return textSize * iconScaleFactor;
+}
+
 module.exports = {
     shuffle,
     downloadImage,
@@ -36910,7 +37037,8 @@ module.exports = {
     calculateAspectRatioFit,
     createText,
     chunkArray,
-    randomBetween
+    randomBetween,
+    getIconSizeFromTextSize
 };
 
 /***/ }),

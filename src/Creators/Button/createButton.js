@@ -2,7 +2,7 @@ const { Color, Rectangle, Shadow, Text } = require("scenegraph");
 
 const tinyColor = require("../../utils/tinycolor");
 const iconData = require("../../data/icons");
-const { insertNode, createIcon } = require("../../utils");
+const { insertNode, createIcon, getIconSizeFromTextSize } = require("../../utils");
 
 const assembleButton = require("./assembleButton");
 const buttonSizeMap = require("./buttonSizeMap");
@@ -11,6 +11,7 @@ const defaultButtonProps = require("./defaultButtonProps");
 
 function createButton(props = {}){
     let {
+        iconPlacement,
         icon,
         text,
         size,
@@ -24,17 +25,8 @@ function createButton(props = {}){
 
     if(!text && !text.length && !icon && !icon.length) text = "Submit";
 
-    let iconScaleFactor = 0.9;
-    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit'];
-    const mediumIcons = ['cocktail'];
-    if(icon){
-        if(icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
-        if(mediumIcons.includes(icon)) iconScaleFactor = 0.76;
-        if(largeIcons.includes(icon)) iconScaleFactor = 0.65;
-    }
-
     const buttonProps = buttonSizeMap[size];
-    const iconSize = buttonProps.fontSize * iconScaleFactor;
+    const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
 
     const bgRectangle = new Rectangle();
     bgRectangle.resize(...buttonProps.size);
@@ -51,13 +43,19 @@ function createButton(props = {}){
         
     insertNode(bgRectangle);
     
-    let buttonText;
+    let buttonText, iconNode, showIcon = icon && iconData[icon];
+
     let textColor = "#FFF";
     if(outlined || link)
         textColor = color;
     else
         textColor = tinyColor(color).isLight() ? "black" : "white";
-        
+    
+    if(showIcon){
+        iconNode = createIcon(iconData[icon], {fill: textColor, size: iconSize});
+        if(iconPlacement == "right") insertNode(iconNode);
+    }
+    
     if(text && text.length){
         buttonText = new Text();
         buttonText.text = text;
@@ -71,15 +69,11 @@ function createButton(props = {}){
         insertNode(buttonText);
     }
 
-    let iconNode;
-    if(icon && iconData[icon]){
-        iconNode = createIcon(iconData[icon], {fill: textColor, size: iconSize});
-        insertNode(iconNode);
-    }
+    if(showIcon && iconPlacement != 'right') insertNode(iconNode);
 
     return assembleButton(
         [bgRectangle, buttonText, iconNode],
-        {...buttonProps, iconSize, iconScaleFactor}
+        {...buttonProps, iconPlacement, iconSize}
     );
 }
 

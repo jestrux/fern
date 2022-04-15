@@ -51,22 +51,33 @@ function assembleNavbar(props = {}, images){
     const [bg, container] = createNavBackground(props);
     props.container = container;
 
-    const leftSlotContent = [
+    const leftSlot = createNavSlot(props, [
         "logo",
-        // "menu", "buttons"
-    ];
-    const leftSlot = createNavSlot(props, leftSlotContent);
+        // "menu",
+        // "socials",
+    ]);
     leftSlot.name = "FernNavLeftSlot";
 
-    const rightSlotContent = [
-        // "search", "socials", "dp",
-        "menu", //"buttons"
-    ];
+    const middleSlot = createNavSlot(props, [
+        // "logo",
+        "menu",
+        // "socials"
+    ]);
+    middleSlot.name = "FernNavMiddleSlot";
 
-    const rightSlot = createNavSlot({ ...props, alignment: "right" }, rightSlotContent);
+    const rightSlot = createNavSlot({ ...props, alignment: "right" }, [
+        // "search",
+        // "dp",
+        // "menu",
+        "socials",
+        "buttons"
+    ]);
     rightSlot.name = "FernNavRightSlot";
 
-    selection.items = [bg, container, leftSlot, rightSlot];
+    selection.items = [leftSlot, middleSlot, rightSlot];
+    commands.distributeHorizontal();
+
+    selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
     commands.group();
 
     return selection.items[0];

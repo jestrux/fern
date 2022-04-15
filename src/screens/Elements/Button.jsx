@@ -7,6 +7,7 @@ const IconList = require('../../components/IconPicker/IconList');
 
 function Button({value, onClose}){
     const [text, setText] = React.useState(value ? value.text : "Submit");
+    const iconPlacement = value ? value.iconPlacement : "left";
     const size = value ? value.size : "sm";
     const color = value ? value.color : "#000";
     const shadow = value ? value.shadow : false;
@@ -34,9 +35,16 @@ function Button({value, onClose}){
         Creators.Button({...value, roundness});
     }
 
-    function handleSetIcon(icon){
-        if(icon == true) icon = "add";
-        Creators.Button({...value, icon});
+    function handleSetIcon(newValue){
+        let icon = newValue, iconPlacement = value.iconPlacement;
+        if(["left", "right", "none"].includes(newValue)){
+            if(newValue == "none") icon = null;
+            else {
+                icon = value.icon && value.icon.length ? value.icon : "add";
+                iconPlacement = newValue;
+            }
+        };
+        Creators.Button({...value, icon, iconPlacement});
     }
 
     return (
@@ -58,11 +66,15 @@ function Button({value, onClose}){
                     <div className="flex items-center justify-between">
                         <label className="text-md">Icon</label>
                         
-                        <Toggle checked={icon} onChange={handleSetIcon} />
+                        <ButtonGroup 
+                            value={icon ? iconPlacement : "none"}
+                            choices={["none", "left", "right"]}
+                            onChange={handleSetIcon}
+                        />
                     </div>
 
                     { icon &&
-                        <div className="-mx-12px p-2 mt-1 bg-white overflow-y-auto" style={{maxHeight: "140px"}}>
+                        <div className="-mx-12px p-2 mt-1 bg-white overflow-y-auto">
                             <IconList
                                 onChange={handleSetIcon}
                             />
@@ -86,7 +98,7 @@ function Button({value, onClose}){
 
                     <ButtonGroup 
                         value={size}
-                        choices={["sm", "md", "lg"]}
+                        choices={["xs", "sm", "md", "lg"]}
                         onChange={handleSetSize}
                     />
                 </div>

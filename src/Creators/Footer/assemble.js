@@ -28,7 +28,7 @@ function assembleFooter(props = {}, images){
         ...props, ...images,
         width: 1600, //1920, 
         height: 70, 
-        // socialMediaIcons: [
+        // icons: [
         //     "facebook",
         //     "twitter", 
         //     "instagram", 

@@ -26,7 +26,7 @@ function footerSubscribeComponent(props = {}) {
     // color: subscribeColor,
     // icon: "send",
     text: "subscribe",
-    size: subscribeInset ? "sm" : "md",
+    size: subscribeInset ? "xs" : "sm",
     roundness: subscribeRoundness,
   });
 
@@ -38,7 +38,7 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  if(subscribeInset) button.moveInParentCoordinates(-6, 0);
+  if(subscribeInset) button.moveInParentCoordinates(-5, 0);
 
   const subscribeText = createText(subscribeMessage, {
     name: "FernFooterSubscribeText",
@@ -61,7 +61,7 @@ function footerSubscribeComponent(props = {}) {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 24,
+        spacings: 20,
       },
     };
   }
