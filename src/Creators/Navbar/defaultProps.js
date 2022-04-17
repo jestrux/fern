@@ -19,6 +19,7 @@ const defaultNavbarProps = {
     backgroundColor: "white",
     color: "#333",
     // activeColor: "#17FD9B",
+    // inActiveOpacity: 0.5,
     shadow: null,
     border: null,
     text: {

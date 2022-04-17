@@ -21,6 +21,20 @@ const schema = {
         type: "color",
         choices: ["transparent", "#333", "#FFF"],
       },
+      activeColor: {
+        label: "Active Color",
+        type: "color",
+        optional: true,
+        defaultValue: "#0083F6",
+        choices: ["#333", "white", "#0083F6", "#28A745", "#DC3535"],
+      },
+      // inActiveOpacity: {
+      //   optional: true,
+      //   type: "number",
+      //   defaultValue: 0.5,
+      //   min: 0,
+      //   max: 1,
+      // },
       shadow: "boolean",
       border: {
         type: "section",
