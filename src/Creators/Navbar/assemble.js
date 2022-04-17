@@ -65,8 +65,14 @@ function assembleNavbar(props = {}, images) {
   };
 
   const textBehaviorMap = {
+    normal: {
+      fontStyle: "Regular",
+      textTransform: "none",
+      textTransform: "none",
+      letterSpacing: 18,
+      fontSize: 16
+    },
     loud: {
-      fontFamily: "Helvetica Neue",
       fontStyle: "Condensed Black",
       textTransform: "uppercase",
       letterSpacing: 50,
