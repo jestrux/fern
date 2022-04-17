@@ -13,7 +13,7 @@ function navButtonsComponent({color, activeColor,
         button1 = createButton({
             text: buttons[1],
             size: "sm",
-            color: activeColor,
+            color: activeColor || color,
             outlined: mainButtonStyle == "outline",
             roundness: "md"
         });
@@ -30,7 +30,7 @@ function navButtonsComponent({color, activeColor,
         button1 = createButton({
             text: buttons[0],
             size: "sm",
-            color: activeColor,
+            color: activeColor || color,
             outlined: mainButtonStyle == "outline",
             roundness: "md"
         });

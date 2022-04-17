@@ -31880,78 +31880,109 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, createBorder, insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createNavSlot = __webpack_require__(/*! ./createSlot */ "./src/Creators/Navbar/createSlot.js");
 
-function createNavBackground({ width, height, backgroundColor, color, border, shadow }) {
-    console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
-    let bg = new Rectangle();
-    bg.resize(width, height);
-    bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
-    bg.strokeEnabled = false;
-    bg.name = "BG";
-    insertNode(bg);
+function createNavBackground({
+  width,
+  height,
+  backgroundColor,
+  color,
+  border,
+  shadow
+}) {
+  console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
+  let bg = new Rectangle();
+  bg.resize(width, height);
+  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
+  bg.strokeEnabled = false;
+  bg.name = "BG";
+  insertNode(bg);
 
-    if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);else if (border) {
-        const borderNode = createBorder({ width });
-        borderNode.opacity = 0.1;
-        insertNode(borderNode);
+  if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);else if (border) {
+    const borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
 
-        selection.items = [bg, borderNode];
-        commands.group();
-        bg = selection.items[0];
-        placeInParent(borderNode, { x: 0, y: height });
-    }
+    selection.items = [bg, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    bg = selection.items[0];
+  }
 
-    const container = new Rectangle();
-    const containerWidth = 1400; // 1600;
-    container.resize(Math.min(width, containerWidth), height);
-    container.fill = new Color("white", 0);
-    container.strokeEnabled = false;
-    container.name = "Container";
-    insertNode(container);
+  const container = new Rectangle();
+  const containerWidth = 1400; // 1600;
+  container.resize(Math.min(width, containerWidth), height);
+  container.fill = new Color("white", 0);
+  container.strokeEnabled = false;
+  container.name = "Container";
+  insertNode(container);
 
-    selection.items = [bg, container];
-    commands.alignHorizontalCenter();
-    commands.alignVerticalCenter();
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
 
-    return [bg, container];
+  return [bg, container];
 }
 
 function assembleNavbar(props = {}, images) {
-    props = _extends({}, props, images, {
-        width: 1600,
-        // width: 1920,
-        height: 70
-    });
+  props = _extends({}, props, images, {
+    width: 1600,
+    // width: 1920,
+    height: 70
+  });
 
-    const [bg, container] = createNavBackground(props);
-    props.container = container;
+  const textBehaviorMap = {
+    loud: {
+      fontFamily: "Helvetica Neue",
+      fontStyle: "Condensed Black",
+      textTransform: "uppercase",
+      letterSpacing: 50,
+      fontSize: 22
+    }
+  };
 
-    const leftSlot = createNavSlot(props, ["logo"]
-    // "menu",
-    // "socials",
-    );
-    leftSlot.name = "FernNavLeftSlot";
+  if (props.theme && props.theme.text) {
+    props.theme.text = _extends({}, props.theme.text, textBehaviorMap[props.theme.text.behavior] || {});
+  }
 
-    const middleSlot = createNavSlot(props, [
-    // "logo",
-    "menu"]
-    // "socials"
-    );
-    middleSlot.name = "FernNavMiddleSlot";
+  const [bg, container] = createNavBackground(_extends({}, props, props.theme));
+  props.container = container;
 
-    const rightSlot = createNavSlot(_extends({}, props, { alignment: "right" }), [
-    // "search",
-    // "dp",
-    // "menu",
-    "socials", "buttons"]);
-    rightSlot.name = "FernNavRightSlot";
+  const leftSlot = createNavSlot(_extends({}, props, props.theme), ["logo"]
+  // "menu",
+  // "socials",
+  );
+  leftSlot.name = "FernNavLeftSlot";
 
-    selection.items = [leftSlot, middleSlot, rightSlot];
-    commands.distributeHorizontal();
+  const middleSlot = createNavSlot(_extends({}, props, props.theme), [
+  // "logo",
+  "menu"]
+  // "socials"
+  );
+  middleSlot.name = "FernNavMiddleSlot";
 
-    selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
-    commands.group();
+  const rightSlot = createNavSlot(_extends({}, props, props.theme, { alignment: "right" }), [
+  // "search",
+  // "dp",
+  // "menu",
+  "socials", "buttons"]);
+  rightSlot.name = "FernNavRightSlot";
 
-    return selection.items[0];
+  selection.items = [leftSlot, middleSlot, rightSlot];
+  commands.distributeHorizontal();
+
+  selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
+  commands.group();
+
+  const navbar = selection.items[0];
+  bg.resize(bg.localBounds.width, navbar.localBounds.height);
+  container.resize(container.localBounds.width, navbar.localBounds.height);
+
+  return navbar;
 }
 
 module.exports = assembleNavbar;
@@ -31980,7 +32011,7 @@ function navButtonsComponent({ color, activeColor,
         button1 = createButton({
             text: buttons[1],
             size: "sm",
-            color: activeColor,
+            color: activeColor || color,
             outlined: mainButtonStyle == "outline",
             roundness: "md"
         });
@@ -31996,7 +32027,7 @@ function navButtonsComponent({ color, activeColor,
         button1 = createButton({
             text: buttons[0],
             size: "sm",
-            color: activeColor,
+            color: activeColor || color,
             outlined: mainButtonStyle == "outline",
             roundness: "md"
         });
@@ -32105,134 +32136,145 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection, Color, Rectangle, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { getPadding, getGroupChildByName, createBorder, insertNode, placeInParent } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const {
+  getPadding,
+  getGroupChildByName,
+  createBorder,
+  insertNode,
+  placeInParent,
+  createText
+} = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
 function createLink(props) {
-    const linkBg = new Rectangle();
-    linkBg.resize(90, 70);
-    linkBg.fill = new Color("white", 0);
-    linkBg.strokeEnabled = false;
-    linkBg.name = "FernNavLinkBg";
-    insertNode(linkBg);
+  const linkBg = new Rectangle();
+  linkBg.resize(90, 70);
+  linkBg.fill = new Color("white", 0);
+  linkBg.strokeEnabled = false;
+  linkBg.name = "FernNavLinkBg";
+  insertNode(linkBg);
 
-    const linkText = new Text();
-    linkText.name = "text";
-    linkText.text = "Android 12";
-    linkText.fill = new Color(props.color, props.inActiveOpacity);
-    linkText.fontFamily = "Helvetica Neue";
-    linkText.fontSize = 16;
-    linkText.fontStyle = "Medium";
-    linkText.name = "FernNavLinkText";
-    insertNode(linkText);
+  const linkText = createText("Android 12", _extends({
+    name: "FernNavLinkText",
+    fill: new Color(props.color, props.inActiveOpacity),
+    fontSize: 16,
+    type: Text.POINT
+  }, props.theme && props.theme.text ? props.theme.text : {}));
 
-    selection.items = [linkBg, linkText];
-    commands.alignVerticalCenter();
-    commands.alignHorizontalCenter();
-    commands.group();
+  insertNode(linkText);
 
-    const link = selection.items[0];
+  selection.items = [linkBg, linkText];
+  commands.alignVerticalCenter();
+  commands.alignHorizontalCenter();
+  commands.group();
 
-    link.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: linkBg,
-            values: getPadding(10, 26)
-        }
-    };
+  const link = selection.items[0];
 
-    return link;
+  link.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: linkBg,
+      values: getPadding(10, 26)
+    }
+  };
+
+  return link;
 }
 
 function changeLinkText(link, text = "Link", cb = () => {}) {
-    if (!link) return;
+  if (!link) return;
 
-    getGroupChildByName(link, 'FernNavLinkText', linkText => {
-        if (linkText) linkText.text = text.length ? text : "Link";
-        cb();
-    });
+  getGroupChildByName(link, "FernNavLinkText", linkText => {
+    if (linkText) linkText.text = text.length ? text : "Link";
+    cb();
+  });
 }
 
-function createNavActiveIndicator({ shadow = false, showIndicator, activeLink, activeColor = "#000", navMenu }) {
-    getGroupChildByName(navMenu, activeLink, navActiveLink => {
-        try {
-            const { width, height } = navActiveLink.localBounds;
-            getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
-                linkText.fill = new Color(activeColor);
-            });
+function createNavActiveIndicator({
+  shadow = false,
+  showIndicator,
+  activeLink,
+  color,
+  activeColor,
+  navMenu
+}) {
+  getGroupChildByName(navMenu, activeLink, navActiveLink => {
+    try {
+      const { width, height } = navActiveLink.localBounds;
+      getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
+        linkText.fill = new Color(activeColor || color);
+      });
 
-            if (showIndicator) {
-                const navActiveIndicator = createBorder({
-                    width: width,
-                    thickness: 2,
-                    color: activeColor
-                });
+      if (showIndicator) {
+        const navActiveIndicator = createBorder({
+          width: width,
+          thickness: 2,
+          color: activeColor || color
+        });
 
-                selection.items = [navMenu];
-                commands.group();
-                navMenu = selection.items[0];
-                navMenu.addChild(navActiveIndicator);
-                navMenu.name = "FernNavMenu";
+        selection.items = [navMenu];
+        commands.group();
+        navMenu = selection.items[0];
+        navMenu.addChild(navActiveIndicator);
+        navMenu.name = "FernNavMenu";
 
-                placeInParent(navActiveIndicator, {
-                    x: navActiveLink.topLeftInParent.x,
-                    y: height - (shadow ? 8 : 8.75)
-                });
-            }
-        } catch (error) {
-            console.log("Error creating nav indicator: ", error);
-        }
-    });
+        placeInParent(navActiveIndicator, {
+          x: navActiveLink.topLeftInParent.x,
+          y: height - (shadow ? 8 : 8.75)
+        });
+      }
+    } catch (error) {
+      console.log("Error creating nav indicator: ", error);
+    }
+  });
 
-    return navMenu;
+  return navMenu;
 }
 
 function navMenuComponent(props = {}, cb = () => {}) {
-    const {
-        links = []
-    } = props;
+  const { links = [] } = props;
 
-    const linkItems = [...links];
-    linkItems.reverse();
+  const linkItems = [...links];
+  linkItems.reverse();
 
-    try {
-        const linkNode = createLink(props);
-        changeLinkText(linkNode, linkItems[0]);
-        linkNode.name = linkItems[0];
-        const navLinkNodes = [linkNode];
+  try {
+    const linkNode = createLink(props);
+    changeLinkText(linkNode, linkItems[0]);
+    linkNode.name = linkItems[0];
+    const navLinkNodes = [linkNode];
 
-        for (let i = 1; i < links.length; i++) {
-            commands.duplicate();
-            const newLink = selection.items[0];
-            selection.items = [newLink];
-            navLinkNodes.push(newLink);
-            newLink.name = linkItems[i];
+    for (let i = 1; i < links.length; i++) {
+      commands.duplicate();
+      const newLink = selection.items[0];
+      selection.items = [newLink];
+      navLinkNodes.push(newLink);
+      newLink.name = linkItems[i];
 
-            changeLinkText(newLink, linkItems[i]);
-        }
-
-        selection.items = navLinkNodes;
-        commands.group();
-        let navMenu = selection.items[0];
-        navMenu.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_HORIZONTAL,
-                spacings: 30
-            }
-        };
-
-        navMenu = selection.items[0];
-
-        if (props.links.includes(props.activeLink)) {
-            navMenu = createNavActiveIndicator(_extends({}, props, {
-                navMenu
-            }));
-        }
-
-        return navMenu;
-    } catch (error) {
-        console.log("Error creating nav links: ", error);
+      changeLinkText(newLink, linkItems[i]);
     }
+
+    selection.items = navLinkNodes;
+    commands.group();
+    let navMenu = selection.items[0];
+    navMenu.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_HORIZONTAL,
+        spacings: 30
+      }
+    };
+
+    navMenu = selection.items[0];
+
+    if (props.links.includes(props.activeLink)) {
+      navMenu = createNavActiveIndicator(_extends({}, props, {
+        navMenu
+      }));
+    }
+
+    return navMenu;
+  } catch (error) {
+    console.log("Error creating nav links: ", error);
+  }
 }
 
 module.exports = navMenuComponent;
@@ -32386,49 +32428,51 @@ module.exports = createNavSlot;
 /***/ (function(module, exports) {
 
 const defaultNavbarProps = {
-    slots: {
-        left: ["logo"],
-        middle: [],
-        right: ["menu", "buttons"]
-    },
-    links: ["Home", "About Us", "Events", "Contact Us"],
-    activeLink: "Home",
-    buttons: [
-    // "Sign In", 
-    "Get Started"],
-    profile: false,
-    search: false,
-    shoppingCart: false,
-    socialMediaIcons: [], //["facebook", "twitter", "instagram"],
-    theme: {
-        backgroundColor: "white",
-        color: "black",
-        // activeColor: "#17FD9B",
-        shadow: false,
-        border: false
-        // inActiveOpacity: 0.5,
-        // buttons: {
-        //     size: "sm",
-        //     style: "outline", //fill,
-        //     roundness: "md"
-        // },
-        // text: {
-        //     fontFamily: "Helvetica Neue",
-        //     fontWeight: "Regular", // "Condensed Black",
-        //     textTransform: "none", // "titlecase", "lowercase", "uppercase",
-        // },
-        // menu: {
-        //     showIndicator: false,
-        // },
-        // socialMediaIcons: {
-        //     backgroundStyle: "none", // "fill", "outline",
-        //     roundness: "md", // "full", "none", 
-        // },
-        // search: {
-        //     style: "outline", // fill,
-        //     roundness: "md", // full,
-        // },
+  logo: "logo2",
+  slots: {
+    left: ["logo"],
+    middle: [],
+    right: ["menu", "buttons"]
+  },
+  links: ["Home", "About Us", "Events", "Contact Us"],
+  activeLink: "Home",
+  buttons: [
+  // "Sign In",
+  "Get Started"],
+  profile: false,
+  search: false,
+  shoppingCart: false,
+  socialMediaIcons: [], //["facebook", "twitter", "instagram"],
+  theme: {
+    backgroundColor: "white",
+    color: "#333",
+    // activeColor: "#17FD9B",
+    shadow: null,
+    border: null,
+    text: {
+      behavior: "normal", // "loud",
+      fontFamily: "Helvetica Neue",
+      fontStyle: "Regular", // "Condensed Black",
+      textTransform: "none" // "titlecase", "lowercase", "uppercase",
     }
+    // buttons: {
+    //     size: "sm",
+    //     style: "outline", //fill,
+    //     roundness: "md"
+    // },
+    // menu: {
+    //     showIndicator: false,
+    //     inActiveOpacity: 0.5,
+    // },
+    // socialMediaIcons: {
+    //     backgroundStyle: "none", // "fill", "outline",
+    //     roundness: "md", // "full", "none",
+    // },
+    // search: {
+    //     style: "outline", // fill,
+    //     roundness: "md", // full,
+    // },
+  }
 };
 
 module.exports = defaultNavbarProps;
@@ -32473,50 +32517,66 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const {
+  editDom,
+  getAssetFileFromPath,
+  placeInParent,
+  tagNode
+} = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Navbar/defaultProps.js");
 const assembleNavbar = __webpack_require__(/*! ./assemble */ "./src/Creators/Navbar/assemble.js");
 const getNavbarComponent = __webpack_require__(/*! ./getNavbarComponent */ "./src/Creators/Navbar/getNavbarComponent.js");
 
 async function Navbar(userProps) {
-    let props = _extends({}, defaultNavbarProps, userProps || {});
+  let props = _extends({}, defaultNavbarProps, userProps || {});
 
-    // let logoImage = await getAssetFileFromPath(props.color == "white" ? "images/android-white.png" : "images/android.png");
-    let logoImage = await getAssetFileFromPath("images/android-white.png");
-    let dpImage = await getAssetFileFromPath("images/profile-image-placeholder.jpg");
+  // let logoImage = await getAssetFileFromPath(props.color == "white" ? "images/android-white.png" : "images/android.png");
+  const [logo1, logo2, logo3, dp] = await Promise.all([getAssetFileFromPath("images/logo-android-white.png"), getAssetFileFromPath("images/logo-paperless.png"), getAssetFileFromPath("images/logo-darling-brew.png"), getAssetFileFromPath("images/dp-female-white.jpg")]);
 
-    try {
-        const oldNavbar = userProps ? selection.items[0] : null;
-        if (oldNavbar) {
-            const logoNode = getNavbarComponent(oldNavbar, "logo");
-            const dpNode = getNavbarComponent(oldNavbar, "dp");
+  const imageMap = {
+    logo1,
+    logo2,
+    logo3,
+    dp
+  };
+  let logoImage = imageMap[props.logo] || logo3;
+  let dpImage = imageMap[dp];
 
-            logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
-            dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
-        }
-
-        editDom(() => {
-            try {
-                const navbar = assembleNavbar(props, {
-                    logoImage,
-                    dpImage
-                });
-                navbar.name = "FernNavbar";
-
-                tagNode(navbar, _extends({ type: "Navbar" }, props));
-
-                if (oldNavbar) {
-                    placeInParent(navbar, oldNavbar.topLeftInParent);
-                    oldNavbar.removeFromParent();
-                } else placeInParent(navbar, { x: 0, y: 0 });
-            } catch (error) {
-                console.log("Error creating navbar: ", error);
-            }
-        });
-    } catch (error) {
-        console.log("Error creating card: ", error);
+  try {
+    const oldNavbar = userProps ? selection.items[0] : null;
+    if (oldNavbar) {
+      if (props.logo == "custom") {
+        const logoNode = getNavbarComponent(oldNavbar, "logo");
+        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      }
+      if (props.dp == "custom") {
+        const dpNode = getNavbarComponent(oldNavbar, "dp");
+        dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+      }
     }
+
+    editDom(() => {
+      try {
+        const navbar = assembleNavbar(props, {
+          logoImage,
+          dpImage
+        });
+        navbar.name = "FernNavbar";
+
+        tagNode(navbar, _extends({ type: "Navbar" }, props));
+
+        if (oldNavbar) {
+          placeInParent(navbar, oldNavbar.topLeftInParent);
+          oldNavbar.removeFromParent();
+        } else placeInParent(navbar, { x: 0, y: 0 });
+      } catch (error) {
+        console.log("Error creating navbar: ", error);
+      }
+    });
+  } catch (error) {
+    console.log("Error creating card: ", error);
+  }
 }
 
 module.exports = Navbar;
@@ -32978,71 +33038,87 @@ const { editDom } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const colorDialog = __webpack_require__(/*! ../utils/CustomDialogs/Color */ "./src/utils/CustomDialogs/Color.js");
 
 const ColorList = ({
-    colors = DEFAULT_COLORS,
-    centerColors = false,
-    selectedColor,
-    small = false,
-    choiceSize,
-    spacing = 4,
-    showCustomPicker = true,
-    onChange
+  colors = DEFAULT_COLORS,
+  centerColors = false,
+  selectedColor,
+  small = false,
+  choiceSize,
+  spacing = 4,
+  showCustomPicker = true,
+  showTransparent,
+  onChange
 }) => {
-    function handleCustomColorChanged(color) {
-        if (!color) return;
-        console.log("Custom color selected: ", color);
+  if (colors && colors.length && showTransparent) colors = ["transparent", ...colors];
 
-        setTimeout(() => {
-            editDom(() => onChange(color), false);
-        }, 300);
-    }
+  function handleCustomColorChanged(color) {
+    if (!color) return;
+    console.log("Custom color selected: ", color);
 
-    let customColorIconSize = choiceSize;
-    if (!choiceSize) customColorIconSize = small ? 16 : 20;
-    customColorIconSize += 4;
+    setTimeout(() => {
+      editDom(() => onChange(color), false);
+    }, 300);
+  }
 
-    return React.createElement(
-        "div",
-        { className: `flex flex-wrap items-center ${centerColors && 'justify-center'}`,
-            style: { margin: `-${spacing}px` }
-        },
-        showCustomPicker && React.createElement(
-            "div",
-            { title: "Pick asset colour", className: "flex center-center cursor-pointer rounded-full ml-2 mr-1",
-                style: { width: customColorIconSize, height: customColorIconSize },
-                onClick: () => colorDialog(handleCustomColorChanged)
-            },
-            React.createElement(
-                "svg",
-                { height: customColorIconSize, viewBox: "0 0 24 24" },
-                React.createElement("path", { fill: "#888", d: "M12,2C6.49,2,2,6.49,2,12s4.49,10,10,10c1.38,0,2.5-1.12,2.5-2.5c0-0.61-0.23-1.2-0.64-1.67c-0.08-0.1-0.13-0.21-0.13-0.33 c0-0.28,0.22-0.5,0.5-0.5H16c3.31,0,6-2.69,6-6C22,6.04,17.51,2,12,2z M17.5,13c-0.83,0-1.5-0.67-1.5-1.5c0-0.83,0.67-1.5,1.5-1.5 s1.5,0.67,1.5,1.5C19,12.33,18.33,13,17.5,13z M14.5,9C13.67,9,13,8.33,13,7.5C13,6.67,13.67,6,14.5,6S16,6.67,16,7.5 C16,8.33,15.33,9,14.5,9z M5,11.5C5,10.67,5.67,10,6.5,10S8,10.67,8,11.5C8,12.33,7.33,13,6.5,13S5,12.33,5,11.5z M11,7.5 C11,8.33,10.33,9,9.5,9S8,8.33,8,7.5C8,6.67,8.67,6,9.5,6S11,6.67,11,7.5z" })
-            )
-        ),
-        colors.map((color, index) => {
-            const selected = selectedColor == color;
-            let size = choiceSize + "px";
-            if (!choiceSize) size = small ? "16px" : "20px";
-            const unselectedBgColor = color == "#ffffff" ? 'black' : 'transparent';
+  let customColorIconSize = choiceSize;
+  if (!choiceSize) customColorIconSize = small ? 10 : 14;
+  customColorIconSize += 4;
 
-            return React.createElement(
-                "div",
-                { key: index, style: { padding: spacing + 'px' } },
-                React.createElement(
-                    "div",
-                    { className: `cursor-pointer rounded-full border-2`,
-                        style: { padding: "2px", borderColor: color, backgroundColor: selected ? unselectedBgColor : color },
-                        onClick: () => onChange(color)
-                    },
-                    React.createElement("div", { className: "rounded-full",
-                        style: {
-                            width: size, height: size,
-                            backgroundColor: color,
-                            borderColor: selected ? "#fff" : 'transparent'
-                        }
-                    })
-                )
-            );
+  return React.createElement(
+    "div",
+    {
+      className: `flex flex-wrap items-center ${centerColors && "justify-center"}`,
+      style: { margin: `-${spacing}px` }
+    },
+    showCustomPicker && React.createElement(
+      "div",
+      {
+        title: "Pick asset colour",
+        className: "flex center-center cursor-pointer rounded-full ml-2 mr-1",
+        style: { width: customColorIconSize, height: customColorIconSize },
+        onClick: () => colorDialog(handleCustomColorChanged)
+      },
+      React.createElement(
+        "svg",
+        { height: customColorIconSize, viewBox: "0 0 24 24" },
+        React.createElement("path", {
+          fill: "#888",
+          d: "M12,2C6.49,2,2,6.49,2,12s4.49,10,10,10c1.38,0,2.5-1.12,2.5-2.5c0-0.61-0.23-1.2-0.64-1.67c-0.08-0.1-0.13-0.21-0.13-0.33 c0-0.28,0.22-0.5,0.5-0.5H16c3.31,0,6-2.69,6-6C22,6.04,17.51,2,12,2z M17.5,13c-0.83,0-1.5-0.67-1.5-1.5c0-0.83,0.67-1.5,1.5-1.5 s1.5,0.67,1.5,1.5C19,12.33,18.33,13,17.5,13z M14.5,9C13.67,9,13,8.33,13,7.5C13,6.67,13.67,6,14.5,6S16,6.67,16,7.5 C16,8.33,15.33,9,14.5,9z M5,11.5C5,10.67,5.67,10,6.5,10S8,10.67,8,11.5C8,12.33,7.33,13,6.5,13S5,12.33,5,11.5z M11,7.5 C11,8.33,10.33,9,9.5,9S8,8.33,8,7.5C8,6.67,8.67,6,9.5,6S11,6.67,11,7.5z"
         })
-    );
+      )
+    ),
+    colors.map((color, index) => {
+      const selected = selectedColor == color;
+      let size = choiceSize + "px";
+      if (!choiceSize) size = small ? "10px" : "14px";
+      const unselectedBgColor = color == "#ffffff" ? "black" : "transparent";
+
+      return React.createElement(
+        "div",
+        { key: index, style: { padding: spacing + "px" } },
+        React.createElement(
+          "div",
+          {
+            className: `cursor-pointer rounded-full ${small ? "border" : "border-2"}`,
+            style: {
+              padding: "2px",
+              borderColor: color == "transparent" ? "#ddd" : color,
+              backgroundColor: selected ? unselectedBgColor : color
+            },
+            onClick: () => onChange(color)
+          },
+          React.createElement("div", {
+            className: "rounded-full",
+            style: {
+              width: size,
+              height: size,
+              backgroundColor: color,
+              borderColor: selected ? "#fff" : "transparent"
+            }
+          })
+        )
+      );
+    })
+  );
 };
 
 module.exports = ColorList;
@@ -33059,10 +33135,130 @@ module.exports = ColorList;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const { camelCaseToSentenceCase } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ "./src/components/ButtonGroup.jsx");
 const ColorList = __webpack_require__(/*! ./ColorList */ "./src/components/ColorList.jsx");
 const IconList = __webpack_require__(/*! ./IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
 const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
+
+function ListEditor({ links, activeLink, onChange, onChangeActiveLink }) {
+  const [linkBeingEdited, setLinkBeingEdited] = React.useState(null);
+  function handleSetLinks(links) {
+    onChange(links);
+  }
+
+  function handleLinkTextChanged(e) {
+    e.preventDefault();
+    const form = e.target;
+    const newValue = form.elements[0].value;
+
+    if (links[linkBeingEdited] != newValue) {
+      const newLinks = [...links];
+      newLinks.splice(linkBeingEdited, 1, newValue);
+
+      const wasSelected = linkBeingEdited === links.indexOf(activeLink);
+      onChange(newLinks, wasSelected ? newValue : null);
+    } else setLinkBeingEdited(null);
+  }
+
+  function handleMoveLink(e, linkIndex) {
+    const isLastItem = linkIndex === links.length - 1;
+    const { shiftKey, altKey } = e;
+    const leap = shiftKey ? 3 : 1;
+    let newIndex = isLastItem || altKey ? linkIndex - leap : linkIndex + leap;
+
+    // clamp
+    newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
+    console.log("New index: ", newIndex);
+
+    const newLinks = [...links];
+    const link = newLinks.splice(linkIndex, 1)[0];
+    newLinks.splice(newIndex, 0, link);
+
+    onChange(newLinks);
+  }
+
+  return React.createElement(
+    "div",
+    { className: "pt-2 mt-3" },
+    React.createElement(
+      "div",
+      { className: "flex items-center justify-between px-3" },
+      React.createElement(
+        "label",
+        { className: "text-md" },
+        "Links"
+      ),
+      React.createElement(Toggle, { checked: links, onChange: handleSetLinks })
+    ),
+    links && React.createElement(
+      "div",
+      { className: "-mx-12pxs mt-1" },
+      React.createElement(
+        "div",
+        { className: "bg-white" },
+        links.map((link, index) => {
+          const selected = activeLink === link;
+          const editting = linkBeingEdited === index;
+
+          return React.createElement(
+            "div",
+            {
+              key: index,
+              className: `parent bg-white py-2 px-3 border-b border-light-gray flex items-center ${selected ? "text-blue" : ""}`
+            },
+            React.createElement("div", {
+              className: `mr-2 rounded-full border ${selected ? "bg-blue border-blue" : "border-dark-gray cursor-pointer"}`,
+              style: { width: "10px", height: "10px" },
+              onClick: () => selected ? null : onChangeActiveLink(link)
+            }),
+            editting && React.createElement(
+              "form",
+              {
+                action: "#",
+                className: "flex-1 bg-gray",
+                onSubmit: handleLinkTextChanged
+              },
+              React.createElement("input", {
+                autoFocus: true,
+                className: "w-full",
+                defaultValue: link,
+                name: "link",
+                "uxp-quiet": "true",
+                onKeyDown: e => e.key == "Escape" ? setLinkBeingEdited(null) : null
+              })
+            ),
+            !editting && React.createElement(
+              React.Fragment,
+              null,
+              React.createElement(
+                "h5",
+                {
+                  className: "flex-1 text-base font-normal cursor-pointer",
+                  onClick: () => setLinkBeingEdited(index)
+                },
+                link
+              ),
+              React.createElement(
+                "div",
+                {
+                  className: "visible-on-parent-hover cursor-pointer rounded-full bg-light-gray flex center-center",
+                  style: { width: "20px", height: "20px" },
+                  onClick: e => handleMoveLink(e, index)
+                },
+                React.createElement(
+                  "svg",
+                  { width: "14px", height: "14px", viewBox: "0 0 24 24" },
+                  React.createElement("polygon", { points: "13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01" })
+                )
+              )
+            )
+          );
+        })
+      )
+    )
+  );
+}
 
 const ComponentFieldEditor = function ({ field = {}, onChange }) {
   const {
@@ -33076,7 +33272,8 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     offValue,
     min,
     max,
-    value
+    value,
+    meta = {}
   } = _extends({}, field ? field : {});
 
   function handleToggle(newValue) {
@@ -33084,7 +33281,6 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     const derivedOffValue = offValue || fieldTypeIsText ? "" : null;
 
     handleChange(!newValue ? derivedOffValue : defaultValue || true);
-    onChange(newProps);
   }
 
   const [tempValue, setTempValue] = React.useState(value);
@@ -33113,8 +33309,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
       React.createElement(
         "label",
         { className: "mt-2 text-md", style: { marginBottom: "0.1rem" } },
-        label.charAt(0).toUpperCase(),
-        label.substring(1)
+        camelCaseToSentenceCase(label)
       ),
       type == "boolean" && React.createElement(Toggle, { checked: value, onChange: handleChange }),
       optional == true && React.createElement(Toggle, { checked: value, onChange: handleToggle })
@@ -33122,24 +33317,23 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     (!optional || value) && React.createElement(
       React.Fragment,
       null,
-      type == "radio" && React.createElement(ButtonGroup, {
+      type == "radio" && React.createElement(ButtonGroup, _extends({
         value: value,
         choices: choices,
         onChange: handleChange
-      }),
-      type == "color" && React.createElement(ColorList, {
-        small: true,
+      }, meta)),
+      type == "color" && React.createElement(ColorList, _extends({
         colors: choices,
         selectedColor: value,
         onChange: handleChange
-      }),
+      }, meta)),
       type == "icon" && React.createElement(
         "div",
         {
           className: "-mx-12px p-2 mt-1 bg-white overflow-y-auto",
           style: { maxHeight: "140px" }
         },
-        React.createElement(IconList, { onChange: handleChange })
+        React.createElement(IconList, _extends({ onChange: handleChange }, meta))
       ),
       !["boolean", "color", "icon", "radio"].includes(type) && React.createElement(
         "form",
@@ -33147,7 +33341,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
           className: "w-full",
           onSubmit: e => {
             e.preventDefault();
-            handleChange(tempValue);
+            handleChange(type == "number" ? Number(tempValue) : tempValue);
           }
         },
         React.createElement("input", {
@@ -33176,47 +33370,11 @@ module.exports = ComponentFieldEditor;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const { camelCaseToSentenceCase } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ComponentFieldEditor = __webpack_require__(/*! ./ComponentFieldEditor */ "./src/components/ComponentFieldEditor.jsx");
 const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
 
-function ComponentFieldGroup({ field, data, onChange }) {
-  function handleToggle(newValue) {
-    const newProps = field.children.reduce((agg, child) => {
-      const childTypeIsText = !child.type || !child.type.length || child.type.toLowerCase() == "text";
-      const offValue = child.offValue || childTypeIsText ? "" : null;
-
-      agg[child.__id] = !newValue ? offValue : child.defaultValue || true;
-
-      return agg;
-    }, {});
-    onChange(newProps);
-  }
-
-  const checked = field.children.every(child => child.value);
-
-  return React.createElement(
-    "div",
-    { className: "mb-2" },
-    React.createElement(
-      "div",
-      { className: "flex items-center justify-between" },
-      React.createElement(
-        "label",
-        { className: "mt-2 text-md" },
-        field.label.charAt(0).toUpperCase(),
-        field.label.substring(1)
-      ),
-      field.optional && React.createElement(Toggle, { checked: checked, onChange: handleToggle })
-    ),
-    checked && field.children.map((child, index) => React.createElement(ComponentFieldEditor, {
-      key: index,
-      field: _extends({}, child, { __data: data }),
-      onChange: onChange
-    }))
-  );
-}
-
-function ComponentFields({ schema, data, onChange }) {
+function schemaToFields(schema, data) {
   const fields = [];
 
   Object.entries(schema).forEach(([label, props]) => {
@@ -33224,7 +33382,9 @@ function ComponentFields({ schema, data, onChange }) {
 
     props.__id = label;
     props.label = ["undefined", null].includes(typeof props.label) ? label : props.label;
-    props.value = data[label];
+
+    // if(data) props.value = data;
+    props.value = data ? data[label] : props.defaultValue;
 
     if (!props.group) fields.push(props);else {
       const groupIndex = fields.findIndex(group => group.label == props.group);
@@ -33242,11 +33402,131 @@ function ComponentFields({ schema, data, onChange }) {
     }
   });
 
+  return fields;
+}
+
+function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
+  function handleChange(key, newValue) {
+    const updatedProps = typeof key == "string" ? { [key]: newValue } : key;
+    console.log("Section field updated: ", updatedProps);
+
+    onChange(field.__id, _extends({}, data, updatedProps));
+  }
+
+  function handleToggle(newValue) {
+    const newProps = !newValue ? null : schemaToFields(field.children, data).reduce((agg, child) => {
+      return _extends({}, agg, { [child.__id]: child.defaultValue || true });
+    }, {});
+
+    onChange(_extends({}, data, {
+      [field.__id]: newProps
+    }));
+  }
+
+  const children = !data ? [] : schemaToFields(field.children, data);
+
+  return React.createElement(
+    "div",
+    { className: rootLevel ? "border-t border-b mb-2 mt-2 -mx-12px" : data && "mb-1" },
+    React.createElement(
+      "div",
+      {
+        className: `flex items-center justify-between
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 border-t ${data && 'bg-black26'}`}
+      `
+      },
+      React.createElement(
+        "label",
+        {
+          className: `text-sm tracking-widest ${rootLevel && "text-blue"}`
+        },
+        field.label.toUpperCase()
+      ),
+      field.optional && React.createElement(Toggle, { checked: data, onChange: handleToggle })
+    ),
+    data && React.createElement(
+      "div",
+      { className: `${rootLevel ? "px-12px" : "-mx-12px"}` },
+      React.createElement(
+        "div",
+        { className: rootLevel ? "" : "px-12px" },
+        children.map((field, index) => {
+          if (field.type == "section") return React.createElement(ComponentFieldSection, {
+            key: index,
+            field: field,
+            data: data[field.__id],
+            onChange: handleChange
+          });else if (field.type == "group") return React.createElement(ComponentFieldGroup, {
+            key: index,
+            field: field,
+            data: data,
+            onChange: handleChange
+          });
+
+          return React.createElement(
+            "div",
+            { className: "mb-2", key: index },
+            React.createElement(ComponentFieldEditor, {
+              field: _extends({}, field, { __data: data }),
+              onChange: handleChange
+            })
+          );
+        })
+      )
+    )
+  );
+}
+
+function ComponentFieldGroup({ field, data, onChange }) {
+  function handleToggle(newValue) {
+    const newProps = field.children.reduce((agg, child) => {
+      const childTypeIsText = !child.type || !child.type.length || child.type.toLowerCase() == "text";
+      const offValue = child.offValue || childTypeIsText ? "" : null;
+
+      return _extends({}, agg, {
+        [child.__id]: !newValue ? offValue : child.defaultValue || true
+      });
+    }, {});
+    onChange(newProps);
+  }
+
+  const checked = field.children.every(child => child.value);
+
+  return React.createElement(
+    "div",
+    { className: "mb-2" },
+    React.createElement(
+      "div",
+      { className: "flex items-center justify-between" },
+      React.createElement(
+        "label",
+        { className: "mt-2 text-md" },
+        camelCaseToSentenceCase(field.label)
+      ),
+      field.optional && React.createElement(Toggle, { checked: checked, onChange: handleToggle })
+    ),
+    checked && field.children.map((child, index) => React.createElement(ComponentFieldEditor, {
+      key: index,
+      field: _extends({}, child, { __data: data }),
+      onChange: onChange
+    }))
+  );
+}
+
+function ComponentFields({ schema, data, onChange }) {
+  const fields = schemaToFields(schema, data);
+
   return React.createElement(
     "div",
     null,
     fields.map((field, index) => {
-      if (field.type == "group") return React.createElement(ComponentFieldGroup, {
+      if (field.type == "section") return React.createElement(ComponentFieldSection, {
+        key: index,
+        rootLevel: true,
+        field: field,
+        data: data[field.__id],
+        onChange: onChange
+      });else if (field.type == "group") return React.createElement(ComponentFieldGroup, {
         key: index,
         field: field,
         data: data,
@@ -33470,13 +33750,9 @@ module.exports = Toggle;
 /***/ (function(module, exports) {
 
 module.exports = {
-    PLUGIN_ID: "f6e24b19",
-    DEFAULT_COLORS: ["#FFB7BE", // red 
-    "#1473E6", // blue
-    "#41A257", // green
-    "#FFD0A2", // orange
-    "#000000", "#FFFFFF"],
-    ELEMENT_TYPES: ["Button", "Input", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
+  PLUGIN_ID: "f6e24b19",
+  DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "white"],
+  ELEMENT_TYPES: ["Button", "Input", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
 };
 
 /***/ }),
@@ -35324,184 +35600,95 @@ module.exports = MediaSection;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Navbar/Links.jsx":
-/*!***********************************************!*\
-  !*** ./src/screens/Elements/Navbar/Links.jsx ***!
-  \***********************************************/
+/***/ "./src/screens/Elements/Navbar.jsx":
+/*!*****************************************!*\
+  !*** ./src/screens/Elements/Navbar.jsx ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 
-function NavbarLinks({ links, activeLink, onChange, onChangeActiveLink }) {
-    const [linkBeingEdited, setLinkBeingEdited] = React.useState(null);
-    function handleSetLinks(links) {
-        onChange(links);
+const schema = {
+  logo: {
+    type: "radio",
+    choices: ["custom", "logo1", "logo2", "logo3"]
+  },
+  theme: {
+    type: "section",
+    children: {
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        meta: {
+          showTransparent: true
+        }
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["transparent", "#333", "#FFF"]
+      },
+      shadow: "boolean",
+      border: {
+        type: "section",
+        optional: true,
+        children: {
+          color: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["black", "white"],
+            meta: { small: true }
+          },
+          thickness: {
+            type: "number",
+            defaultValue: 1.5,
+            min: 1.5
+          },
+          opacity: {
+            type: "number",
+            defaultValue: 1,
+            min: 0.1,
+            max: 1
+          }
+        }
+      },
+      text: {
+        type: "section",
+        optional: true,
+        children: {
+          behavior: {
+            type: "radio",
+            defaultValue: "normal",
+            choices: ["normal", "loud"]
+          }
+          // fontFamily: {
+          //   type: "text",
+          //   defaultValue: "Helvetica Neue"
+          // },
+          // fontFamily: {
+          //   type: "text",
+          //   defaultValue: "Helvetica Neue"
+          // },
+          // textTransform: {
+          //   type: "choice",
+          //   defaultValue: "none",
+          //   choices: ["none", "uppercase"]
+          // },
+        }
+      }
     }
-
-    function handleLinkTextChanged(e) {
-        e.preventDefault();
-        const form = e.target;
-        const newValue = form.elements[0].value;
-
-        if (links[linkBeingEdited] != newValue) {
-            const newLinks = [...links];
-            newLinks.splice(linkBeingEdited, 1, newValue);
-
-            const wasSelected = linkBeingEdited === links.indexOf(activeLink);
-            onChange(newLinks, wasSelected ? newValue : null);
-        } else setLinkBeingEdited(null);
-    }
-
-    function handleMoveLink(e, linkIndex) {
-        const isLastItem = linkIndex === links.length - 1;
-        const { shiftKey, altKey } = e;
-        const leap = shiftKey ? 3 : 1;
-        let newIndex = isLastItem || altKey ? linkIndex - leap : linkIndex + leap;
-
-        // clamp
-        newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
-        console.log("New index: ", newIndex);
-
-        const newLinks = [...links];
-        const link = newLinks.splice(linkIndex, 1)[0];
-        newLinks.splice(newIndex, 0, link);
-
-        onChange(newLinks);
-    }
-
-    return React.createElement(
-        'div',
-        { className: 'pt-2 mt-3' },
-        React.createElement(
-            'div',
-            { className: 'flex items-center justify-between px-3' },
-            React.createElement(
-                'label',
-                { className: 'text-md' },
-                'Links'
-            ),
-            React.createElement(Toggle, { checked: links, onChange: handleSetLinks })
-        ),
-        links && React.createElement(
-            'div',
-            { className: '-mx-12pxs mt-1' },
-            React.createElement(
-                'div',
-                { className: 'bg-white' },
-                links.map((link, index) => {
-                    const selected = activeLink === link;
-                    const editting = linkBeingEdited === index;
-
-                    return React.createElement(
-                        'div',
-                        { key: index, className: `parent bg-white py-2 px-3 border-b border-light-gray flex items-center ${selected ? 'text-blue' : ''}` },
-                        React.createElement('div', { className: `mr-2 rounded-full border ${selected ? 'bg-blue border-blue' : 'border-dark-gray cursor-pointer'}`,
-                            style: { width: "10px", height: "10px" },
-                            onClick: () => selected ? null : onChangeActiveLink(link)
-                        }),
-                        editting && React.createElement(
-                            'form',
-                            { action: '#', className: 'flex-1 bg-gray', onSubmit: handleLinkTextChanged },
-                            React.createElement('input', {
-                                autoFocus: true,
-                                className: 'w-full',
-                                defaultValue: link,
-                                name: 'link',
-                                'uxp-quiet': 'true',
-                                onKeyDown: e => e.key == 'Escape' ? setLinkBeingEdited(null) : null
-                            })
-                        ),
-                        !editting && React.createElement(
-                            React.Fragment,
-                            null,
-                            React.createElement(
-                                'h5',
-                                { className: 'flex-1 text-base font-normal cursor-pointer',
-                                    onClick: () => setLinkBeingEdited(index)
-                                },
-                                link
-                            ),
-                            React.createElement(
-                                'div',
-                                { className: 'visible-on-parent-hover cursor-pointer rounded-full bg-light-gray flex center-center',
-                                    style: { width: "20px", height: "20px" },
-                                    onClick: e => handleMoveLink(e, index)
-                                },
-                                React.createElement(
-                                    'svg',
-                                    { width: '14px', height: '14px', viewBox: '0 0 24 24' },
-                                    React.createElement('polygon', { points: '13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01' })
-                                )
-                            )
-                        )
-                    );
-                })
-            )
-        )
-    );
-}
-
-module.exports = NavbarLinks;
-
-/***/ }),
-
-/***/ "./src/screens/Elements/Navbar/index.jsx":
-/*!***********************************************!*\
-  !*** ./src/screens/Elements/Navbar/index.jsx ***!
-  \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../../Creators */ "./src/Creators/index.js");
-const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
-const ButtonGroup = __webpack_require__(/*! ../../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
-const NavbarLinks = __webpack_require__(/*! ./Links */ "./src/screens/Elements/Navbar/Links.jsx");
-const PageTitle = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
-const ComponentFieldEditor = __webpack_require__(/*! ../../../components/ComponentFieldEditor */ "./src/components/ComponentFieldEditor.jsx");
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "setValue":
-      return _extends({}, state, { isRunning: true });
-    default:
-      throw new Error();
   }
-}
+};
 
 function Navbar({ value, onClose }) {
-  const [state, dispatch] = useReducer(reducer, value);
-  const theme = state.theme;
-
-  function updateField(field, newValue) {
-    Creators.Navbar(_extends({}, value, { [field]: newValue }));
-  }
-
-  function handleSetLinks(links, newActiveLink) {
-    setLinks(links);
-
-    const newProps = _extends({}, value, { links });
-
-    if (newActiveLink) newProps.activeLink = newActiveLink;
-
-    Creators.Navbar(newProps);
-  }
-
-  return React.createElement(
-    "div",
-    { style: { margin: "0.5rem -12px" } },
-    React.createElement(PageTitle, { title: "Navbar", onClose: onClose }),
-    React.createElement(NavbarLinks, {
-      links: state.links,
-      activeLink: state.activeLink,
-      onChange: handleSetLinks,
-      onChangeActiveLink: activeLink => Creators.Navbar(_extends({}, value, { activeLink }))
-    })
-  );
+  return React.createElement(ComponentPage, {
+    title: "Navbar",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
 }
 
 module.exports = Navbar;
@@ -35523,7 +35710,7 @@ const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx"
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const Input = __webpack_require__(/*! ./Input */ "./src/screens/Elements/Input.jsx");
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
-const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
+const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
@@ -36415,33 +36602,33 @@ const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.j
 let data;
 
 function shuffle(array) {
-    return [...array].sort(_ => Math.random() - 0.5);
+  return [...array].sort(_ => Math.random() - 0.5);
 }
 
 function createArboard({ name, width = 1080, height = 1920, color = "white" }, rootNode, relativeTo) {
-    const { Color, Artboard } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  const { Color, Artboard } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-    try {
-        const arty = new Artboard();
-        arty.width = width;
-        arty.height = height;
-        arty.fill = new Color(color);
-        arty.name = name;
+  try {
+    const arty = new Artboard();
+    arty.width = width;
+    arty.height = height;
+    arty.fill = new Color(color);
+    arty.name = name;
 
-        rootNode.addChild(arty, 0);
+    rootNode.addChild(arty, 0);
 
-        if (relativeTo) {
-            const { x, y } = relativeTo.boundsInParent;
-            placeInParent(arty, { x: x + arty.width + 350, y });
-        } else {
-            const { x, y } = getTopMostArtboardCoordinates(rootNode, Artboard);
-            placeInParent(arty, { x, y: y - height - 120 });
-        }
-
-        return arty;
-    } catch (error) {
-        console.log("Error creating artboard: ", error);
+    if (relativeTo) {
+      const { x, y } = relativeTo.boundsInParent;
+      placeInParent(arty, { x: x + arty.width + 350, y });
+    } else {
+      const { x, y } = getTopMostArtboardCoordinates(rootNode, Artboard);
+      placeInParent(arty, { x, y: y - height - 120 });
     }
+
+    return arty;
+  } catch (error) {
+    console.log("Error creating artboard: ", error);
+  }
 }
 
 /**
@@ -36451,24 +36638,26 @@ function createArboard({ name, width = 1080, height = 1920, color = "white" }, r
  * @param {url} photoUrl
  */
 async function downloadImage(photoUrl, returnBase64 = false) {
-    try {
-        const photoObj = await xhrBinary(photoUrl);
-        if (returnBase64) {
-            const previewBase64 = await base64ArrayBuffer(photoObj);
-            return `data:image/png;base64,${previewBase64}`;
-        }
-
-        const storage = __webpack_require__(/*! uxp */ "uxp").storage;
-        const fs = storage.localFileSystem;
-        const tempFolder = await fs.getTemporaryFolder();
-        const tempFileName = [...Array(30)].map(() => Math.random().toString(36)[2]).join('');
-        const tempFile = await tempFolder.createFile(tempFileName, { overwrite: true });
-        await tempFile.write(photoObj, { format: storage.formats.binary });
-        return tempFile;
-    } catch (error) {
-        console.log("Error downloading images: ", error);
-        throw error;
+  try {
+    const photoObj = await xhrBinary(photoUrl);
+    if (returnBase64) {
+      const previewBase64 = await base64ArrayBuffer(photoObj);
+      return `data:image/png;base64,${previewBase64}`;
     }
+
+    const storage = __webpack_require__(/*! uxp */ "uxp").storage;
+    const fs = storage.localFileSystem;
+    const tempFolder = await fs.getTemporaryFolder();
+    const tempFileName = [...Array(30)].map(() => Math.random().toString(36)[2]).join("");
+    const tempFile = await tempFolder.createFile(tempFileName, {
+      overwrite: true
+    });
+    await tempFile.write(photoObj, { format: storage.formats.binary });
+    return tempFile;
+  } catch (error) {
+    console.log("Error downloading images: ", error);
+    throw error;
+  }
 }
 
 /**
@@ -36478,509 +36667,530 @@ async function downloadImage(photoUrl, returnBase64 = false) {
  * @param {url} url
  */
 async function xhrBinary(url) {
-    const res = await fetch(url);
-    if (!res.ok) {
-        const error = await res.json();
-        if (error.message) throw Error(error.message);else throw Error(res.statusText);
-    }
-    const buffer = await res.arrayBuffer();
-    const arr = new Uint8Array(buffer);
-    return arr;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const error = await res.json();
+    if (error.message) throw Error(error.message);else throw Error(res.statusText);
+  }
+  const buffer = await res.arrayBuffer();
+  const arr = new Uint8Array(buffer);
+  return arr;
 }
 
 function getTopMostArtboardCoordinates(rootNode, Artboard) {
-    // TODO: Add logic for when there are no artboards
-    // TODO: Add logic for when you can't add in anymore artboards
+  // TODO: Add logic for when there are no artboards
+  // TODO: Add logic for when you can't add in anymore artboards
 
-    const artboards = rootNode.children.filter(node => node instanceof Artboard);
-    const artboardBounds = artboards.map(({ globalBounds }) => globalBounds);
+  const artboards = rootNode.children.filter(node => node instanceof Artboard);
+  const artboardBounds = artboards.map(({ globalBounds }) => globalBounds);
 
-    let mostLeft, topMost;
+  let mostLeft, topMost;
 
-    const xPositions = artboardBounds.map(({ x }) => x);
-    mostLeft = Math.min(...xPositions);
+  const xPositions = artboardBounds.map(({ x }) => x);
+  mostLeft = Math.min(...xPositions);
 
-    const yPositions = artboardBounds.map(({ y }) => y);
-    topMost = Math.min(...yPositions);
+  const yPositions = artboardBounds.map(({ y }) => y);
+  topMost = Math.min(...yPositions);
 
-    return { x: mostLeft, y: topMost };
+  return { x: mostLeft, y: topMost };
 }
 
 function placeInParent(node, coords) {
-    coords = coords || node.parent.topLeftInParent;
-    let nodeBounds = node.localBounds;
-    let nodeTopLeft = { x: nodeBounds.x, y: nodeBounds.y };
-    node.placeInParentCoordinates(nodeTopLeft, coords);
+  coords = coords || node.parent.topLeftInParent;
+  let nodeBounds = node.localBounds;
+  let nodeTopLeft = { x: nodeBounds.x, y: nodeBounds.y };
+  node.placeInParentCoordinates(nodeTopLeft, coords);
 }
 
 /**
  * Gets the dimensions of a node based on its type
- * 
+ *
  * @returns {Object} Object containing width and height
  */
 function getDimensions(node) {
-    let width, height;
-    switch (node.constructor.name) {
-        case "Rectangle":
-        case "Polygon":
-            width = node.width;
-            height = node.height;
-            break;
-        case "Ellipse":
-            width = node.radiusX * 2;
-            height = node.radiusY * 2;
-            break;
-        case "BooleanGroup": // Selecting arbitrary values for path and boolean group
-        case "Path":
-            width = 500;
-            height = 500;
-            break;
-        default:
-            throw "Not supported";
-    }
+  let width, height;
+  switch (node.constructor.name) {
+    case "Rectangle":
+    case "Polygon":
+      width = node.width;
+      height = node.height;
+      break;
+    case "Ellipse":
+      width = node.radiusX * 2;
+      height = node.radiusY * 2;
+      break;
+    case "BooleanGroup": // Selecting arbitrary values for path and boolean group
+    case "Path":
+      width = 500;
+      height = 500;
+      break;
+    default:
+      throw "Not supported";
+  }
 
-    return {
-        width, height
-    };
+  return {
+    width,
+    height
+  };
 }
 
 /**
  * A little helper class to make storing key-value-pairs (e.g. settings) for plugins for Adobe XD CC easier.
  */
 class storageHelper {
-    /**
-     * Creates a data file if none was previously existent.
-     * @return {Promise<storage.File>} The data file
-     * @private
-     */
-    static async init() {
-        const storage = __webpack_require__(/*! uxp */ "uxp").storage;
-        const fs = storage.localFileSystem;
-        let dataFolder = await fs.getDataFolder();
-        try {
-            let returnFile = await dataFolder.getEntry('storage.json');
-            data = JSON.parse((await returnFile.read({ format: storage.formats.utf8 })).toString());
-            return returnFile;
-        } catch (e) {
-            const file = await dataFolder.createEntry('storage.json', { type: storage.types.file, overwrite: true });
-            if (file.isFile) {
-                await file.write('{}', { append: false });
-                data = {};
-                return file;
-            } else {
-                throw new Error('Storage file storage.json was not a file.');
-            }
-        }
+  /**
+   * Creates a data file if none was previously existent.
+   * @return {Promise<storage.File>} The data file
+   * @private
+   */
+  static async init() {
+    const storage = __webpack_require__(/*! uxp */ "uxp").storage;
+    const fs = storage.localFileSystem;
+    let dataFolder = await fs.getDataFolder();
+    try {
+      let returnFile = await dataFolder.getEntry("storage.json");
+      data = JSON.parse((await returnFile.read({ format: storage.formats.utf8 })).toString());
+      return returnFile;
+    } catch (e) {
+      const file = await dataFolder.createEntry("storage.json", {
+        type: storage.types.file,
+        overwrite: true
+      });
+      if (file.isFile) {
+        await file.write("{}", { append: false });
+        data = {};
+        return file;
+      } else {
+        throw new Error("Storage file storage.json was not a file.");
+      }
     }
+  }
 
-    /**
-     * Retrieves a value from storage. Saves default value if none is set.
-     * @param {string} key The identifier
-     * @param {*} defaultValue The default value. Gets saved and returned if no value was previously set for the speciefied key.
-     * @return {Promise<*>} The value retrieved from storage. If none is saved, the `defaultValue` is returned.
-     */
-    static async get(key, defaultValue) {
-        if (!data) {
-            const dataFile = await this.init();
-            data = JSON.parse((await dataFile.read({ format: storage.formats.utf8 })).toString());
-        }
-        if (data[key] === undefined) {
-            await this.set(key, defaultValue);
-            return defaultValue;
-        } else {
-            return data[key];
-        }
+  /**
+   * Retrieves a value from storage. Saves default value if none is set.
+   * @param {string} key The identifier
+   * @param {*} defaultValue The default value. Gets saved and returned if no value was previously set for the speciefied key.
+   * @return {Promise<*>} The value retrieved from storage. If none is saved, the `defaultValue` is returned.
+   */
+  static async get(key, defaultValue) {
+    if (!data) {
+      const dataFile = await this.init();
+      data = JSON.parse((await dataFile.read({ format: storage.formats.utf8 })).toString());
     }
+    if (data[key] === undefined) {
+      await this.set(key, defaultValue);
+      return defaultValue;
+    } else {
+      return data[key];
+    }
+  }
 
-    /**
-     * Saves a certain key-value-pair to the storage.
-     * @param {string} key The identifier
-     * @param {*} value The value that get's saved
-     * @return {Promise<void>}
-     */
-    static async set(key, value) {
-        const dataFile = await this.init();
-        data[key] = value;
-        return await dataFile.write(JSON.stringify(data), { append: false, format: storage.formats.utf8 });
-    }
+  /**
+   * Saves a certain key-value-pair to the storage.
+   * @param {string} key The identifier
+   * @param {*} value The value that get's saved
+   * @return {Promise<void>}
+   */
+  static async set(key, value) {
+    const dataFile = await this.init();
+    data[key] = value;
+    return await dataFile.write(JSON.stringify(data), {
+      append: false,
+      format: storage.formats.utf8
+    });
+  }
 
-    /**
-     * Deletes a certain key-value-pair from the storage
-     * @param {string} key The key of the deleted pair
-     * @return {Promise<void>}
-     */
-    static async delete(key) {
-        return await this.set(key, undefined);
-    }
+  /**
+   * Deletes a certain key-value-pair from the storage
+   * @param {string} key The key of the deleted pair
+   * @return {Promise<void>}
+   */
+  static async delete(key) {
+    return await this.set(key, undefined);
+  }
 
-    /**
-     * Resets (i.e. purges) all stored settings.
-     * @returns {Promise<void>}
-     */
-    static async reset() {
-        const dataFile = await this.init();
-        return await dataFile.write('{}', { append: false, format: storage.formats.utf8 });
-    }
+  /**
+   * Resets (i.e. purges) all stored settings.
+   * @returns {Promise<void>}
+   */
+  static async reset() {
+    const dataFile = await this.init();
+    return await dataFile.write("{}", {
+      append: false,
+      format: storage.formats.utf8
+    });
+  }
 }
 
 function base64ArrayBuffer(arrayBuffer) {
-    let base64 = '';
-    const encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let base64 = "";
+  const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    const bytes = new Uint8Array(arrayBuffer);
-    const byteLength = bytes.byteLength;
-    const byteRemainder = byteLength % 3;
-    const mainLength = byteLength - byteRemainder;
+  const bytes = new Uint8Array(arrayBuffer);
+  const byteLength = bytes.byteLength;
+  const byteRemainder = byteLength % 3;
+  const mainLength = byteLength - byteRemainder;
 
-    let a, b, c, d;
-    let chunk;
+  let a, b, c, d;
+  let chunk;
 
-    // Main loop deals with bytes in chunks of 3
-    for (var i = 0; i < mainLength; i = i + 3) {
-        // Combine the three bytes into a single integer
-        chunk = bytes[i] << 16 | bytes[i + 1] << 8 | bytes[i + 2];
+  // Main loop deals with bytes in chunks of 3
+  for (var i = 0; i < mainLength; i = i + 3) {
+    // Combine the three bytes into a single integer
+    chunk = bytes[i] << 16 | bytes[i + 1] << 8 | bytes[i + 2];
 
-        // Use bitmasks to extract 6-bit segments from the triplet
-        a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
-        b = (chunk & 258048) >> 12; // 258048   = (2^6 - 1) << 12
-        c = (chunk & 4032) >> 6; // 4032     = (2^6 - 1) << 6
-        d = chunk & 63; // 63       = 2^6 - 1
+    // Use bitmasks to extract 6-bit segments from the triplet
+    a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+    b = (chunk & 258048) >> 12; // 258048   = (2^6 - 1) << 12
+    c = (chunk & 4032) >> 6; // 4032     = (2^6 - 1) << 6
+    d = chunk & 63; // 63       = 2^6 - 1
 
-        // Convert the raw binary segments to the appropriate ASCII encoding
-        base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
-    }
+    // Convert the raw binary segments to the appropriate ASCII encoding
+    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
+  }
 
-    // Deal with the remaining bytes and padding
-    if (byteRemainder == 1) {
-        chunk = bytes[mainLength];
+  // Deal with the remaining bytes and padding
+  if (byteRemainder == 1) {
+    chunk = bytes[mainLength];
 
-        a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
+    a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
 
-        // Set the 4 least significant bits to zero
-        b = (chunk & 3) << 4; // 3   = 2^2 - 1
+    // Set the 4 least significant bits to zero
+    b = (chunk & 3) << 4; // 3   = 2^2 - 1
 
-        base64 += encodings[a] + encodings[b] + '==';
-    } else if (byteRemainder == 2) {
-        chunk = bytes[mainLength] << 8 | bytes[mainLength + 1];
+    base64 += encodings[a] + encodings[b] + "==";
+  } else if (byteRemainder == 2) {
+    chunk = bytes[mainLength] << 8 | bytes[mainLength + 1];
 
-        a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
-        b = (chunk & 1008) >> 4; // 1008  = (2^6 - 1) << 4
+    a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
+    b = (chunk & 1008) >> 4; // 1008  = (2^6 - 1) << 4
 
-        // Set the 2 least significant bits to zero
-        c = (chunk & 15) << 2; // 15    = 2^4 - 1
+    // Set the 2 least significant bits to zero
+    c = (chunk & 15) << 2; // 15    = 2^4 - 1
 
-        base64 += encodings[a] + encodings[b] + encodings[c] + '=';
-    }
+    base64 += encodings[a] + encodings[b] + encodings[c] + "=";
+  }
 
-    return base64;
+  return base64;
 }
 
 function editDom(cb, wrapWithEditor = true) {
-    const invisibleButton = document.createElement("button");
-    invisibleButton.innerText = "Invisible button";
-    invisibleButton.style.display = "none";
-    document.body.appendChild(invisibleButton);
+  const invisibleButton = document.createElement("button");
+  invisibleButton.innerText = "Invisible button";
+  invisibleButton.style.display = "none";
+  document.body.appendChild(invisibleButton);
 
-    invisibleButton.addEventListener("click", () => {
-        const { editDocument } = __webpack_require__(/*! application */ "application");
+  invisibleButton.addEventListener("click", () => {
+    const { editDocument } = __webpack_require__(/*! application */ "application");
 
-        if (wrapWithEditor) {
-            editDocument(async (...args) => {
-                cb(...args);
-            });
-        } else cb();
-    });
+    if (wrapWithEditor) {
+      editDocument(async (...args) => {
+        cb(...args);
+      });
+    } else cb();
+  });
 
-    invisibleButton.click();
+  invisibleButton.click();
 
-    setTimeout(() => {
-        invisibleButton.remove();
-    }, 200);
+  setTimeout(() => {
+    invisibleButton.remove();
+  }, 200);
 }
 
 function someTime(duration = 10) {
-    return new Promise(res => {
-        setTimeout(res, duration);
-    });
+  return new Promise(res => {
+    setTimeout(res, duration);
+  });
 }
 
 function getGroupChildByName(group, name = "BG", cb = () => {}, multiple = false) {
-    return new Promise((res, rej) => {
-        try {
-            let found = false,
-                recurse = false;
-            const namePath = name.split("/");
-            name = namePath.shift();
+  return new Promise((res, rej) => {
+    try {
+      let found = false,
+          recurse = false;
+      const namePath = name.split("/");
+      name = namePath.shift();
 
-            // console.log("Get child: ", group, name);
-            let results = group.children.filter(child => child.name == name);
-            if (results.length && namePath.length > 1) {
-                while (results.length && namePath.length > 1) {
-                    name = namePath.shift();
-                    results = results[0].children.filter(child => child.name == name);
-                }
-            }
-
-            if (results.length) {
-                if (namePath.length == 1) results = results[0].children.filter(child => child.name == namePath[0]);
-
-                if (!multiple) results = results[0];
-
-                cb(results);
-                res(results);
-
-                return;
-            }
-
-            // group.children.forEach(node => {
-            //     if (node.name == name) {
-            //         if (namePath.length <= 1) {
-            //             found = node;
-            //             recurse = false;
-            //             return;
-            //         }
-            //         else{
-            //             group = node;
-            //             recurse = true;
-            //             return;
-            //         }
-            //     }
-            // });
-
-            // if(recurse){
-            //     console.log("Recursing...", namePath, group);
-            //     return getGroupChildByName(group, namePath.join("/"), cb);
-            // }
-            // else if (found) {
-            //     const actualName = name.split("/").pop();
-            //     const results = group.children.filter(child => child.name == actualName);
-            //     if(results.length > 1) found = results;
-
-            //     cb(found);
-            //     res(found);
-
-            //     return;
-            // }
-
-            cb(null);
-            rej();
-        } catch (error) {
-            console.log("Error fetching group child: ", error);
+      // console.log("Get child: ", group, name);
+      let results = group.children.filter(child => child.name == name);
+      if (results.length && namePath.length > 1) {
+        while (results.length && namePath.length > 1) {
+          name = namePath.shift();
+          results = results[0].children.filter(child => child.name == name);
         }
-    });
+      }
+
+      if (results.length) {
+        if (namePath.length == 1) results = results[0].children.filter(child => child.name == namePath[0]);
+
+        if (!multiple) results = results[0];
+
+        cb(results);
+        res(results);
+
+        return;
+      }
+
+      // group.children.forEach(node => {
+      //     if (node.name == name) {
+      //         if (namePath.length <= 1) {
+      //             found = node;
+      //             recurse = false;
+      //             return;
+      //         }
+      //         else{
+      //             group = node;
+      //             recurse = true;
+      //             return;
+      //         }
+      //     }
+      // });
+
+      // if(recurse){
+      //     console.log("Recursing...", namePath, group);
+      //     return getGroupChildByName(group, namePath.join("/"), cb);
+      // }
+      // else if (found) {
+      //     const actualName = name.split("/").pop();
+      //     const results = group.children.filter(child => child.name == actualName);
+      //     if(results.length > 1) found = results;
+
+      //     cb(found);
+      //     res(found);
+
+      //     return;
+      // }
+
+      cb(null);
+      rej();
+    } catch (error) {
+      console.log("Error fetching group child: ", error);
+    }
+  });
 }
 
 function createIcon(pathData, defaultOptions = {}) {
-    const { Path, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  const { Path, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-    const options = _extends({
-        fill: "#555",
-        stroke: "none",
-        strokeWidth: 2,
-        opacity: 1
-    }, defaultOptions);
+  const options = _extends({
+    fill: "#555",
+    stroke: "none",
+    strokeWidth: 2,
+    opacity: 1
+  }, defaultOptions);
 
-    try {
-        const icon = new Path();
-        icon.pathData = pathData;
-        if (options.strokeJoins) icon.strokeJoins = options.strokeJoins;
+  try {
+    const icon = new Path();
+    icon.pathData = pathData;
+    if (options.strokeJoins) icon.strokeJoins = options.strokeJoins;
 
-        if (options.stroke && options.stroke.length && options.stroke != "none") {
-            icon.stroke = new Color(options.stroke, options.opacity);
-            icon.strokeWidth = options.strokeWidth;
-            icon.strokeEnabled = true;
-        } else icon.strokeEnabled = false;
+    if (options.stroke && options.stroke.length && options.stroke != "none") {
+      icon.stroke = new Color(options.stroke, options.opacity);
+      icon.strokeWidth = options.strokeWidth;
+      icon.strokeEnabled = true;
+    } else icon.strokeEnabled = false;
 
-        if (options.fill && options.fill.length && options.fill != "none") icon.fill = new Color(options.fill, options.opacity);
+    if (options.fill && options.fill.length && options.fill != "none") icon.fill = new Color(options.fill, options.opacity);
 
-        if (options.size) {
-            const { width, height } = icon.localBounds;
-            const aspectRatio = width / height;
-            if (width > height) icon.resize(options.size, options.size / aspectRatio);else icon.resize(options.size * aspectRatio, options.size);
-        }
-
-        return icon;
-    } catch (error) {
-        console.log("Error with path: ", error);
-        return "";
+    if (options.size) {
+      const { width, height } = icon.localBounds;
+      const aspectRatio = width / height;
+      if (width > height) icon.resize(options.size, options.size / aspectRatio);else icon.resize(options.size * aspectRatio, options.size);
     }
+
+    return icon;
+  } catch (error) {
+    console.log("Error with path: ", error);
+    return "";
+  }
 }
 
 async function getAssetFileFromPath(path, extensions = "", shuffleResults) {
-    try {
-        const storage = __webpack_require__(/*! uxp */ "uxp").storage;
-        const fs = storage.localFileSystem;
-        const pluginFolder = await fs.getPluginFolder();
+  try {
+    const storage = __webpack_require__(/*! uxp */ "uxp").storage;
+    const fs = storage.localFileSystem;
+    const pluginFolder = await fs.getPluginFolder();
 
-        if (path.indexOf(".") == -1) {
-            const pathArray = path.split("/");
-            let folders = await pluginFolder.getEntries();
-            let folderName = pathArray.shift();
-            let folder = folders.find(e => e.isFolder && e.name == folderName);
+    if (path.indexOf(".") == -1) {
+      const pathArray = path.split("/");
+      let folders = await pluginFolder.getEntries();
+      let folderName = pathArray.shift();
+      let folder = folders.find(e => e.isFolder && e.name == folderName);
 
-            while (folder && pathArray.length) {
-                folders = await folder.getEntries();
-                folderName = pathArray.shift();
-                folder = folders.find(e => e.isFolder && e.name == folderName);
-            }
+      while (folder && pathArray.length) {
+        folders = await folder.getEntries();
+        folderName = pathArray.shift();
+        folder = folders.find(e => e.isFolder && e.name == folderName);
+      }
 
-            if (!folder) return console.log(`Folder ${pathArray} not found!`);
+      if (!folder) return console.log(`Folder ${pathArray} not found!`);
 
-            const files = await folder.getEntries();
-            if (!extensions.length) return shuffleResults ? shuffle(files) : files;
+      const files = await folder.getEntries();
+      if (!extensions.length) return shuffleResults ? shuffle(files) : files;
 
-            extensions = extensions.split("|");
-            const results = files.filter(e => extensions.includes(e.name.split(".").pop()));
+      extensions = extensions.split("|");
+      const results = files.filter(e => extensions.includes(e.name.split(".").pop()));
 
-            return shuffleResults ? shuffle(results) : results;
-        }
-
-        return await pluginFolder.getEntry(path);
-    } catch (error) {
-        console.log("Error fetching asset: ", error);
+      return shuffleResults ? shuffle(results) : results;
     }
+
+    return await pluginFolder.getEntry(path);
+  } catch (error) {
+    console.log("Error fetching asset: ", error);
+  }
 }
 
 function getPadding(px = 4, py = 4) {
-    return {
-        bottom: py, top: py,
-        left: px, right: px
-    };
+  return {
+    bottom: py,
+    top: py,
+    left: px,
+    right: px
+  };
 }
 
 function createBorder({
-    top = 0,
-    width = 1920,
-    color = "black",
-    thickness = 1.5
+  top = 0,
+  width = 1920,
+  color = "black",
+  thickness = 1.5
 }) {
-    const { Color, Line } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  const { Color, Line } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-    const border = new Line();
-    border.strokeEnabled = true;
-    border.stroke = new Color(color);
-    border.strokeWidth = thickness;
-    border.setStartEnd(0, top, width, top);
+  const border = new Line();
+  border.strokeEnabled = true;
+  border.stroke = new Color(color);
+  border.strokeWidth = thickness;
+  border.setStartEnd(0, top, width, top);
 
-    return border;
+  return border;
 }
 
 function insertNode(node) {
-    const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-    let insertionParent = selection.insertionParent;
-    if (selection.focusedArtboard) insertionParent = selection.focusedArtboard;
+  const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  let insertionParent = selection.insertionParent;
+  if (selection.focusedArtboard) insertionParent = selection.focusedArtboard;
 
-    insertionParent.addChild(node);
+  insertionParent.addChild(node);
 }
 
 function tagNode(node, data) {
-    node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+  node.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
 }
 
 function getNodeTag(node) {
-    const jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
+  const jsonString = node.sharedPluginData.getItem(PLUGIN_ID, "richData");
 
-    if (jsonString) {
-        try {
-            return JSON.parse(jsonString);
-        } catch (error) {
-            console.log("Error getting node tag: ", error);
-        }
+  if (jsonString) {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.log("Error getting node tag: ", error);
     }
+  }
 
-    return;
+  return;
 }
 
 function getFernComponentChildByName(component, childName, componentChildrenPathMap) {
-    let child;
+  let child;
 
-    const childPath = componentChildrenPathMap[childName];
+  const childPath = componentChildrenPathMap[childName];
 
-    if (!childPath) return console.log(`${childName} component not found.`);
+  if (!childPath) return console.log(`${childName} component not found.`);
 
-    getGroupChildByName(component, childPath, childFromPath => {
-        child = childFromPath;
-    });
+  getGroupChildByName(component, childPath, childFromPath => {
+    child = childFromPath;
+  });
 
-    return child;
+  return child;
 }
 
 function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
-    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-    return { width: srcWidth * ratio, height: srcHeight * ratio };
+  var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+  return { width: srcWidth * ratio, height: srcHeight * ratio };
 }
 
 function createText(text = "Acacia Grove | The Right Inn..", props) {
-    const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-    const defaultTextProps = {
-        name: "Text",
-        fill: new Color("#000"),
-        fontSize: 20, fontFamily: "Helvetica Neue", fontStyle: "Light",
-        layoutBox: _extends({
-            type: Text.AUTO_HEIGHT
-        }, props)
-    };
-    props = _extends({}, defaultTextProps, props);
+  const defaultTextProps = {
+    name: "Text",
+    fill: new Color("#000"),
+    fontSize: 20,
+    fontFamily: "Helvetica Neue",
+    fontStyle: "Light",
+    layoutBox: _extends({
+      type: Text.AUTO_HEIGHT
+    }, props)
+  };
+  props = _extends({}, defaultTextProps, props);
 
-    const textNode = new Text();
-    textNode.text = text;
-    Object.assign(textNode, props);
+  const textNode = new Text();
+  textNode.text = text;
+  Object.assign(textNode, props);
 
-    return textNode;
+  return textNode;
 }
 
 function chunkArray(array, size) {
-    var results = [];
-    while (array.length) {
-        results.push(array.splice(0, size));
-    }
-    return results;
-};
+  var results = [];
+  while (array.length) {
+    results.push(array.splice(0, size));
+  }
+  return results;
+}
 
 function randomBetween(min, max) {
-    return Math.random() * (max - min + 1) + min;
+  return Math.random() * (max - min + 1) + min;
 }
 
 function getIconSizeFromTextSize(icon, textSize) {
-    let iconScaleFactor = 0.9;
-    const largeIcons = ['add', 'check', 'close', 'play', 'remove', 'edit', 'chevron-right'];
-    const mediumIcons = ['cocktail'];
+  let iconScaleFactor = 0.9;
+  const largeIcons = ["add", "check", "close", "play", "remove", "edit", "chevron-right"];
+  const mediumIcons = ["cocktail"];
 
-    if (icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
-    if (mediumIcons.includes(icon)) iconScaleFactor = 0.76;
-    if (largeIcons.includes(icon)) iconScaleFactor = 0.65;
+  if (icon.indexOf("circle") != -1) iconScaleFactor = 1.05;
+  if (mediumIcons.includes(icon)) iconScaleFactor = 0.76;
+  if (largeIcons.includes(icon)) iconScaleFactor = 0.65;
 
-    return textSize * iconScaleFactor;
+  return textSize * iconScaleFactor;
+}
+
+function camelCaseToSentenceCase(text) {
+  if (!text || !text.length) return "";
+  const result = text.replace(/([A-Z]{1,})/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
 module.exports = {
-    shuffle,
-    downloadImage,
-    getDimensions,
-    storageHelper,
-    createArboard,
-    getTopMostArtboardCoordinates,
-    placeInParent,
-    simpleDateFormat,
-    editDom,
-    base64ArrayBuffer,
-    someTime,
-    getGroupChildByName,
-    fakeValue,
-    createIcon,
-    getAssetFileFromPath,
-    getPadding,
-    createBorder,
-    insertNode,
-    tagNode,
-    getNodeTag,
-    getFernComponentChildByName,
-    calculateAspectRatioFit,
-    createText,
-    chunkArray,
-    randomBetween,
-    getIconSizeFromTextSize
+  shuffle,
+  downloadImage,
+  getDimensions,
+  storageHelper,
+  createArboard,
+  getTopMostArtboardCoordinates,
+  placeInParent,
+  simpleDateFormat,
+  editDom,
+  base64ArrayBuffer,
+  someTime,
+  getGroupChildByName,
+  fakeValue,
+  createIcon,
+  getAssetFileFromPath,
+  getPadding,
+  createBorder,
+  insertNode,
+  tagNode,
+  getNodeTag,
+  getFernComponentChildByName,
+  calculateAspectRatioFit,
+  createText,
+  chunkArray,
+  randomBetween,
+  getIconSizeFromTextSize,
+  camelCaseToSentenceCase
 };
 
 /***/ }),

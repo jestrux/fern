@@ -3,84 +3,124 @@ const commands = require("commands");
 const { placeInParent, createBorder, insertNode } = require("../../utils");
 const createNavSlot = require("./createSlot");
 
-function createNavBackground({ width, height, backgroundColor, color, border, shadow }){
-    console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
-    let bg = new Rectangle();
-    bg.resize(width, height);
-    bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
-    bg.strokeEnabled = false;
-    bg.name = "BG";
-    insertNode(bg);
+function createNavBackground({
+  width,
+  height,
+  backgroundColor,
+  color,
+  border,
+  shadow,
+}) {
+  console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
+  let bg = new Rectangle();
+  bg.resize(width, height);
+  bg.fill =
+    backgroundColor == "transparent"
+      ? new Color("white", 0)
+      : new Color(backgroundColor);
+  bg.strokeEnabled = false;
+  bg.name = "BG";
+  insertNode(bg);
 
-    if(shadow)
-        bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
-    else if(border){
-        const borderNode = createBorder({ width });
-        borderNode.opacity = 0.1;
-        insertNode(borderNode);
+  if (shadow) bg.shadow = new Shadow(0, 1, 4, new Color("#000000", 0.16), true);
+  else if (border) {
+    const borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5,
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
 
-        selection.items = [bg, borderNode];
-        commands.group();
-        bg = selection.items[0];
-        placeInParent(borderNode, {x: 0, y: height});
-    }
+    selection.items = [bg, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    bg = selection.items[0];
+  }
 
-    const container = new Rectangle();
-    const containerWidth = 1400 // 1600;
-    container.resize(Math.min(width, containerWidth), height);
-    container.fill = new Color("white", 0);
-    container.strokeEnabled = false;
-    container.name = "Container";
-    insertNode(container);
+  const container = new Rectangle();
+  const containerWidth = 1400; // 1600;
+  container.resize(Math.min(width, containerWidth), height);
+  container.fill = new Color("white", 0);
+  container.strokeEnabled = false;
+  container.name = "Container";
+  insertNode(container);
 
-    selection.items = [bg, container];
-    commands.alignHorizontalCenter();
-    commands.alignVerticalCenter();
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
 
-    return [bg, container];
+  return [bg, container];
 }
 
-function assembleNavbar(props = {}, images){
-    props = {
-        ...props, ...images,
-        width: 1600,
-        // width: 1920,
-        height: 70,
+function assembleNavbar(props = {}, images) {
+  props = {
+    ...props,
+    ...images,
+    width: 1600,
+    // width: 1920,
+    height: 70,
+  };
+
+  const textBehaviorMap = {
+    loud: {
+      fontFamily: "Helvetica Neue",
+      fontStyle: "Condensed Black",
+      textTransform: "uppercase",
+      letterSpacing: 50,
+      fontSize: 22
+    },
+  };
+
+  if (props.theme && props.theme.text) {
+    props.theme.text = {
+      ...props.theme.text,
+      ...(textBehaviorMap[props.theme.text.behavior] || {}),
     };
+  }
 
-    const [bg, container] = createNavBackground(props);
-    props.container = container;
+  const [bg, container] = createNavBackground({ ...props, ...props.theme });
+  props.container = container;
 
-    const leftSlot = createNavSlot(props, [
-        "logo",
-        // "menu",
-        // "socials",
-    ]);
-    leftSlot.name = "FernNavLeftSlot";
+  const leftSlot = createNavSlot({ ...props, ...props.theme }, [
+    "logo",
+    // "menu",
+    // "socials",
+  ]);
+  leftSlot.name = "FernNavLeftSlot";
 
-    const middleSlot = createNavSlot(props, [
-        // "logo",
-        "menu",
-        // "socials"
-    ]);
-    middleSlot.name = "FernNavMiddleSlot";
+  const middleSlot = createNavSlot({ ...props, ...props.theme }, [
+    // "logo",
+    "menu",
+    // "socials"
+  ]);
+  middleSlot.name = "FernNavMiddleSlot";
 
-    const rightSlot = createNavSlot({ ...props, alignment: "right" }, [
-        // "search",
-        // "dp",
-        // "menu",
-        "socials",
-        "buttons"
-    ]);
-    rightSlot.name = "FernNavRightSlot";
+  const rightSlot = createNavSlot(
+    { ...props, ...props.theme, alignment: "right" },
+    [
+      // "search",
+      // "dp",
+      // "menu",
+      "socials",
+      "buttons",
+    ]
+  );
+  rightSlot.name = "FernNavRightSlot";
 
-    selection.items = [leftSlot, middleSlot, rightSlot];
-    commands.distributeHorizontal();
+  selection.items = [leftSlot, middleSlot, rightSlot];
+  commands.distributeHorizontal();
 
-    selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
-    commands.group();
+  selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
+  commands.group();
+  
+  const navbar = selection.items[0];
+  bg.resize(bg.localBounds.width, navbar.localBounds.height);
+  container.resize(container.localBounds.width, navbar.localBounds.height);
 
-    return selection.items[0];
+  return navbar;
 }
 
 module.exports = assembleNavbar;
