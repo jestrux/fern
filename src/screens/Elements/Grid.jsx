@@ -4,7 +4,9 @@ const Toggle = require('../../components/Toggle');
 const ButtonGroup = require('../../components/ButtonGroup');
 
 function Grid({value, onClose}){
-    const numberOfRecords = value ? value.numberOfRecords : 3;
+    const [numberOfRecords, setNumberOfRecords] = React.useState(
+        value ? value.numberOfRecords : ""
+      );
     const columns = value ? value.columns : 3;
     const columnChoices = [
         { label: 'TWO', value: 2},
@@ -31,7 +33,8 @@ function Grid({value, onClose}){
         Creators.Grid({...value, refreshData: true});
     }
 
-    function handleSetNumberOfRecords(numberOfRecords){
+    function handleSaveNumberOfRecords(e){
+        e.preventDefault();
         const newColumnCount = numberOfRecords < columns ? numberOfRecords : columns;
         Creators.Grid({...value, numberOfRecords, columns: newColumnCount});
     }
@@ -112,31 +115,25 @@ function Grid({value, onClose}){
                     <div className="flex items-center justify-between">
                         <label className="mb-1 text-md">Grid data</label>
 
-                        <span className="cursor-pointer bg-gray rounded-full flex center-center" style={{width: "22px", height: "22px", marginTop: "4px"}}
+                        <span className="cursor-pointer bg-gray rounded-full flex center-center" style={{width: "22px", height: "22px", marginTop: "-4px"}}
                             onClick={refreshData}
                         >
                             <svg width="14px" viewBox="0 0 24 24"><path fill="none" stroke="#555" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                         </span>
                     </div>
                     <div>
-                        <input className="w-full" type="range" min="2" max="20"
-                            value={numberOfRecords}
-                            onChange={(e) => handleSetNumberOfRecords(parseInt(e.target.value))}
-                        />
-                    </div>
-                    <div className="flex justify-between opacity-50 px-1">
-                        <div className="flex flex-col items-start">
-                            <span className="mb-1">|</span>
-                            2
-                        </div>
-                        <div className="flex flex-col center-center">
-                            <span className="mb-1">|</span>
-                            11
-                        </div>
-                        <div className="flex flex-col items-end">
-                            <span className="mb-1">|</span>
-                            20
-                        </div>
+                        <form
+                            className="w-full"
+                            onSubmit={handleSaveNumberOfRecords}
+                        >
+                            <input
+                                className="m-0 w-full"
+                                type="number"
+                                placeholder="Set input width here..."
+                                value={numberOfRecords}
+                                onChange={e => setNumberOfRecords(e.target.value)}
+                            />
+                        </form>
                     </div>
                 </div>
 

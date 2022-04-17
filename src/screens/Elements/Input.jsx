@@ -1,203 +1,82 @@
 const React = require("react");
-const Creators = require("../../Creators");
-const Toggle = require("../../components/Toggle");
-const ButtonGroup = require("../../components/ButtonGroup");
-const IconList = require("../../components/IconPicker/IconList");
+const ComponentPage = require("../../components/ComponentPage");
+
+const schema = {
+  label: {
+    defaultValue: "Email Address",
+    optional: true,
+  },
+  icon: {
+    type: "icon",
+    defaultValue: "mail",
+    optional: true,
+    choices: [
+      "search",
+      "account-circle",
+      "account-box",
+      "mail",
+      "phone",
+      "lock",
+      "date",
+      "location",
+      "time",
+      "attachment",
+      "link",
+      "notes",
+      "work",
+      "seat",
+    ],
+  },
+  placeholder: {
+    defaultValue: "E.g. apwbd@hogwarts.com",
+    optional: true,
+  },
+  value: {
+    defaultValue: "watson@sherlocks.com",
+    optional: true,
+  },
+  width: {
+    type: "number",
+    min: ({ icon, value, placeholder, label, size }) => {
+      let minWidth = 120;
+
+      if (value && value.length) minWidth = value.length * 13;
+      else if (placeholder && placeholder.length)
+        minWidth = placeholder.length * 13;
+
+      if (label && label.length)
+        minWidth = Math.max(label.length * 8, minWidth);
+
+      if (icon && icon.length) minWidth += 32;
+
+      return Math.ceil(minWidth);
+    },
+  },
+  size: {
+    type: "radio",
+    choices: ["md", "lg"],
+  },
+  color: {
+    type: "color",
+    choices: ["#333", "#FFF"],
+  },
+  shadow: "boolean",
+  outlined: "boolean",
+  roundness: {
+    label: "Rounded Corners",
+    type: "radio",
+    choices: ["none", "normal", "full"],
+  },
+};
 
 function Input({ value, onClose }) {
-  const [inputValue, setInputValue] = React.useState(
-    value ? value.inputValue : ""
-  );
-  const [width, setWidth] = React.useState(
-    value ? value.width : 388
-  );
-  const [placeholder, setPlaceholder] = React.useState(
-    value ? value.placeholder : ""
-  );
-  const [label, setLabel] = React.useState(value ? value.label : "");
-  const shadow = value ? value.shadow : false;
-  const roundness = value ? value.roundness : "normal";
-  const size = value ? value.size : "xs";
-  const icon = value ? value.icon : null;
-
-  function handleSetLabel(label) {
-    label = label ? "Email Address" : label;
-    Creators.Input({ ...value, label });
-  }
-
-  function handleSetIcon(icon) {
-    if (icon == true) icon = "search";
-    Creators.Input({ ...value, icon });
-  }
-
   return (
-    <div style={{ margin: "0.5rem -12px" }}>
-      <div className="flex items-center px-1">
-        <span className="cursor-pointer opacity-65" onClick={onClose}>
-          <svg height="16" viewBox="0 0 24 24" width="24">
-            <path
-              fill="#333"
-              d="M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
-            />
-          </svg>
-        </span>
-
-        <h2 className="px-0 text-md ml-1">Input</h2>
-      </div>
-
-      <div className="px-3">
-        <div className="pt-2 mt-3">
-          <div className="flex items-center justify-between">
-            <label className="text-md">Icon</label>
-
-            <Toggle checked={icon} onChange={handleSetIcon} />
-          </div>
-
-          {icon && (
-            <div
-              className="-mx-12px p-2 mt-1 bg-white overflow-y-auto"
-              style={{ maxHeight: "140px" }}
-            >
-              <IconList
-                iconNames={[
-                  "search",
-                  "account-circle",
-                  "account-box",
-                  "mail",
-                  "phone",
-                  "lock",
-                  "date",
-                  "location",
-                  "time",
-                  "attachment",
-                  "link",
-                  "notes",
-                  "work",
-                  "seat",
-                ]}
-                onChange={handleSetIcon}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="mt-1">
-          <div className="flex items-center justify-between mt-3">
-            <label className="text-md">Label</label>
-            <Toggle checked={label} onChange={handleSetLabel} />
-          </div>
-
-          {label && (
-            <div className={`-mx-12px px-12px py-2 mt-1 bg-white border-b`}>
-              <div className="flex flex-col items-start">
-                <form
-                  className="w-full"
-                  onSubmit={e => {
-                    e.preventDefault();
-                    Creators.Input({ ...value, label });
-                  }}
-                >
-                  <input
-                    className="m-0 w-full"
-                    type="text"
-                    value={label}
-                    onChange={e => setLabel(e.target.value)}
-                  />
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="pt-2 mt-3 flex flex-col items-start">
-          <label className="mb-1 text-md">Value</label>
-
-          <form
-            className="w-full"
-            onSubmit={e => {
-              e.preventDefault();
-              Creators.Input({ ...value, inputValue });
-            }}
-          >
-            <input
-              className="m-0 w-full"
-              type="text"
-              placeholder="Enter input value here..."
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-            />
-          </form>
-        </div>
-
-        <div className="pt-2 mt-3 flex flex-col items-start">
-          <label className="mb-1 text-md">Placeholder</label>
-
-          <form
-            className="w-full"
-            onSubmit={e => {
-              e.preventDefault();
-              Creators.Input({ ...value, placeholder });
-            }}
-          >
-            <input
-              className="m-0 w-full"
-              type="text"
-              placeholder="Enter input placeholder here..."
-              value={placeholder}
-              onChange={e => setPlaceholder(e.target.value)}
-            />
-          </form>
-        </div>
-
-        <div className="flex items-center justify-between mt-3 pt-2">
-          <label className="text-md">Shadow</label>
-
-          <Toggle checked={shadow}
-            onChange={shadow => Creators.Input({ ...value, shadow })}
-          />
-        </div>
-
-        <div className="pt-1 mt-3 flex flex-col items-start">
-          <label className="mb-1 text-md">Rounded Corners</label>
-
-          <ButtonGroup
-            value={roundness}
-            choices={["none", "normal", "full"]}
-            onChange={roundness => Creators.Input({ ...value, roundness })}
-          />
-        </div>
-
-        <div className="pt-1 mt-3 flex flex-col items-start">
-          <label className="mb-1 text-md">Size</label>
-
-          <ButtonGroup
-            value={size}
-            choices={["md", "lg"]}
-            onChange={size => Creators.Input({ ...value, size })}
-          />
-        </div>
-
-        <div className="pt-2 mt-3 flex flex-col items-start">
-          <label className="mb-1 text-md">Width</label>
-
-          <form
-            className="w-full"
-            onSubmit={e => {
-              e.preventDefault();
-              Creators.Input({ ...value, width });
-            }}
-          >
-            <input
-              className="m-0 w-full"
-              type="number"
-              placeholder="Set input width here..."
-              value={width}
-              onChange={e => setWidth(e.target.value)}
-            />
-          </form>
-        </div>
-      </div>
-    </div>
+    <ComponentPage
+      title="Input"
+      onClose={onClose}
+      schema={schema}
+      data={value}
+    />
   );
 }
 

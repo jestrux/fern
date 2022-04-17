@@ -18,7 +18,11 @@ function createGridBackground({ width, height, color, shadow, images }){
     insertNode(bg);
 
     const container = new Rectangle();
-    container.resize(Math.min(width, 1600), height);
+    const containerWidth = 1400; //1600;
+    container.resize(
+        Math.min(width, containerWidth), 
+        height
+    );
     container.fill = new Color("red");
     container.strokeEnabled = false;
     
@@ -33,7 +37,8 @@ function createGridBackground({ width, height, color, shadow, images }){
 function assembleGrid(props = {}, images){
     props = {
         ...props, images,
-        width: 1920, height: 800,
+        width: 1600, //1920, 
+        height: 800,
     };
 
     let [bg, container] = createGridBackground(props);

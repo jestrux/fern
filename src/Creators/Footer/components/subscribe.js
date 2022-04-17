@@ -6,7 +6,7 @@ const createButton = require("../../Button/createButton");
 
 function footerSubscribeComponent(props = {}) {
     const {
-        subscribeMessage = "Subscribe to our newsletter to get premium content. We'll respect your privacy never spam your inbox.",
+        subscribeMessage = "Subscribe to newsletter to get premium content.",
         subscribeWidth = 380,
         subscribeInset = true,
         subscribeRoundness = "md",
@@ -16,7 +16,7 @@ function footerSubscribeComponent(props = {}) {
   const input = createInput({
     // icon: "mail",
     // iconColor: subscribeColor,
-    // inputValue: "watson@sherlocks.com",
+    // value: "watson@sherlocks.com",
     width: subscribeWidth,
     placeholder: "e.g. apwbd@hogwarts.com",
     roundness: subscribeRoundness,

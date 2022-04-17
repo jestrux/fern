@@ -8,5 +8,5 @@ module.exports = {
     outlined: false,
     link: false,
     underline: false,
-    roundness: "md",
+    roundness: "normal",
 };

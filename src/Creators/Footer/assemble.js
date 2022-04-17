@@ -3,10 +3,10 @@ const commands = require("commands");
 const { placeInParent, createBorder, insertNode, getPadding, getGroupChildByName } = require("../../utils");
 const createFooterSlot = require("./createSlot");
 
-function createFooterBackground({ width, height, color }){
+function createFooterBackground({ width, height, backgroundColor }){
     let bg = new Rectangle();
     bg.resize(width, height);
-    bg.fill = new Color(color);
+    bg.fill = new Color(backgroundColor);
     bg.strokeEnabled = false;
     insertNode(bg);
 
@@ -41,13 +41,13 @@ function assembleFooter(props = {}, images){
     const bg = createFooterBackground(props);
     
     const slotDefinitions = [
-        ["logo", "about", "socials"],
+        ["logo", "about"],
         ["menu"],
-        ["menu"],
-        ["menu"],
+        // ["subscribe"],
         // ["menu"],
         // ["menu"],
-        ["subscribe"],
+        ["menu"],
+        ["socials", "subscribe"],
     ];
 
     const slots = Array(slotDefinitions);

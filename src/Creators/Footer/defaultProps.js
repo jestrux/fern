@@ -1,10 +1,11 @@
 const defaultFooterProps = {
-    color: "white",
+    backgroundColor: "white",
+    color: "#888",
     shadow: true,
     border: true,
-    showLinkTitles: true,
+    showLinkTitles: false,
     links: [
-        "About Us",
+        // "About Us",
         "Careers", "Newsroom", "Privacy Policy",
     ],
     activeLink: "Home",

@@ -29461,23 +29461,6 @@ module.exports = assembleButton;
 
 /***/ }),
 
-/***/ "./src/Creators/Button/buttonRoundnessMap.js":
-/*!***************************************************!*\
-  !*** ./src/Creators/Button/buttonRoundnessMap.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = {
-    "none": 0,
-    "sm": 2,
-    "md": 6,
-    "lg": 10,
-    "full": 999
-};
-
-/***/ }),
-
 /***/ "./src/Creators/Button/buttonSizeMap.js":
 /*!**********************************************!*\
   !*** ./src/Creators/Button/buttonSizeMap.js ***!
@@ -29490,6 +29473,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 14,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 10,
             left: 14,
@@ -29501,6 +29485,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 17,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 13,
             top: 13,
@@ -29512,6 +29497,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 22,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 16,
             left: 24,
@@ -29523,6 +29509,7 @@ module.exports = {
         size: [101, 48],
         fontSize: 22,
         fontStyle: "Medium",
+        cornerRadius: 4,
         padding: {
             bottom: 18,
             left: 26,
@@ -29547,72 +29534,78 @@ const { Color, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */
 
 const tinyColor = __webpack_require__(/*! ../../utils/tinycolor */ "./src/utils/tinycolor.js");
 const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
-const { insertNode, createIcon, getIconSizeFromTextSize } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const {
+  insertNode,
+  createIcon,
+  getIconSizeFromTextSize
+} = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const assembleButton = __webpack_require__(/*! ./assembleButton */ "./src/Creators/Button/assembleButton.js");
 const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
-const buttonRoundnessMap = __webpack_require__(/*! ./buttonRoundnessMap */ "./src/Creators/Button/buttonRoundnessMap.js");
 const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 
 function createButton(props = {}) {
-    let {
-        iconPlacement,
-        icon,
-        text,
-        size,
-        color,
-        shadow,
-        outlined,
-        link,
-        underline,
-        roundness
-    } = _extends({}, defaultButtonProps, props);
+  let {
+    iconPlacement,
+    icon,
+    text,
+    size,
+    color,
+    shadow,
+    outlined,
+    link,
+    underline,
+    roundness
+  } = _extends({}, defaultButtonProps, props);
 
-    if (!text && !text.length && !icon && !icon.length) text = "Submit";
+  if (!text && !text.length && !icon && !icon.length) text = "Submit";
 
-    const buttonProps = buttonSizeMap[size];
-    const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
+  const buttonProps = buttonSizeMap[size];
+  const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
 
-    const bgRectangle = new Rectangle();
-    bgRectangle.resize(...buttonProps.size);
-    bgRectangle.fill = new Color(color, outlined || link ? 0 : 1);
-    bgRectangle.strokeEnabled = !link;
-    bgRectangle.strokeWidth = 1.5;
+  const bgRectangle = new Rectangle();
+  bgRectangle.resize(...buttonProps.size);
+  bgRectangle.fill = new Color(color, outlined || link ? 0 : 1);
+  bgRectangle.strokeEnabled = !link;
+  bgRectangle.strokeWidth = 1.2;
 
-    bgRectangle.setAllCornerRadii(buttonRoundnessMap[roundness] || 0);
-    bgRectangle.name = "BG";
-    if (!shadow) bgRectangle.stroke = new Color(color);else bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
+  bgRectangle.setAllCornerRadii((["none", "full"].includes(roundness) ? { none: 0, full: 999 }[roundness] : buttonProps.cornerRadius) || 0);
+  bgRectangle.name = "BG";
+  if (!shadow) bgRectangle.stroke = new Color(color);else bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
 
-    insertNode(bgRectangle);
+  insertNode(bgRectangle);
 
-    let buttonText,
-        iconNode,
-        showIcon = icon && iconData[icon];
+  let buttonText,
+      iconNode,
+      showIcon = icon && iconData[icon];
 
-    let textColor = "#FFF";
-    if (outlined || link) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
+  let textColor = "#FFF";
+  if (outlined || link) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
 
-    if (showIcon) {
-        iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
-        if (iconPlacement == "right") insertNode(iconNode);
-    }
+  if (showIcon) {
+    iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
+    if (iconPlacement == "right") insertNode(iconNode);
+  }
 
-    if (text && text.length) {
-        buttonText = new Text();
-        buttonText.text = text;
+  if (text && text.length) {
+    buttonText = new Text();
+    buttonText.text = text;
 
-        buttonText.fill = new Color(textColor);
-        buttonText.fontFamily = "Helvetica Neue";
-        buttonText.fontSize = buttonProps.fontSize;
-        buttonText.fontStyle = buttonProps.fontStyle;
-        buttonText.underline = underline;
+    buttonText.fill = new Color(textColor);
+    buttonText.fontFamily = "Helvetica Neue";
+    buttonText.fontSize = buttonProps.fontSize;
+    buttonText.fontStyle = buttonProps.fontStyle;
+    buttonText.underline = underline;
 
-        insertNode(buttonText);
-    }
+    insertNode(buttonText);
+  }
 
-    if (showIcon && iconPlacement != 'right') insertNode(iconNode);
+  if (showIcon && iconPlacement != "right") insertNode(iconNode);
 
-    return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, { iconPlacement, iconSize }));
+  return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, {
+    iconPlacement,
+    iconSize
+  }));
 }
 
 module.exports = createButton;
@@ -29636,7 +29629,7 @@ module.exports = {
     outlined: false,
     link: false,
     underline: false,
-    roundness: "md"
+    roundness: "normal"
 };
 
 /***/ }),
@@ -29842,10 +29835,10 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, createBorder, insertNode, getPadding, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createFooterSlot = __webpack_require__(/*! ./createSlot */ "./src/Creators/Footer/createSlot.js");
 
-function createFooterBackground({ width, height, color }) {
+function createFooterBackground({ width, height, backgroundColor }) {
     let bg = new Rectangle();
     bg.resize(width, height);
-    bg.fill = new Color(color);
+    bg.fill = new Color(backgroundColor);
     bg.strokeEnabled = false;
     insertNode(bg);
 
@@ -29878,10 +29871,11 @@ function assembleFooter(props = {}, images) {
 
     const bg = createFooterBackground(props);
 
-    const slotDefinitions = [["logo", "about", "socials"], ["menu"], ["menu"], ["menu"],
+    const slotDefinitions = [["logo", "about"], ["menu"],
+    // ["subscribe"],
     // ["menu"],
     // ["menu"],
-    ["subscribe"]];
+    ["menu"], ["socials", "subscribe"]];
 
     const slots = Array(slotDefinitions);
 
@@ -30123,7 +30117,7 @@ const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src
 
 function footerSubscribeComponent(props = {}) {
   const {
-    subscribeMessage = "Subscribe to our newsletter to get premium content. We'll respect your privacy never spam your inbox.",
+    subscribeMessage = "Subscribe to newsletter to get premium content.",
     subscribeWidth = 380,
     subscribeInset = true,
     subscribeRoundness = "md",
@@ -30133,7 +30127,7 @@ function footerSubscribeComponent(props = {}) {
   const input = createInput({
     // icon: "mail",
     // iconColor: subscribeColor,
-    // inputValue: "watson@sherlocks.com",
+    // value: "watson@sherlocks.com",
     width: subscribeWidth,
     placeholder: "e.g. apwbd@hogwarts.com",
     roundness: subscribeRoundness
@@ -30307,11 +30301,14 @@ module.exports = createFooterSlot;
 /***/ (function(module, exports) {
 
 const defaultFooterProps = {
-    color: "white",
+    backgroundColor: "white",
+    color: "#888",
     shadow: true,
     border: true,
-    showLinkTitles: true,
-    links: ["About Us", "Careers", "Newsroom", "Privacy Policy"],
+    showLinkTitles: false,
+    links: [
+    // "About Us",
+    "Careers", "Newsroom", "Privacy Policy"],
     activeLink: "Home",
     activeColor: "#00A860",
     buttons: ["Get Started"],
@@ -30433,7 +30430,8 @@ function createGridBackground({ width, height, color, shadow, images }) {
     insertNode(bg);
 
     const container = new Rectangle();
-    container.resize(Math.min(width, 1600), height);
+    const containerWidth = 1400; //1600;
+    container.resize(Math.min(width, containerWidth), height);
     container.fill = new Color("red");
     container.strokeEnabled = false;
 
@@ -30447,7 +30445,8 @@ function createGridBackground({ width, height, color, shadow, images }) {
 
 function assembleGrid(props = {}, images) {
     props = _extends({}, props, { images,
-        width: 1920, height: 800
+        width: 1600, //1920, 
+        height: 800
     });
 
     let [bg, container] = createGridBackground(props);
@@ -31259,58 +31258,58 @@ const { selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegra
 const commands = __webpack_require__(/*! commands */ "commands");
 
 function assembleInput(inputComponents, inputProps) {
-    const [bgRectangle, inputText, label, iconNode] = inputComponents;
+  const [bgRectangle, inputText, label, iconNode] = inputComponents;
 
-    if (iconNode) {
-        selection.items = [iconNode, inputText];
-        commands.alignLeft();
-        commands.alignVerticalCenter();
-        commands.group();
-
-        const inputContent = selection.items[0];
-        const iconSize = inputProps.iconSize;
-        inputText.moveInParentCoordinates(iconSize + 10, 0);
-
-        selection.items = [bgRectangle, inputContent];
-        commands.alignHorizontalCenter();
-        commands.alignVerticalCenter();
-        commands.group();
-        inputText.moveInParentCoordinates(0, inputProps.inputValue && inputProps.inputValue.length ? -1.25 : -0.5);
-    } else {
-        selection.items = [bgRectangle, inputText];
-        commands.alignHorizontalCenter();
-        commands.alignVerticalCenter();
-        commands.group();
-    }
-
-    const input = selection.items[0];
-    const padding = inputProps.padding;
-
-    input.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: bgRectangle,
-            values: padding
-        }
-    };
-
-    if (!label) return input;
-
-    selection.items = [input, label];
+  if (iconNode) {
+    selection.items = [iconNode, inputText];
     commands.alignLeft();
+    commands.alignVerticalCenter();
     commands.group();
-    label.moveInParentCoordinates(inputProps.roundness == "full" ? 6 : 0, 0);
 
-    const inputGroup = selection.items[0];
-    inputGroup.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-            orientation: SceneNode.STACK_VERTICAL,
-            spacings: 3
-        }
-    };
+    const inputContent = selection.items[0];
+    const iconSize = inputProps.iconSize;
+    inputText.moveInParentCoordinates(iconSize + (inputProps.size == "lg" ? 16 : 12), 0);
 
-    return inputGroup;
+    selection.items = [bgRectangle, inputContent];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    inputText.moveInParentCoordinates(0, inputProps.value && inputProps.value.length ? inputProps.size == "lg" ? -1 : -1.25 : -0.5);
+  } else {
+    selection.items = [bgRectangle, inputText];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+  }
+
+  const input = selection.items[0];
+  const padding = inputProps.padding;
+
+  input.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bgRectangle,
+      values: padding
+    }
+  };
+
+  if (!label) return input;
+
+  selection.items = [input, label];
+  commands.alignLeft();
+  commands.group();
+  label.moveInParentCoordinates(inputProps.roundness == "full" ? 6 : 0, 0);
+
+  const inputGroup = selection.items[0];
+  inputGroup.layout = {
+    type: SceneNode.LAYOUT_STACK,
+    stack: {
+      orientation: SceneNode.STACK_VERTICAL,
+      spacings: 3
+    }
+  };
+
+  return inputGroup;
 }
 
 module.exports = assembleInput;
@@ -31329,82 +31328,88 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { Color, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
 const iconData = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
-const { insertNode, createIcon, createText, getIconSizeFromTextSize } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const {
+  insertNode,
+  createIcon,
+  createText,
+  getIconSizeFromTextSize
+} = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const assembleInput = __webpack_require__(/*! ./assembleInput */ "./src/Creators/Input/assembleInput.js");
 const defaultInputProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Input/defaultProps.js");
 const inputSizeMap = __webpack_require__(/*! ./inputSizeMap */ "./src/Creators/Input/inputSizeMap.js");
-const inputRoundnessMap = __webpack_require__(/*! ./inputRoundnessMap */ "./src/Creators/Input/inputRoundnessMap.js");
 
 function createInput(props = {}) {
-    let {
-        icon,
-        iconColor,
-        iconOpacity,
-        backgroundColor,
-        borderColor,
-        color,
-        label,
-        placeholder,
-        placeholderOpacity,
-        inputValue,
-        size,
-        roundness,
-        width
-    } = _extends({}, defaultInputProps, props);
+  let {
+    icon,
+    iconColor,
+    iconOpacity,
+    backgroundColor,
+    borderColor,
+    color,
+    labelOpacity,
+    label,
+    placeholder,
+    placeholderOpacity,
+    value,
+    size,
+    outlined,
+    roundness,
+    width
+  } = _extends({}, defaultInputProps, props);
 
-    const inputProps = inputSizeMap[size];
-    const padding = inputProps.padding;
+  const inputProps = inputSizeMap[size];
+  const padding = inputProps.padding;
 
-    if (roundness == "full") {
-        padding.left = padding.left + 4;
-        padding.right = padding.right + 4;
-    }
+  const validIconWaSet = icon && iconData[icon];
 
-    const iconSize = icon && iconData[icon] ? getIconSizeFromTextSize(icon, inputProps.fontSize) : 0;
+  const iconSize = validIconWaSet ? getIconSizeFromTextSize(icon, inputProps.fontSize) : 0;
 
-    const bgRectangle = new Rectangle();
-    bgRectangle.resize(82, 150);
-    bgRectangle.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
-    bgRectangle.stroke = new Color(borderColor ? borderColor : "#888");
-    bgRectangle.strokeEnabled = true;
-    bgRectangle.strokeWidth = 1;
-    // bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
+  const bgRectangle = new Rectangle();
+  bgRectangle.resize(82, 150);
+  bgRectangle.fill = backgroundColor == "transparent" || outlined ? new Color("white", 0) : new Color(backgroundColor);
+  bgRectangle.stroke = new Color(color);
+  bgRectangle.strokeEnabled = true;
+  bgRectangle.strokeWidth = 1;
 
-    bgRectangle.setAllCornerRadii((["none", "full"].includes(roundness) ? inputRoundnessMap[roundness] : inputProps.cornerRadius) || 0);
-    bgRectangle.name = "BG";
+  bgRectangle.setAllCornerRadii((["none", "full"].includes(roundness) ? { none: 0, full: 999 }[roundness] : inputProps.cornerRadius) || 0);
+  bgRectangle.name = "BG";
 
-    insertNode(bgRectangle);
+  insertNode(bgRectangle);
 
-    const text = inputValue && inputValue.length ? inputValue : placeholder;
-    const inputText = createText(text + " ", {
-        fill: new Color(color, inputValue && inputValue.length ? 1 : placeholderOpacity),
-        width: width - ((iconSize > 0 ? iconSize + 10 : 0) + padding.left + padding.right),
-        fontSize: inputProps.fontSize,
-        fontStyle: inputProps.fontStyle
+  const text = value && value.length ? value : placeholder;
+  const inputText = createText(text + " ", {
+    fill: new Color(color, value && value.length ? 1 : placeholderOpacity),
+    width: width - ((iconSize > 0 ? iconSize + 10 : 0) + padding.left + padding.right),
+    fontSize: inputProps.fontSize,
+    fontStyle: inputProps.fontStyle
+  });
+  insertNode(inputText);
+
+  let iconNode;
+  if (validIconWaSet) {
+    iconNode = createIcon(iconData[icon], {
+      fill: iconColor || color,
+      size: iconSize,
+      opacity: iconOpacity
     });
-    insertNode(inputText);
+    insertNode(iconNode);
+  }
 
-    let iconNode;
-    if (icon && iconData[icon]) {
-        iconNode = createIcon(iconData[icon], { fill: iconColor, size: iconSize, opacity: iconOpacity });
-        insertNode(iconNode);
-    }
+  let labelNode;
+  if (label && label.length) {
+    labelNode = createText(label, {
+      fill: new Color(color, labelOpacity),
+      fontSize: 17,
+      type: Text.POINT
+    });
+    insertNode(labelNode);
+  }
 
-    let labelNode;
-    if (label && label.length) {
-        labelNode = createText(label, {
-            fill: new Color("#777"),
-            fontSize: 17,
-            type: Text.POINT
-        });
-        insertNode(labelNode);
-    }
-
-    return assembleInput([bgRectangle, inputText, labelNode, iconNode], _extends({}, props, {
-        iconSize: 20,
-        padding
-    }));
+  return assembleInput([bgRectangle, inputText, labelNode, iconNode], _extends({}, props, {
+    iconSize: 20,
+    padding
+  }));
 }
 
 module.exports = createInput;
@@ -31420,14 +31425,16 @@ module.exports = createInput;
 
 const defaultInputProps = {
     icon: null,
-    iconColor: "#ACACAC",
-    iconOpacity: 1,
+    // iconColor: "#ACACAC",
+    iconOpacity: 0.5,
     backgroundColor: "#fff",
     color: "#333",
-    inputValue: "",
+    value: "",
     // label: "Email Address",
-    placeholder: "Enter email here...",
+    labelOpacity: 0.5,
+    placeholder: "E.g. apwbd@hogwarts.com",
     placeholderOpacity: 0.3,
+    outlined: false,
     shadow: false,
     roundness: "normal",
     size: "md",
@@ -31481,23 +31488,6 @@ module.exports = Input;
 
 /***/ }),
 
-/***/ "./src/Creators/Input/inputRoundnessMap.js":
-/*!*************************************************!*\
-  !*** ./src/Creators/Input/inputRoundnessMap.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = {
-    "none": 0,
-    "sm": 2,
-    "md": 6,
-    "lg": 10,
-    "full": 999
-};
-
-/***/ }),
-
 /***/ "./src/Creators/Input/inputSizeMap.js":
 /*!********************************************!*\
   !*** ./src/Creators/Input/inputSizeMap.js ***!
@@ -31514,18 +31504,18 @@ module.exports = {
         cornerRadius: 6,
         padding: {
             bottom: 12, top: 12,
-            left: 12, right: 12
+            left: 16, right: 16
         }
     },
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Medium",
+        fontStyle: "Regular",
         labelFontSize: 20,
         cornerRadius: 6,
         padding: {
             bottom: 16, top: 16,
-            left: 16, right: 16
+            left: 20, right: 20
         }
     }
 };
@@ -32396,25 +32386,49 @@ module.exports = createNavSlot;
 /***/ (function(module, exports) {
 
 const defaultNavbarProps = {
-    backgroundColor: "transparent",
-    // backgroundColor: "white",
-    color: "white",
-    // color: "black",
-    // activeColor: "#17FD9B",
-    inActiveOpacity: 0.5,
-    activeColor: "white",
-    shadow: false,
-    border: false,
-    links: ["Home", "About Us", "Our Services", "Blogs", "Contact Us"],
+    slots: {
+        left: ["logo"],
+        middle: [],
+        right: ["menu", "buttons"]
+    },
+    links: ["Home", "About Us", "Events", "Contact Us"],
     activeLink: "Home",
     buttons: [
     // "Sign In", 
     "Get Started"],
-    mainButtonStyle: "outline",
-    socialMediaIcons: ["facebook", "twitter", "instagram"],
-    profile: true,
-    search: true,
-    showIndicator: false
+    profile: false,
+    search: false,
+    shoppingCart: false,
+    socialMediaIcons: [], //["facebook", "twitter", "instagram"],
+    theme: {
+        backgroundColor: "white",
+        color: "black",
+        // activeColor: "#17FD9B",
+        shadow: false,
+        border: false
+        // inActiveOpacity: 0.5,
+        // buttons: {
+        //     size: "sm",
+        //     style: "outline", //fill,
+        //     roundness: "md"
+        // },
+        // text: {
+        //     fontFamily: "Helvetica Neue",
+        //     fontWeight: "Regular", // "Condensed Black",
+        //     textTransform: "none", // "titlecase", "lowercase", "uppercase",
+        // },
+        // menu: {
+        //     showIndicator: false,
+        // },
+        // socialMediaIcons: {
+        //     backgroundStyle: "none", // "fill", "outline",
+        //     roundness: "md", // "full", "none", 
+        // },
+        // search: {
+        //     style: "outline", // fill,
+        //     roundness: "md", // full,
+        // },
+    }
 };
 
 module.exports = defaultNavbarProps;
@@ -33035,6 +33049,290 @@ module.exports = ColorList;
 
 /***/ }),
 
+/***/ "./src/components/ComponentFieldEditor.jsx":
+/*!*************************************************!*\
+  !*** ./src/components/ComponentFieldEditor.jsx ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ "./src/components/ButtonGroup.jsx");
+const ColorList = __webpack_require__(/*! ./ColorList */ "./src/components/ColorList.jsx");
+const IconList = __webpack_require__(/*! ./IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
+const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
+
+const ComponentFieldEditor = function ({ field = {}, onChange }) {
+  const {
+    __id,
+    __data,
+    optional,
+    label,
+    type,
+    choices,
+    defaultValue,
+    offValue,
+    min,
+    max,
+    value
+  } = _extends({}, field ? field : {});
+
+  function handleToggle(newValue) {
+    const fieldTypeIsText = !type || !type.length || type.toLowerCase() == "text";
+    const derivedOffValue = offValue || fieldTypeIsText ? "" : null;
+
+    handleChange(!newValue ? derivedOffValue : defaultValue || true);
+    onChange(newProps);
+  }
+
+  const [tempValue, setTempValue] = React.useState(value);
+
+  function handleChange(newValue) {
+    if (min != undefined) {
+      let minValue = min;
+      if (typeof min == "function") minValue = min(__data);
+      if (newValue < minValue) newValue = minValue;
+    }
+    if (max != undefined) {
+      let maxValue = max;
+      if (typeof max == "function") maxValue = max(__data);
+      if (newValue > maxValue) newValue = maxValue;
+    }
+
+    onChange(__id, newValue);
+  }
+
+  return React.createElement(
+    "div",
+    { className: "ComponentFieldEditor" },
+    label && label.length && React.createElement(
+      "div",
+      { className: "flex items-center justify-between" },
+      React.createElement(
+        "label",
+        { className: "mt-2 text-md", style: { marginBottom: "0.1rem" } },
+        label.charAt(0).toUpperCase(),
+        label.substring(1)
+      ),
+      type == "boolean" && React.createElement(Toggle, { checked: value, onChange: handleChange }),
+      optional == true && React.createElement(Toggle, { checked: value, onChange: handleToggle })
+    ),
+    (!optional || value) && React.createElement(
+      React.Fragment,
+      null,
+      type == "radio" && React.createElement(ButtonGroup, {
+        value: value,
+        choices: choices,
+        onChange: handleChange
+      }),
+      type == "color" && React.createElement(ColorList, {
+        small: true,
+        colors: choices,
+        selectedColor: value,
+        onChange: handleChange
+      }),
+      type == "icon" && React.createElement(
+        "div",
+        {
+          className: "-mx-12px p-2 mt-1 bg-white overflow-y-auto",
+          style: { maxHeight: "140px" }
+        },
+        React.createElement(IconList, { onChange: handleChange })
+      ),
+      !["boolean", "color", "icon", "radio"].includes(type) && React.createElement(
+        "form",
+        {
+          className: "w-full",
+          onSubmit: e => {
+            e.preventDefault();
+            handleChange(tempValue);
+          }
+        },
+        React.createElement("input", {
+          className: "m-0 w-full",
+          type: type,
+          value: tempValue,
+          "uxp-quiet": "true",
+          onChange: e => setTempValue(e.target.value)
+        })
+      )
+    )
+  );
+};
+
+module.exports = ComponentFieldEditor;
+
+/***/ }),
+
+/***/ "./src/components/ComponentFields.jsx":
+/*!********************************************!*\
+  !*** ./src/components/ComponentFields.jsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentFieldEditor = __webpack_require__(/*! ./ComponentFieldEditor */ "./src/components/ComponentFieldEditor.jsx");
+const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
+
+function ComponentFieldGroup({ field, data, onChange }) {
+  function handleToggle(newValue) {
+    const newProps = field.children.reduce((agg, child) => {
+      const childTypeIsText = !child.type || !child.type.length || child.type.toLowerCase() == "text";
+      const offValue = child.offValue || childTypeIsText ? "" : null;
+
+      agg[child.__id] = !newValue ? offValue : child.defaultValue || true;
+
+      return agg;
+    }, {});
+    onChange(newProps);
+  }
+
+  const checked = field.children.every(child => child.value);
+
+  return React.createElement(
+    "div",
+    { className: "mb-2" },
+    React.createElement(
+      "div",
+      { className: "flex items-center justify-between" },
+      React.createElement(
+        "label",
+        { className: "mt-2 text-md" },
+        field.label.charAt(0).toUpperCase(),
+        field.label.substring(1)
+      ),
+      field.optional && React.createElement(Toggle, { checked: checked, onChange: handleToggle })
+    ),
+    checked && field.children.map((child, index) => React.createElement(ComponentFieldEditor, {
+      key: index,
+      field: _extends({}, child, { __data: data }),
+      onChange: onChange
+    }))
+  );
+}
+
+function ComponentFields({ schema, data, onChange }) {
+  const fields = [];
+
+  Object.entries(schema).forEach(([label, props]) => {
+    if (typeof props == "string") props = { type: props };
+
+    props.__id = label;
+    props.label = ["undefined", null].includes(typeof props.label) ? label : props.label;
+    props.value = data[label];
+
+    if (!props.group) fields.push(props);else {
+      const groupIndex = fields.findIndex(group => group.label == props.group);
+
+      if (groupIndex != -1) fields[groupIndex].children.push(props);else {
+        const group = {
+          type: "group",
+          label: props.group,
+          optional: props.optional == "group",
+          children: [props]
+        };
+
+        fields.push(group);
+      }
+    }
+  });
+
+  return React.createElement(
+    "div",
+    null,
+    fields.map((field, index) => {
+      if (field.type == "group") return React.createElement(ComponentFieldGroup, {
+        key: index,
+        field: field,
+        data: data,
+        onChange: onChange
+      });
+
+      return React.createElement(
+        "div",
+        { className: "mb-2", key: index },
+        React.createElement(ComponentFieldEditor, {
+          field: _extends({}, field, { __data: data }),
+          onChange: onChange
+        })
+      );
+    })
+  );
+}
+
+module.exports = ComponentFields;
+
+/***/ }),
+
+/***/ "./src/components/ComponentPage.jsx":
+/*!******************************************!*\
+  !*** ./src/components/ComponentPage.jsx ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../Creators */ "./src/Creators/index.js");
+const ComponentFields = __webpack_require__(/*! ./ComponentFields */ "./src/components/ComponentFields.jsx");
+
+const ComponentPage = function ({ title, onClose, schema, data, children }) {
+  function updateField(field, newValue) {
+    let updatedProps = typeof field == "string" ? { [field]: newValue } : field;
+    Creators[title](_extends({}, data, updatedProps));
+  }
+
+  return React.createElement(
+    "div",
+    { style: { margin: "0.5rem -12px" } },
+    React.createElement(
+      "div",
+      { className: "flex items-center px-1" },
+      React.createElement(
+        "span",
+        { className: "cursor-pointer opacity-65", onClick: onClose },
+        React.createElement(
+          "svg",
+          { height: "16", viewBox: "0 0 24 24", width: "24" },
+          React.createElement("path", {
+            fill: "#333",
+            d: "M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
+          })
+        )
+      ),
+      React.createElement(
+        "h2",
+        { className: "px-0 text-md ml-1" },
+        title
+      )
+    ),
+    React.createElement(
+      "div",
+      { className: "px-3" },
+      schema && React.createElement(
+        "div",
+        { className: "mt-3" },
+        React.createElement(ComponentFields, {
+          schema: schema,
+          data: data,
+          onChange: updateField
+        })
+      ),
+      children
+    )
+  );
+};
+
+module.exports = ComponentPage;
+
+/***/ }),
+
 /***/ "./src/components/IconPicker/IconList.jsx":
 /*!************************************************!*\
   !*** ./src/components/IconPicker/IconList.jsx ***!
@@ -33275,190 +33573,55 @@ module.exports = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
-const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
-const ColorList = __webpack_require__(/*! ../../components/ColorList */ "./src/components/ColorList.jsx");
-const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
-const IconList = __webpack_require__(/*! ../../components/IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+
+const schema = {
+  icon: {
+    type: "icon",
+    label: "",
+    defaultValue: "add",
+    group: "icon",
+    optional: "group"
+  },
+  iconPlacement: {
+    label: "Placement",
+    type: "radio",
+    choices: ["left", "right"],
+    defaultValue: "left",
+    group: "icon",
+    optional: "group"
+  },
+  text: {
+    label: "",
+    defaultValue: "Submit",
+    group: "text",
+    optional: "group"
+  },
+  size: {
+    type: "radio",
+    choices: ["xs", "sm", "md", "lg"]
+  },
+  color: {
+    type: "color",
+    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"]
+  },
+  shadow: "boolean",
+  outlined: "boolean",
+  roundness: {
+    label: "Rounded Corners",
+    type: "radio",
+    choices: ["none", "normal", "full"]
+  }
+};
 
 function Button({ value, onClose }) {
-    const [text, setText] = React.useState(value ? value.text : "Submit");
-    const iconPlacement = value ? value.iconPlacement : "left";
-    const size = value ? value.size : "sm";
-    const color = value ? value.color : "#000";
-    const shadow = value ? value.shadow : false;
-    const outlined = value ? value.outlined : false;
-    const roundness = value ? value.roundness : "xs";
-    const icon = value ? value.icon : null;
-
-    function handleSetSize(size) {
-        Creators.Button(_extends({}, value, { size }));
-    }
-
-    function handleSetColor(color) {
-        Creators.Button(_extends({}, value, { color }));
-    }
-
-    function handleSetShadow(shadow) {
-        Creators.Button(_extends({}, value, { shadow }));
-    }
-
-    function handleSetOutlined(outlined) {
-        Creators.Button(_extends({}, value, { outlined }));
-    }
-
-    function handleSetRoundness(roundness) {
-        Creators.Button(_extends({}, value, { roundness }));
-    }
-
-    function handleSetIcon(newValue) {
-        let icon = newValue,
-            iconPlacement = value.iconPlacement;
-        if (["left", "right", "none"].includes(newValue)) {
-            if (newValue == "none") icon = null;else {
-                icon = value.icon && value.icon.length ? value.icon : "add";
-                iconPlacement = newValue;
-            }
-        };
-        Creators.Button(_extends({}, value, { icon, iconPlacement }));
-    }
-
-    return React.createElement(
-        'div',
-        { style: { margin: "0.5rem -12px" } },
-        React.createElement(
-            'div',
-            { className: 'flex items-center px-1' },
-            React.createElement(
-                'span',
-                { className: 'cursor-pointer opacity-65', onClick: onClose },
-                React.createElement(
-                    'svg',
-                    { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
-                )
-            ),
-            React.createElement(
-                'h2',
-                { className: 'px-0 text-md ml-1' },
-                'Button'
-            )
-        ),
-        React.createElement(
-            'div',
-            { className: 'px-3' },
-            React.createElement(
-                'div',
-                { className: 'pt-2 mt-3' },
-                React.createElement(
-                    'div',
-                    { className: 'flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-md' },
-                        'Icon'
-                    ),
-                    React.createElement(ButtonGroup, {
-                        value: icon ? iconPlacement : "none",
-                        choices: ["none", "left", "right"],
-                        onChange: handleSetIcon
-                    })
-                ),
-                icon && React.createElement(
-                    'div',
-                    { className: '-mx-12px p-2 mt-1 bg-white overflow-y-auto' },
-                    React.createElement(IconList, {
-                        onChange: handleSetIcon
-                    })
-                )
-            ),
-            React.createElement(
-                'div',
-                { className: 'pt-2 mt-3 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Text'
-                ),
-                React.createElement(
-                    'form',
-                    { className: 'w-full', onSubmit: e => {
-                            e.preventDefault();Creators.Button(_extends({}, value, { text }));
-                        } },
-                    React.createElement('input', { className: 'm-0 w-full', type: 'text',
-                        value: text,
-                        onChange: e => setText(e.target.value)
-                    })
-                )
-            ),
-            React.createElement(
-                'div',
-                { className: 'pt-2 mt-3 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Size'
-                ),
-                React.createElement(ButtonGroup, {
-                    value: size,
-                    choices: ["xs", "sm", "md", "lg"],
-                    onChange: handleSetSize
-                })
-            ),
-            React.createElement(
-                'div',
-                { className: 'pt-2 mt-3 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Color'
-                ),
-                React.createElement(ColorList, {
-                    small: true,
-                    colors: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"],
-                    selectedColor: color,
-                    onChange: handleSetColor
-                })
-            ),
-            React.createElement(
-                'div',
-                { className: 'flex items-center justify-between mt-3 pt-2' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Shadow'
-                ),
-                React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
-            ),
-            React.createElement(
-                'div',
-                { className: 'flex items-center justify-between mt-3 pt-1' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Outlined'
-                ),
-                React.createElement(Toggle, { checked: outlined, onChange: handleSetOutlined })
-            ),
-            React.createElement(
-                'div',
-                { className: 'pt-1 mt-3 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'Rounded Corners'
-                ),
-                React.createElement(ButtonGroup, {
-                    value: roundness,
-                    choices: ["none", "sm", "md", "lg", "full"],
-                    onChange: handleSetRoundness
-                })
-            )
-        )
-    );
+  return React.createElement(ComponentPage, {
+    title: "Button",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
 }
 
 module.exports = Button;
@@ -34014,7 +34177,7 @@ const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/compone
 const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
 
 function Grid({ value, onClose }) {
-    const numberOfRecords = value ? value.numberOfRecords : 3;
+    const [numberOfRecords, setNumberOfRecords] = React.useState(value ? value.numberOfRecords : "");
     const columns = value ? value.columns : 3;
     const columnChoices = [{ label: 'TWO', value: 2 }, { label: 'THREE', value: 3 }, { label: 'FOUR', value: 4 }, { label: 'FIVE', value: 5 }];
     const columnSpacing = value ? value.columnSpacing : 20;
@@ -34036,7 +34199,8 @@ function Grid({ value, onClose }) {
         Creators.Grid(_extends({}, value, { refreshData: true }));
     }
 
-    function handleSetNumberOfRecords(numberOfRecords) {
+    function handleSaveNumberOfRecords(e) {
+        e.preventDefault();
         const newColumnCount = numberOfRecords < columns ? numberOfRecords : columns;
         Creators.Grid(_extends({}, value, { numberOfRecords, columns: newColumnCount }));
     }
@@ -34136,7 +34300,7 @@ function Grid({ value, onClose }) {
                     ),
                     React.createElement(
                         'span',
-                        { className: 'cursor-pointer bg-gray rounded-full flex center-center', style: { width: "22px", height: "22px", marginTop: "4px" },
+                        { className: 'cursor-pointer bg-gray rounded-full flex center-center', style: { width: "22px", height: "22px", marginTop: "-4px" },
                             onClick: refreshData
                         },
                         React.createElement(
@@ -34149,43 +34313,19 @@ function Grid({ value, onClose }) {
                 React.createElement(
                     'div',
                     null,
-                    React.createElement('input', { className: 'w-full', type: 'range', min: '2', max: '20',
-                        value: numberOfRecords,
-                        onChange: e => handleSetNumberOfRecords(parseInt(e.target.value))
-                    })
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'flex justify-between opacity-50 px-1' },
                     React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-start' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        '2'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col center-center' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        '11'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-end' },
-                        React.createElement(
-                            'span',
-                            { className: 'mb-1' },
-                            '|'
-                        ),
-                        '20'
+                        'form',
+                        {
+                            className: 'w-full',
+                            onSubmit: handleSaveNumberOfRecords
+                        },
+                        React.createElement('input', {
+                            className: 'm-0 w-full',
+                            type: 'number',
+                            placeholder: 'Set input width here...',
+                            value: numberOfRecords,
+                            onChange: e => setNumberOfRecords(e.target.value)
+                        })
                     )
                 )
             ),
@@ -34685,244 +34825,66 @@ module.exports = Image;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
-const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
-const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
-const IconList = __webpack_require__(/*! ../../components/IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+
+const schema = {
+  label: {
+    defaultValue: "Email Address",
+    optional: true
+  },
+  icon: {
+    type: "icon",
+    defaultValue: "mail",
+    optional: true,
+    choices: ["search", "account-circle", "account-box", "mail", "phone", "lock", "date", "location", "time", "attachment", "link", "notes", "work", "seat"]
+  },
+  placeholder: {
+    defaultValue: "E.g. apwbd@hogwarts.com",
+    optional: true
+  },
+  value: {
+    defaultValue: "watson@sherlocks.com",
+    optional: true
+  },
+  width: {
+    type: "number",
+    min: ({ icon, value, placeholder, label, size }) => {
+      let minWidth = 120;
+
+      if (value && value.length) minWidth = value.length * 13;else if (placeholder && placeholder.length) minWidth = placeholder.length * 13;
+
+      if (label && label.length) minWidth = Math.max(label.length * 8, minWidth);
+
+      if (icon && icon.length) minWidth += 32;
+
+      return Math.ceil(minWidth);
+    }
+  },
+  size: {
+    type: "radio",
+    choices: ["md", "lg"]
+  },
+  color: {
+    type: "color",
+    choices: ["#333", "#FFF"]
+  },
+  shadow: "boolean",
+  outlined: "boolean",
+  roundness: {
+    label: "Rounded Corners",
+    type: "radio",
+    choices: ["none", "normal", "full"]
+  }
+};
 
 function Input({ value, onClose }) {
-  const [inputValue, setInputValue] = React.useState(value ? value.inputValue : "");
-  const [width, setWidth] = React.useState(value ? value.width : 388);
-  const [placeholder, setPlaceholder] = React.useState(value ? value.placeholder : "");
-  const [label, setLabel] = React.useState(value ? value.label : "");
-  const shadow = value ? value.shadow : false;
-  const roundness = value ? value.roundness : "normal";
-  const size = value ? value.size : "xs";
-  const icon = value ? value.icon : null;
-
-  function handleSetLabel(label) {
-    label = label ? "Email Address" : label;
-    Creators.Input(_extends({}, value, { label }));
-  }
-
-  function handleSetIcon(icon) {
-    if (icon == true) icon = "search";
-    Creators.Input(_extends({}, value, { icon }));
-  }
-
-  return React.createElement(
-    "div",
-    { style: { margin: "0.5rem -12px" } },
-    React.createElement(
-      "div",
-      { className: "flex items-center px-1" },
-      React.createElement(
-        "span",
-        { className: "cursor-pointer opacity-65", onClick: onClose },
-        React.createElement(
-          "svg",
-          { height: "16", viewBox: "0 0 24 24", width: "24" },
-          React.createElement("path", {
-            fill: "#333",
-            d: "M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
-          })
-        )
-      ),
-      React.createElement(
-        "h2",
-        { className: "px-0 text-md ml-1" },
-        "Input"
-      )
-    ),
-    React.createElement(
-      "div",
-      { className: "px-3" },
-      React.createElement(
-        "div",
-        { className: "pt-2 mt-3" },
-        React.createElement(
-          "div",
-          { className: "flex items-center justify-between" },
-          React.createElement(
-            "label",
-            { className: "text-md" },
-            "Icon"
-          ),
-          React.createElement(Toggle, { checked: icon, onChange: handleSetIcon })
-        ),
-        icon && React.createElement(
-          "div",
-          {
-            className: "-mx-12px p-2 mt-1 bg-white overflow-y-auto",
-            style: { maxHeight: "140px" }
-          },
-          React.createElement(IconList, {
-            iconNames: ["search", "account-circle", "account-box", "mail", "phone", "lock", "date", "location", "time", "attachment", "link", "notes", "work", "seat"],
-            onChange: handleSetIcon
-          })
-        )
-      ),
-      React.createElement(
-        "div",
-        { className: "mt-1" },
-        React.createElement(
-          "div",
-          { className: "flex items-center justify-between mt-3" },
-          React.createElement(
-            "label",
-            { className: "text-md" },
-            "Label"
-          ),
-          React.createElement(Toggle, { checked: label, onChange: handleSetLabel })
-        ),
-        label && React.createElement(
-          "div",
-          { className: `-mx-12px px-12px py-2 mt-1 bg-white border-b` },
-          React.createElement(
-            "div",
-            { className: "flex flex-col items-start" },
-            React.createElement(
-              "form",
-              {
-                className: "w-full",
-                onSubmit: e => {
-                  e.preventDefault();
-                  Creators.Input(_extends({}, value, { label }));
-                }
-              },
-              React.createElement("input", {
-                className: "m-0 w-full",
-                type: "text",
-                value: label,
-                onChange: e => setLabel(e.target.value)
-              })
-            )
-          )
-        )
-      ),
-      React.createElement(
-        "div",
-        { className: "pt-2 mt-3 flex flex-col items-start" },
-        React.createElement(
-          "label",
-          { className: "mb-1 text-md" },
-          "Value"
-        ),
-        React.createElement(
-          "form",
-          {
-            className: "w-full",
-            onSubmit: e => {
-              e.preventDefault();
-              Creators.Input(_extends({}, value, { inputValue }));
-            }
-          },
-          React.createElement("input", {
-            className: "m-0 w-full",
-            type: "text",
-            placeholder: "Enter input value here...",
-            value: inputValue,
-            onChange: e => setInputValue(e.target.value)
-          })
-        )
-      ),
-      React.createElement(
-        "div",
-        { className: "pt-2 mt-3 flex flex-col items-start" },
-        React.createElement(
-          "label",
-          { className: "mb-1 text-md" },
-          "Placeholder"
-        ),
-        React.createElement(
-          "form",
-          {
-            className: "w-full",
-            onSubmit: e => {
-              e.preventDefault();
-              Creators.Input(_extends({}, value, { placeholder }));
-            }
-          },
-          React.createElement("input", {
-            className: "m-0 w-full",
-            type: "text",
-            placeholder: "Enter input placeholder here...",
-            value: placeholder,
-            onChange: e => setPlaceholder(e.target.value)
-          })
-        )
-      ),
-      React.createElement(
-        "div",
-        { className: "flex items-center justify-between mt-3 pt-2" },
-        React.createElement(
-          "label",
-          { className: "text-md" },
-          "Shadow"
-        ),
-        React.createElement(Toggle, { checked: shadow,
-          onChange: shadow => Creators.Input(_extends({}, value, { shadow }))
-        })
-      ),
-      React.createElement(
-        "div",
-        { className: "pt-1 mt-3 flex flex-col items-start" },
-        React.createElement(
-          "label",
-          { className: "mb-1 text-md" },
-          "Rounded Corners"
-        ),
-        React.createElement(ButtonGroup, {
-          value: roundness,
-          choices: ["none", "normal", "full"],
-          onChange: roundness => Creators.Input(_extends({}, value, { roundness }))
-        })
-      ),
-      React.createElement(
-        "div",
-        { className: "pt-1 mt-3 flex flex-col items-start" },
-        React.createElement(
-          "label",
-          { className: "mb-1 text-md" },
-          "Size"
-        ),
-        React.createElement(ButtonGroup, {
-          value: size,
-          choices: ["md", "lg"],
-          onChange: size => Creators.Input(_extends({}, value, { size }))
-        })
-      ),
-      React.createElement(
-        "div",
-        { className: "pt-2 mt-3 flex flex-col items-start" },
-        React.createElement(
-          "label",
-          { className: "mb-1 text-md" },
-          "Width"
-        ),
-        React.createElement(
-          "form",
-          {
-            className: "w-full",
-            onSubmit: e => {
-              e.preventDefault();
-              Creators.Input(_extends({}, value, { width }));
-            }
-          },
-          React.createElement("input", {
-            className: "m-0 w-full",
-            type: "number",
-            placeholder: "Set input width here...",
-            value: width,
-            onChange: e => setWidth(e.target.value)
-          })
-        )
-      )
-    )
-  );
+  return React.createElement(ComponentPage, {
+    title: "Input",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
 }
 
 module.exports = Input;
@@ -35499,67 +35461,47 @@ const Creators = __webpack_require__(/*! ../../../Creators */ "./src/Creators/in
 const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
 const ButtonGroup = __webpack_require__(/*! ../../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
 const NavbarLinks = __webpack_require__(/*! ./Links */ "./src/screens/Elements/Navbar/Links.jsx");
+const PageTitle = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ComponentFieldEditor = __webpack_require__(/*! ../../../components/ComponentFieldEditor */ "./src/components/ComponentFieldEditor.jsx");
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "setValue":
+      return _extends({}, state, { isRunning: true });
+    default:
+      throw new Error();
+  }
+}
 
 function Navbar({ value, onClose }) {
-    const shadow = value ? value.shadow : false;
-    const [links, setLinks] = React.useState(value ? value.links : []);
+  const [state, dispatch] = useReducer(reducer, value);
+  const theme = state.theme;
 
-    function handleSetShadow(shadow) {
-        Creators.Navbar(_extends({}, value, { shadow }));
-    }
+  function updateField(field, newValue) {
+    Creators.Navbar(_extends({}, value, { [field]: newValue }));
+  }
 
-    function handleSetLinks(links, newActiveLink) {
-        setLinks(links);
+  function handleSetLinks(links, newActiveLink) {
+    setLinks(links);
 
-        const newProps = _extends({}, value, { links });
+    const newProps = _extends({}, value, { links });
 
-        if (newActiveLink) newProps.activeLink = newActiveLink;
+    if (newActiveLink) newProps.activeLink = newActiveLink;
 
-        Creators.Navbar(newProps);
-    }
+    Creators.Navbar(newProps);
+  }
 
-    return React.createElement(
-        'div',
-        { style: { margin: "0.5rem -12px" } },
-        React.createElement(
-            'div',
-            { className: 'flex items-center px-1' },
-            React.createElement(
-                'span',
-                { className: 'cursor-pointer opacity-65', onClick: onClose },
-                React.createElement(
-                    'svg',
-                    { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
-                )
-            ),
-            React.createElement(
-                'h2',
-                { className: 'px-0 text-md ml-1' },
-                'Navbar'
-            )
-        ),
-        React.createElement(
-            'div',
-            { className: 'px-3' },
-            React.createElement(
-                'div',
-                { className: 'flex items-center justify-between mt-3 pt-2' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Shadow'
-                ),
-                React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
-            )
-        ),
-        React.createElement(NavbarLinks, {
-            links: links,
-            activeLink: value.activeLink,
-            onChange: handleSetLinks,
-            onChangeActiveLink: activeLink => Creators.Navbar(_extends({}, value, { activeLink }))
-        })
-    );
+  return React.createElement(
+    "div",
+    { style: { margin: "0.5rem -12px" } },
+    React.createElement(PageTitle, { title: "Navbar", onClose: onClose }),
+    React.createElement(NavbarLinks, {
+      links: state.links,
+      activeLink: state.activeLink,
+      onChange: handleSetLinks,
+      onChangeActiveLink: activeLink => Creators.Navbar(_extends({}, value, { activeLink }))
+    })
+  );
 }
 
 module.exports = Navbar;

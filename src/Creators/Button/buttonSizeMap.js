@@ -3,6 +3,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 14,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 10,
             left: 14,
@@ -14,6 +15,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 17,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 13,
             top: 13,
@@ -25,6 +27,7 @@ module.exports = {
         size: [82, 38],
         fontSize: 22,
         fontStyle: "Regular",
+        cornerRadius: 4,
         padding: {
             bottom: 16,
             left: 24,
@@ -36,6 +39,7 @@ module.exports = {
         size: [101, 48],
         fontSize: 22,
         fontStyle: "Medium",
+        cornerRadius: 4,
         padding: {
             bottom: 18,
             left: 26,

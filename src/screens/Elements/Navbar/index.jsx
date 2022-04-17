@@ -1,57 +1,64 @@
-const React = require('react');
-const Creators = require('../../../Creators');
-const Toggle = require('../../../components/Toggle');
-const ButtonGroup = require('../../../components/ButtonGroup');
-const NavbarLinks = require('./Links');
+const React = require("react");
+const Creators = require("../../../Creators");
+const Toggle = require("../../../components/Toggle");
+const ButtonGroup = require("../../../components/ButtonGroup");
+const NavbarLinks = require("./Links");
+const PageTitle = require("../../../components/ComponentPage");
+const ComponentFieldEditor = require("../../../components/ComponentFieldEditor");
 
-function Navbar({value, onClose}){
-    const shadow = value ? value.shadow : false;
-    const [links, setLinks] = React.useState(value ? value.links : []);
+function reducer(state, action) {
+  switch (action.type) {
+    case "setValue":
+      return { ...state, isRunning: true };
+    default:
+      throw new Error();
+  }
+}
 
-    function handleSetShadow(shadow){
-        Creators.Navbar({...value, shadow});
-    }
+function Navbar({ value, onClose }) {
+  const [state, dispatch] = useReducer(reducer, value);
+  const theme = state.theme;
 
-    function handleSetLinks(links, newActiveLink){
-        setLinks(links);
+  function updateField(field, newValue) {
+    Creators.Navbar({ ...value, [field]: newValue });
+  }
 
-        const newProps = {...value, links};
+  function handleSetLinks(links, newActiveLink) {
+    setLinks(links);
 
-        if(newActiveLink) newProps.activeLink = newActiveLink;
+    const newProps = { ...value, links };
 
-        Creators.Navbar(newProps);
-    }
+    if (newActiveLink) newProps.activeLink = newActiveLink;
 
-    return (
-        <div style={{margin: "0.5rem -12px"}}>
-            <div className="flex items-center px-1">
-                <span className="cursor-pointer opacity-65" onClick={onClose}>
-                    <svg height="16" viewBox="0 0 24 24" width="24">
-                        <path fill="#333" d="M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"/>
-                    </svg>
-                </span>
+    Creators.Navbar(newProps);
+  }
 
-                <h2 className="px-0 text-md ml-1">
-                    Navbar
-                </h2>
-            </div>
+  return (
+    <div style={{ margin: "0.5rem -12px" }}>
+      <PageTitle title="Navbar" onClose={onClose} />
 
-            <div className="px-3">
-                <div className="flex items-center justify-between mt-3 pt-2">
-                    <label className="text-md">Shadow</label>
-                    
-                    <Toggle checked={shadow} onChange={handleSetShadow} />
-                </div>
-            </div>
+      {/* <ComponentFieldEditor
+        title="Shadow"
+        toggleValue={state.shadow}
+        onToggle={newValue => updateField("shadow", newValue)}
+      /> */}
 
-            <NavbarLinks 
-                links={links}
-                activeLink={value.activeLink}
-                onChange={handleSetLinks}
-                onChangeActiveLink={activeLink => Creators.Navbar({...value, activeLink})}
-            />
-        </div>
-    );
+      {/* <ComponentFieldEditor
+        title="Border"
+        toggleValue={state.border}
+        onToggle={newValue => updateField("border", newValue)}
+      /> */}
+
+      <NavbarLinks
+        links={state.links}
+        activeLink={state.activeLink}
+        onChange={handleSetLinks}
+        onChangeActiveLink={activeLink =>
+          Creators.Navbar({ ...value, activeLink })
+        }
+      />
+    </div>
+  );
 }
 
 module.exports = Navbar;
