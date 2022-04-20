@@ -119,13 +119,16 @@ function navMenuComponent(props = {}, {links = "Home, About", activeLink}) {
     selection.items = navLinkNodes;
     commands.group();
     let navMenu = selection.items[0];
-    navMenu.layout = {
-      type: SceneNode.LAYOUT_STACK,
-      stack: {
-        orientation: SceneNode.STACK_HORIZONTAL,
-        spacings: 30,
-      },
-    };
+
+    if(links.length > 1){
+      navMenu.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+          orientation: SceneNode.STACK_HORIZONTAL,
+          spacings: 30,
+        },
+      };
+    }
 
     navMenu = selection.items[0];
 

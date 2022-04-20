@@ -9,7 +9,7 @@ function navSearchInputComponent({color}){
         icon: "search",
         placeholder: "Type here to search",
         roundness: "full",
-        width: 250,
+        width: 350,
         backgroundColor: "transparent",
         placeholderOpacity: 0.4,
         iconColor: color,
