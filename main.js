@@ -29474,7 +29474,7 @@ module.exports = {
     "xs": {
         size: [82, 38],
         fontSize: 14,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [2, 4],
         padding: {
             top: 10,
@@ -29486,7 +29486,7 @@ module.exports = {
     "sm": {
         size: [82, 38],
         fontSize: 16,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [4, 8],
         padding: {
             top: 12,
@@ -29498,7 +29498,7 @@ module.exports = {
     "md": {
         size: [82, 38],
         fontSize: 18,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [6, 10],
         padding: {
             top: 16,
@@ -29510,7 +29510,7 @@ module.exports = {
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [8, 14],
         padding: {
             top: 20,
@@ -29623,7 +29623,7 @@ module.exports = {
     color: "#333",
     shadow: false,
     style: "filled", // "outlined", "flat", "link"
-    roundness: "normal"
+    roundness: "sm"
 };
 
 /***/ }),
@@ -31923,13 +31923,14 @@ function createNavBackground({
 }
 
 function assembleNavbar(props = {}, images) {
-  props = _extends({}, props, images, {
+  props = _extends({}, props, {
+    images,
     width: 1600,
     // width: 1920,
     height: 70
   });
 
-  const textBehaviorMap = {
+  const personaMap = {
     normal: {
       fontStyle: "Medium",
       textTransform: "none",
@@ -31945,31 +31946,20 @@ function assembleNavbar(props = {}, images) {
     }
   };
 
-  if (props.theme && props.theme.text) {
-    props.theme.text = _extends({}, props.theme.text, textBehaviorMap[props.theme.text.behavior] || {});
+  if (props.theme && props.theme.persona) {
+    props.theme.text = _extends({}, props.theme.text, personaMap[props.theme.persona] || {});
   }
 
   const [bg, container] = createNavBackground(_extends({}, props, props.theme));
   props.container = container;
 
-  const leftSlot = createNavSlot(_extends({}, props, props.theme), ["logo"]
-  // "menu",
-  // "socials",
-  );
+  const leftSlot = createNavSlot(_extends({}, props, props.theme), props.leftSlot);
   leftSlot.name = "FernNavLeftSlot";
 
-  const middleSlot = createNavSlot(_extends({}, props, props.theme), [
-  // "logo",
-  "menu"]
-  // "socials"
-  );
+  const middleSlot = createNavSlot(_extends({}, props, props.theme, { alignment: "center" }), props.middleSlot);
   middleSlot.name = "FernNavMiddleSlot";
 
-  const rightSlot = createNavSlot(_extends({}, props, props.theme, { alignment: "right" }), [
-  // "search",
-  // "dp",
-  // "menu",
-  "socials", "buttons"]);
+  const rightSlot = createNavSlot(_extends({}, props, props.theme, { alignment: "right" }), props.rightSlot);
   rightSlot.name = "FernNavRightSlot";
 
   selection.items = [leftSlot, middleSlot, rightSlot];
@@ -32001,56 +31991,59 @@ const commands = __webpack_require__(/*! commands */ "commands");
 
 const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src/Creators/Button/createButton.js");
 
-function navButtonsComponent({ color, activeColor,
-    buttons = ["Sign In", "Get Started"],
-    mainButtonStyle = "fill"
-}) {
-    let button1, button2;
+function navButtonsComponent({
+  color,
+  activeColor,
+  secondaryButtonStyle = "outline", // "link",
+  mainButtonStyle = "fill"
+}, buttons = "Sign In, Get Started") {
+  buttons = buttons.split(",").map(button => button.trim());
+  let button1, button2;
 
-    if (buttons.length == 2) {
-        button1 = createButton({
-            text: buttons[1],
-            size: "sm",
-            color: activeColor || color,
-            outlined: mainButtonStyle == "outline",
-            roundness: "md"
-        });
+  if (buttons.length == 2) {
+    button1 = createButton({
+      text: buttons[1],
+      size: "sm",
+      color: activeColor || color,
+      style: mainButtonStyle,
+      roundness: "sm"
+    });
 
-        button2 = createButton({
-            text: buttons[0],
-            size: "sm",
-            color: color,
-            link: true,
-            underline: true
-        });
-    } else {
-        button1 = createButton({
-            text: buttons[0],
-            size: "sm",
-            color: activeColor || color,
-            outlined: mainButtonStyle == "outline",
-            roundness: "md"
-        });
-    }
+    button2 = createButton({
+      text: buttons[0],
+      size: "sm",
+      color: color,
+      style: secondaryButtonStyle,
+      roundness: "sm"
+    });
+  } else {
+    button1 = createButton({
+      text: buttons[0],
+      size: "sm",
+      color: activeColor || color,
+      style: mainButtonStyle,
+      roundness: "sm"
+    });
+  }
 
-    selection.items = buttons.length == 2 ? [button1, button2] : [button1];
-    commands.alignVerticalCenter();
-    commands.group();
+  selection.items = buttons.length == 2 ? [button1, button2] : [button1];
+  commands.alignVerticalCenter();
+  commands.group();
 
-    const buttonNodes = selection.items[0];
-    buttonNodes.name = "FernNavButtons";
+  const buttonNodes = selection.items[0];
+  buttonNodes.name = "FernNavButtons";
 
-    if (buttons.length == 2) {
-        buttonNodes.layout = {
-            type: SceneNode.LAYOUT_STACK,
-            stack: {
-                orientation: SceneNode.STACK_HORIZONTAL,
-                spacings: 4
-            }
-        };
-    }
+  if (buttons.length == 2) {
+    buttonNodes.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_HORIZONTAL,
+        spacings: secondaryButtonStyle == "outline" ? 8 : 14
+      }
+    };
+  }
 
-    return buttonNodes;
+  return buttonNodes;
 }
 
 module.exports = navButtonsComponent;
@@ -32067,17 +32060,18 @@ module.exports = navButtonsComponent;
 const { Ellipse, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { insertNode, tagNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function navDpComponent({ dpImage }) {
+function navDpComponent({ dpImage, images }, dpIndex) {
     const dp = new Ellipse();
     dp.radiusX = 20;
     dp.radiusY = 20;
     dp.name = "FernNavDp";
+    dp.fill = new ImageFill(images[`dp${dpIndex}`]);
 
-    try {
-        dp.fill = dpImage;
-    } catch (error) {
-        dp.fill = new ImageFill(dpImage);
-    }
+    // try {
+    //     dp.fill = dpImage;
+    // } catch (error) {
+    //     dp.fill = new ImageFill(dpImage);
+    // }
 
     insertNode(dp);
     tagNode(dp, { type: "Image", searchQuery: "face" });
@@ -32099,16 +32093,17 @@ module.exports = navDpComponent;
 const { Rectangle, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { insertNode, calculateAspectRatioFit } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function navLogoComponent({ logoImage }) {
+function navLogoComponent({ logoImage, images }, logoIndex) {
     const logo = new Rectangle();
     logo.resize(163, 25);
     logo.name = "FernNavLogo";
+    logo.fill = new ImageFill(images[`logo${logoIndex}`]);
 
-    try {
-        logo.fill = logoImage;
-    } catch (error) {
-        logo.fill = new ImageFill(logoImage);
-    }
+    // try {
+    //     logo.fill = logoImage;
+    // } catch (error) {
+    //     logo.fill = new ImageFill(logoImage);
+    // }
 
     if (logo.fill.naturalWidth) {
         const { naturalWidth, naturalHeight } = logo.fill;
@@ -32230,9 +32225,8 @@ function createNavActiveIndicator({
   return navMenu;
 }
 
-function navMenuComponent(props = {}, cb = () => {}) {
-  const { links = [] } = props;
-
+function navMenuComponent(props = {}, { links = "Home, About", activeLink }) {
+  links = links.split(",").map(link => link.trim());
   const linkItems = [...links];
   linkItems.reverse();
 
@@ -32265,9 +32259,10 @@ function navMenuComponent(props = {}, cb = () => {}) {
 
     navMenu = selection.items[0];
 
-    if (props.links.includes(props.activeLink)) {
+    if (links.includes(activeLink)) {
       navMenu = createNavActiveIndicator(_extends({}, props, {
-        navMenu
+        navMenu,
+        activeLink
       }));
     }
 
@@ -32336,84 +32331,109 @@ const navSearchInputComponent = __webpack_require__(/*! ./components/searchInput
 const navButtonsComponent = __webpack_require__(/*! ./components/buttons */ "./src/Creators/Navbar/components/buttons.js");
 const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/createIcons */ "./src/Creators/SocialMediaIcons/createIcons.js");
 
-function createNavSlot(props, components = []) {
-    props.iconOpacity = props.inActiveOpacity;
+function createNavSlot(props, components = {}) {
+  props.iconOpacity = props.inActiveOpacity;
 
-    const componentMap = {
-        "logo": navLogoComponent,
-        "menu": navMenuComponent,
-        "dp": navDpComponent,
-        "socials": createSocialMediaIcons,
-        "search": navSearchInputComponent,
-        "buttons": navButtonsComponent
-    };
+  const componentMap = {
+    logo: navLogoComponent,
+    menu: navMenuComponent,
+    dp: navDpComponent,
+    socials: (props, icons) => createSocialMediaIcons(_extends({}, props, { icons })),
+    search: navSearchInputComponent,
+    buttons: navButtonsComponent
+  };
 
-    try {
-        const { width, height, container, alignment = "left" } = props;
+  try {
+    const { width, height, container, alignment = "left" } = props;
 
-        let slot;
+    let slot;
 
-        const slotBg = new Rectangle();
-        slotBg.resize(width / 2, height);
-        insertNode(slotBg);
+    const slotBg = new Rectangle();
+    slotBg.resize(width / 2, height);
+    insertNode(slotBg);
 
-        if (components.length) {
-            const placeholder = new Rectangle();
-            placeholder.resize(1, height);
-            insertNode(placeholder);
+    const componentsAvailable = components && Object.keys(components).length;
+    const validComponents = !componentsAvailable ? null : Object.fromEntries(Object.entries(components).filter(([key, value]) => value && componentMap[key]));
 
-            const content = components.reverse().map(component => {
-                return componentMap[component](props);
-            });
+    if (validComponents && Object.keys(validComponents).length) {
+      const placeholder = new Rectangle();
+      placeholder.resize(1, height);
+      insertNode(placeholder);
+      placeholder.name = "Placeholder";
 
-            selection.items = [slotBg, placeholder, ...content];
-            commands.alignVerticalCenter();
+      const content = Object.entries(validComponents).reverse().map(([component, data]) => componentMap[component](props, data));
 
-            if (alignment == "left") commands.alignLeft();else commands.alignRight();
+      selection.items = [slotBg, placeholder, ...content];
+      commands.alignVerticalCenter();
 
-            selection.items = [...content, placeholder];
-            commands.bringToFront();
-            commands.group();
+      // if(alignment == "left")
+      //     commands.alignLeft();
+      // else
+      //     commands.alignRight();
 
-            const slotContent = selection.items[0];
-            if (slotContent.children.length > 1) {
-                slotContent.layout = {
-                    type: SceneNode.LAYOUT_STACK,
-                    stack: {
-                        orientation: SceneNode.STACK_HORIZONTAL,
-                        spacings: 24
-                    }
-                };
-            }
-            slotContent.name = "FernNavSlotContent";
+      selection.items = [...content, placeholder];
+      commands.bringToFront();
+      commands.group();
 
-            selection.items = [slotBg, slotContent];
-            commands.group();
+      const slotContent = selection.items[0];
+      if (slotContent.children.length > 1) {
+        slotContent.layout = {
+          type: SceneNode.LAYOUT_STACK,
+          stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 24
+          }
+        };
+      }
+      slotContent.name = "FernNavSlotContent";
 
-            slot = selection.items[0];
+      selection.items = [slotBg, slotContent];
+      commands.group();
 
-            slot.layout = {
-                type: SceneNode.LAYOUT_PADDING,
-                padding: {
-                    background: slot,
-                    values: _extends({}, getPadding(30, 0), { right: 0 })
-                }
-            };
+      slot = selection.items[0];
 
-            const { width } = container.localBounds;
-            const { x, y } = container.topLeftInParent;
-            const slotPlacement = { x, y };
-            console.log("Container bounds: ", container);
-
-            if (alignment == "right") slotPlacement.x = width - slot.localBounds.width + x;
-
-            placeInParent(slot, slotPlacement);
+      slot.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+          background: slot,
+          values: _extends({}, getPadding(30, 0), { right: 0 })
         }
+      };
+    } else {
+      const placeholder = new Rectangle();
+      placeholder.name = "Placeholder";
+      placeholder.resize(1, height);
+      insertNode(placeholder);
+      selection.items = [placeholder];
+      commands.group();
+      const slotContent = selection.items[0];
+      slotContent.name = "FernNavSlotContent";
 
-        return slot;
-    } catch (error) {
-        console.log("Error creating slot: ", error);
+      selection.items = [slotBg, slotContent];
+      commands.group();
+
+      slot = selection.items[0];
+      slot.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+          background: placeholder,
+          values: _extends({}, getPadding(30, 0), { right: 0 })
+        }
+      };
     }
+
+    const { x, y } = container.topLeftInParent;
+    const slotPlacement = { x, y };
+    console.log("Container bounds: ", container);
+
+    if (alignment == "right") slotPlacement.x = container.localBounds.width - slot.localBounds.width + x;else if (alignment == "center") slotPlacement.x = container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
+
+    placeInParent(slot, slotPlacement);
+
+    return slot;
+  } catch (error) {
+    console.log("Error creating slot: ", error);
+  }
 }
 
 module.exports = createNavSlot;
@@ -32428,17 +32448,16 @@ module.exports = createNavSlot;
 /***/ (function(module, exports) {
 
 const defaultNavbarProps = {
-  logo: "logo2",
-  slots: {
-    left: ["logo"],
-    middle: [],
-    right: ["menu", "buttons"]
+  leftSlot: { logo: "4" },
+  middleSlot: {},
+  rightSlot: {
+    menu: {
+      links: "Home, About Us, Events, Contact Us",
+      activeLink: "Home"
+    },
+    buttons: "Sign In, Get Started"
   },
-  links: ["Home", "About Us", "Events", "Contact Us"],
   activeLink: "Home",
-  buttons: [
-  // "Sign In",
-  "Get Started"],
   profile: false,
   search: false,
   shoppingCart: false,
@@ -32450,8 +32469,8 @@ const defaultNavbarProps = {
     // inActiveOpacity: 0.5,
     shadow: null,
     border: null,
+    persona: "normal", // "loud",
     text: {
-      behavior: "normal", // "loud",
       fontFamily: "Helvetica Neue",
       fontStyle: "Regular", // "Condensed Black",
       textTransform: "none" // "titlecase", "lowercase", "uppercase",
@@ -32520,9 +32539,9 @@ const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
 const {
   editDom,
-  getAssetFileFromPath,
   placeInParent,
-  tagNode
+  tagNode,
+  getAssetsByType
 } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Navbar/defaultProps.js");
@@ -32532,17 +32551,10 @@ const getNavbarComponent = __webpack_require__(/*! ./getNavbarComponent */ "./sr
 async function Navbar(userProps) {
   let props = _extends({}, defaultNavbarProps, userProps || {});
 
-  // let logoImage = await getAssetFileFromPath(props.color == "white" ? "images/android-white.png" : "images/android.png");
-  const [logo1, logo2, logo3, dp] = await Promise.all([getAssetFileFromPath("images/logo-android-white.png"), getAssetFileFromPath("images/logo-paperless.png"), getAssetFileFromPath("images/logo-darling-brew.png"), getAssetFileFromPath("images/dp-female-white.jpg")]);
+  const [logos, dps] = await Promise.all([getAssetsByType("logo"), getAssetsByType("dp")]);
 
-  const imageMap = {
-    logo1,
-    logo2,
-    logo3,
-    dp
-  };
-  let logoImage = imageMap[props.logo] || logo3;
-  let dpImage = imageMap[dp];
+  let logoImage = logos.logo3;
+  let dpImage = dps.dp1;
 
   try {
     const oldNavbar = userProps ? selection.items[0] : null;
@@ -32559,10 +32571,10 @@ async function Navbar(userProps) {
 
     editDom(() => {
       try {
-        const navbar = assembleNavbar(props, {
+        const navbar = assembleNavbar(props, _extends({
           logoImage,
           dpImage
-        });
+        }, logos, dps));
         navbar.name = "FernNavbar";
 
         tagNode(navbar, _extends({ type: "Navbar" }, props));
@@ -32596,10 +32608,11 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createSocialMediaIcons({
-    icons = ["facebook", "twitter", "instagram"],
+    icons = "facebook, twitter, instagram",
     color = "#888",
     iconOpacity = 1
 }) {
+    icons = icons.split(",").map(icon => icon.trim());
     // https://simpleicons.org/
     const iconPaths = {
         "facebook": "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z",
@@ -33428,12 +33441,12 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
 
   return React.createElement(
     "div",
-    { className: rootLevel ? "border-t border-b mb-2 mt-2 -mx-12px" : data && "mb-1" },
+    { className: rootLevel ? "border-t mb-3 -mx-12px" : data && "mb-1" },
     React.createElement(
       "div",
       {
         className: `flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 border-t ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26 ${data && 'bg-black26'}`}
       `
       },
       React.createElement(
@@ -33441,7 +33454,7 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
         {
           className: `text-sm tracking-widest ${rootLevel && "text-blue"}`
         },
-        field.label.toUpperCase()
+        camelCaseToSentenceCase(field.label).toUpperCase()
       ),
       field.optional && React.createElement(Toggle, { checked: data, onChange: handleToggle })
     ),
@@ -33491,7 +33504,7 @@ function ComponentFieldGroup({ field, data, onChange }) {
     onChange(newProps);
   }
 
-  const checked = field.children.every(child => child.value);
+  const checked = field.children.some(child => child.value);
 
   return React.createElement(
     "div",
@@ -35614,14 +35627,78 @@ module.exports = MediaSection;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 
+const socials = {
+  defaultValue: "facebook, twitter, instagram",
+  optional: true
+};
+
+const logo = {
+  type: "radio",
+  choices: [
+  // "custom", 
+  "1", "2", "3", "4", "5"],
+  defaultValue: "2",
+  offValue: "",
+  optional: true
+};
+
+const menu = {
+  type: "section",
+  optional: true,
+  children: {
+    links: {
+      defaultValue: "Home, About Us, Events, Contact Us"
+    },
+    activeLink: {
+      defaultValue: "Home",
+      optional: true
+    }
+  }
+};
+
 const schema = {
-  logo: {
-    type: "radio",
-    choices: ["custom", "logo1", "logo2", "logo3"]
+  leftSlot: {
+    type: "section",
+    children: {
+      socials, logo, menu
+    }
+  },
+  middleSlot: {
+    type: "section",
+    children: {
+      logo, menu,
+      search: "boolean"
+    }
+  },
+  rightSlot: {
+    type: "section",
+    children: {
+      menu,
+      search: "boolean",
+      buttons: {
+        defaultValue: "Sign In, Get Started",
+        optional: true
+      },
+      socials,
+      dp: {
+        label: "Profile Picture",
+        type: "radio",
+        choices: [
+        // "custom", 
+        "1", "2", "3", "4", "5", "6"],
+        defaultValue: "1",
+        optional: true
+      }
+    }
   },
   theme: {
     type: "section",
     children: {
+      persona: {
+        type: "radio",
+        defaultValue: "normal",
+        choices: ["normal", "loud"]
+      },
       backgroundColor: {
         label: "Background",
         type: "color",
@@ -35666,36 +35743,31 @@ const schema = {
           },
           opacity: {
             type: "number",
-            defaultValue: 1,
+            defaultValue: 0.1,
             min: 0.1,
             max: 1
           }
         }
-      },
-      text: {
-        type: "section",
-        optional: true,
-        children: {
-          behavior: {
-            type: "radio",
-            defaultValue: "normal",
-            choices: ["normal", "loud"]
-          }
-          // fontFamily: {
-          //   type: "text",
-          //   defaultValue: "Helvetica Neue"
-          // },
-          // fontFamily: {
-          //   type: "text",
-          //   defaultValue: "Helvetica Neue"
-          // },
-          // textTransform: {
-          //   type: "choice",
-          //   defaultValue: "none",
-          //   choices: ["none", "uppercase"]
-          // },
-        }
       }
+      // text: {
+      //   type: "section",
+      //   optional: true,
+      //   children: {
+      //     fontFamily: {
+      //       type: "text",
+      //       defaultValue: "Helvetica Neue"
+      //     },
+      //     fontFamily: {
+      //       type: "text",
+      //       defaultValue: "Helvetica Neue"
+      //     },
+      //     textTransform: {
+      //       type: "choice",
+      //       defaultValue: "none",
+      //       choices: ["none", "uppercase"]
+      //     },
+      //   },
+      // },
     }
   }
 };
@@ -37058,6 +37130,16 @@ async function getAssetFileFromPath(path, extensions = "", shuffleResults) {
   }
 }
 
+async function getAssetsByType(type = "logo") {
+  if (type == "logo") {
+    const [logo1, logo2, logo3, logo4, logo5] = await Promise.all(Array(5).fill('fa').map((_, i) => getAssetFileFromPath(`images/logos/${i + 1}.png`)));
+    return { logo1, logo2, logo3, logo4, logo5 };
+  } else if (type == "dp") {
+    const [dp1, dp2, dp3, dp4, dp5, dp6] = await Promise.all(Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/dps/${i + 1}.jpg`)));
+    return { dp1, dp2, dp3, dp4, dp5, dp6 };
+  }
+}
+
 function getPadding(px = 4, py = 4) {
   return {
     bottom: py,
@@ -37208,7 +37290,8 @@ module.exports = {
   chunkArray,
   randomBetween,
   getIconSizeFromTextSize,
-  camelCaseToSentenceCase
+  camelCaseToSentenceCase,
+  getAssetsByType
 };
 
 /***/ }),

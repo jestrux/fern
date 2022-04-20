@@ -2,9 +2,9 @@ const { selection } = require("scenegraph");
 
 const {
   editDom,
-  getAssetFileFromPath,
   placeInParent,
   tagNode,
+  getAssetsByType,
 } = require("../../utils");
 
 const defaultNavbarProps = require("./defaultProps");
@@ -17,22 +17,13 @@ async function Navbar(userProps) {
     ...(userProps || {}),
   };
 
-  // let logoImage = await getAssetFileFromPath(props.color == "white" ? "images/android-white.png" : "images/android.png");
-  const [logo1, logo2, logo3, dp] = await Promise.all([
-    getAssetFileFromPath("images/logo-android-white.png"),
-    getAssetFileFromPath("images/logo-paperless.png"),
-    getAssetFileFromPath("images/logo-darling-brew.png"),
-    getAssetFileFromPath("images/dp-female-white.jpg"),
+  const [logos, dps] = await Promise.all([
+    getAssetsByType("logo"),
+    getAssetsByType("dp"),
   ]);
 
-  const imageMap = {
-    logo1,
-    logo2,
-    logo3,
-    dp,
-  };
-  let logoImage = imageMap[props.logo] || logo3;
-  let dpImage = imageMap[dp];
+  let logoImage = logos.logo3;
+  let dpImage = dps.dp1;
 
   try {
     const oldNavbar = userProps ? selection.items[0] : null;
@@ -52,6 +43,8 @@ async function Navbar(userProps) {
         const navbar = assembleNavbar(props, {
           logoImage,
           dpImage,
+          ...logos,
+          ...dps
         });
         navbar.name = "FernNavbar";
 

@@ -1,14 +1,81 @@
 const React = require("react");
 const ComponentPage = require("../../components/ComponentPage");
 
+const socials = {
+  defaultValue: "facebook, twitter, instagram",
+  optional: true,
+};
+
+const logo = {
+  type: "radio",
+  choices: [
+    // "custom", 
+    "1", "2", "3", "4", "5",
+  ],
+  defaultValue: "2",
+  offValue: "",
+  optional: true,
+};
+
+const menu = {
+  type: "section",
+  optional: true,
+  children: {
+    links: {
+      defaultValue: "Home, About Us, Events, Contact Us",
+    },
+    activeLink: {
+      defaultValue: "Home",
+      optional: true,
+    },
+  },
+};
+
 const schema = {
-  logo: {
-    type: "radio",
-    choices: ["custom", "logo1", "logo2", "logo3"],
+  leftSlot: {
+    type: "section",
+    children: {
+      socials, logo, menu
+    },
+  },
+  middleSlot: {
+    type: "section",
+    children: {
+      logo, menu,
+      search: "boolean"
+    },
+  },
+  rightSlot: {
+    type: "section",
+    children: {
+      menu,
+      search: "boolean",
+      buttons: {
+        defaultValue: "Sign In, Get Started",
+        optional: true,
+      },
+      socials,
+      dp: {
+        label: "Profile Picture",
+        type: "radio",
+        choices: [
+          // "custom", 
+          "1", "2", "3",
+          "4", "5", "6",
+        ],
+        defaultValue: "1",
+        optional: true,
+      }
+    },
   },
   theme: {
     type: "section",
     children: {
+      persona: {
+        type: "radio",
+        defaultValue: "normal",
+        choices: ["normal", "loud"],
+      },
       backgroundColor: {
         label: "Background",
         type: "color",
@@ -53,36 +120,31 @@ const schema = {
           },
           opacity: {
             type: "number",
-            defaultValue: 1,
+            defaultValue: 0.1,
             min: 0.1,
             max: 1,
           },
         },
       },
-      text: {
-        type: "section",
-        optional: true,
-        children: {
-          behavior: {
-            type: "radio",
-            defaultValue: "normal",
-            choices: ["normal", "loud"],
-          },
-          // fontFamily: {
-          //   type: "text",
-          //   defaultValue: "Helvetica Neue"
-          // },
-          // fontFamily: {
-          //   type: "text",
-          //   defaultValue: "Helvetica Neue"
-          // },
-          // textTransform: {
-          //   type: "choice",
-          //   defaultValue: "none",
-          //   choices: ["none", "uppercase"]
-          // },
-        },
-      },
+      // text: {
+      //   type: "section",
+      //   optional: true,
+      //   children: {
+      //     fontFamily: {
+      //       type: "text",
+      //       defaultValue: "Helvetica Neue"
+      //     },
+      //     fontFamily: {
+      //       type: "text",
+      //       defaultValue: "Helvetica Neue"
+      //     },
+      //     textTransform: {
+      //       type: "choice",
+      //       defaultValue: "none",
+      //       choices: ["none", "uppercase"]
+      //     },
+      //   },
+      // },
     },
   },
 };

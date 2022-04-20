@@ -1,16 +1,14 @@
 const defaultNavbarProps = {
-  logo: "logo2",
-  slots: {
-    left: ["logo"],
-    middle: [],
-    right: ["menu", "buttons"],
+  leftSlot: { logo: "4" },
+  middleSlot: {},
+  rightSlot: {
+    menu: {
+      links: "Home, About Us, Events, Contact Us",
+      activeLink: "Home",
+    },
+    buttons: "Sign In, Get Started",
   },
-  links: ["Home", "About Us", "Events", "Contact Us"],
   activeLink: "Home",
-  buttons: [
-    // "Sign In",
-    "Get Started",
-  ],
   profile: false,
   search: false,
   shoppingCart: false,
@@ -22,8 +20,8 @@ const defaultNavbarProps = {
     // inActiveOpacity: 0.5,
     shadow: null,
     border: null,
+    persona: "normal", // "loud",
     text: {
-      behavior: "normal", // "loud",
       fontFamily: "Helvetica Neue",
       fontStyle: "Regular", // "Condensed Black",
       textTransform: "none", // "titlecase", "lowercase", "uppercase",

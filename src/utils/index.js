@@ -468,6 +468,21 @@ async function getAssetFileFromPath(path, extensions = "", shuffleResults) {
   }
 }
 
+async function getAssetsByType(type = "logo") {
+  if (type == "logo") {
+    const [logo1, logo2, logo3, logo4, logo5] = await Promise.all(
+      Array(5).fill('fa').map((_, i) => getAssetFileFromPath(`images/logos/${i+1}.png`))
+    );
+    return { logo1, logo2, logo3, logo4, logo5 };
+  }
+  else if (type == "dp") {
+    const [dp1, dp2, dp3, dp4, dp5, dp6] = await Promise.all(
+      Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/dps/${i+1}.jpg`))
+    );
+    return { dp1, dp2, dp3, dp4, dp5, dp6 };
+  }
+}
+
 function getPadding(px = 4, py = 4) {
   return {
     bottom: py,
@@ -635,4 +650,5 @@ module.exports = {
   randomBetween,
   getIconSizeFromTextSize,
   camelCaseToSentenceCase,
+  getAssetsByType
 };

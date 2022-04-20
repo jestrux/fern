@@ -8,88 +8,122 @@ const navSearchInputComponent = require("./components/searchInput");
 const navButtonsComponent = require("./components/buttons");
 const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 
-function createNavSlot(props, components = []){
-    props.iconOpacity = props.inActiveOpacity;
+function createNavSlot(props, components = {}) {
+  props.iconOpacity = props.inActiveOpacity;
 
-    const componentMap = {
-        "logo": navLogoComponent,
-        "menu": navMenuComponent,
-        "dp": navDpComponent,
-        "socials": createSocialMediaIcons,
-        "search": navSearchInputComponent,
-        "buttons": navButtonsComponent,
+  const componentMap = {
+    logo: navLogoComponent,
+    menu: navMenuComponent,
+    dp: navDpComponent,
+    socials: (props, icons) => createSocialMediaIcons({...props, icons}),
+    search: navSearchInputComponent,
+    buttons: navButtonsComponent,
+  };
+
+  try {
+    const { width, height, container, alignment = "left" } = props;
+
+    let slot;
+
+    const slotBg = new Rectangle();
+    slotBg.resize(width / 2, height);
+    insertNode(slotBg);
+
+    const componentsAvailable = components && Object.keys(components).length;
+    const validComponents = !componentsAvailable
+      ? null
+      : Object.fromEntries(
+          Object.entries(components).filter(
+            ([key, value]) => value && componentMap[key]
+          )
+        );
+
+    if (validComponents && Object.keys(validComponents).length) {
+      const placeholder = new Rectangle();
+      placeholder.resize(1, height);
+      insertNode(placeholder);
+      placeholder.name = "Placeholder";
+
+      const content = Object.entries(validComponents)
+        .reverse()
+        .map(([component, data]) => componentMap[component](props, data));
+
+      selection.items = [slotBg, placeholder, ...content];
+      commands.alignVerticalCenter();
+
+      // if(alignment == "left")
+      //     commands.alignLeft();
+      // else
+      //     commands.alignRight();
+
+      selection.items = [...content, placeholder];
+      commands.bringToFront();
+      commands.group();
+
+      const slotContent = selection.items[0];
+      if (slotContent.children.length > 1) {
+        slotContent.layout = {
+          type: SceneNode.LAYOUT_STACK,
+          stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 24,
+          },
+        };
+      }
+      slotContent.name = "FernNavSlotContent";
+
+      selection.items = [slotBg, slotContent];
+      commands.group();
+
+      slot = selection.items[0];
+
+      slot.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+          background: slot,
+          values: { ...getPadding(30, 0), right: 0 },
+        },
+      };
+    } else {
+      const placeholder = new Rectangle();
+      placeholder.name = "Placeholder";
+      placeholder.resize(1, height);
+      insertNode(placeholder);
+      selection.items = [placeholder];
+      commands.group();
+      const slotContent = selection.items[0];
+      slotContent.name = "FernNavSlotContent";
+
+      selection.items = [slotBg, slotContent];
+      commands.group();
+
+      slot = selection.items[0];
+      slot.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+          background: placeholder,
+          values: { ...getPadding(30, 0), right: 0 },
+        },
+      };
     }
 
-    try {
-        const { width, height, container, alignment = "left" } = props;
+    const { x, y } = container.topLeftInParent;
+    const slotPlacement = { x, y };
+    console.log("Container bounds: ", container);
 
-        let slot;
+    if (alignment == "right")
+      slotPlacement.x =
+        container.localBounds.width - slot.localBounds.width + x;
+    else if (alignment == "center")
+      slotPlacement.x =
+        container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
 
-        const slotBg = new Rectangle();
-        slotBg.resize(width / 2, height);
-        insertNode(slotBg);
+    placeInParent(slot, slotPlacement);
 
-        if(components.length){
-            const placeholder = new Rectangle();
-            placeholder.resize(1, height);
-            insertNode(placeholder);
-
-            const content = components.reverse().map(component => {
-                return componentMap[component](props);
-            });
-
-            selection.items = [ slotBg, placeholder, ...content ];
-            commands.alignVerticalCenter();
-            
-            if(alignment == "left")
-                commands.alignLeft();
-            else
-                commands.alignRight();
-        
-            selection.items = [...content, placeholder];
-            commands.bringToFront();
-            commands.group();
-        
-            const slotContent = selection.items[0];
-            if(slotContent.children.length > 1){
-                slotContent.layout = {
-                    type: SceneNode.LAYOUT_STACK,
-                    stack: {
-                        orientation: SceneNode.STACK_HORIZONTAL,
-                        spacings: 24
-                    }
-                };
-            }
-            slotContent.name = "FernNavSlotContent";
-        
-            selection.items = [ slotBg, slotContent ];
-            commands.group();
-
-            slot = selection.items[0];
-
-            slot.layout = {
-                type: SceneNode.LAYOUT_PADDING,
-                padding: {
-                    background: slot,
-                    values: {...getPadding(30, 0), right: 0}
-                }
-            };
-
-            const { width } = container.localBounds;
-            const { x, y } = container.topLeftInParent;
-            const slotPlacement = { x, y };
-            console.log("Container bounds: ", container);
-            
-            if(alignment == "right")
-                slotPlacement.x = width - slot.localBounds.width + x;
-
-            placeInParent(slot, slotPlacement);
-        }
-
-        return slot;
-    } catch (error) {
-        console.log("Error creating slot: ", error);
-    }
+    return slot;
+  } catch (error) {
+    console.log("Error creating slot: ", error);
+  }
 }
 
 module.exports = createNavSlot;

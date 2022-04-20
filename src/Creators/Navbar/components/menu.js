@@ -95,9 +95,8 @@ function createNavActiveIndicator({
   return navMenu;
 }
 
-function navMenuComponent(props = {}, cb = () => {}) {
-  const { links = [] } = props;
-
+function navMenuComponent(props = {}, {links = "Home, About", activeLink}) {
+  links = links.split(",").map(link => link.trim());
   const linkItems = [...links];
   linkItems.reverse();
 
@@ -130,10 +129,11 @@ function navMenuComponent(props = {}, cb = () => {}) {
 
     navMenu = selection.items[0];
 
-    if (props.links.includes(props.activeLink)) {
+    if (links.includes(activeLink)) {
       navMenu = createNavActiveIndicator({
         ...props,
         navMenu,
+        activeLink,
       });
     }
 

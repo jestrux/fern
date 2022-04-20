@@ -58,61 +58,47 @@ function createNavBackground({
 function assembleNavbar(props = {}, images) {
   props = {
     ...props,
-    ...images,
+    images,
     width: 1600,
     // width: 1920,
     height: 70,
   };
 
-  const textBehaviorMap = {
+  const personaMap = {
     normal: {
       fontStyle: "Medium",
       textTransform: "none",
       textTransform: "none",
       letterSpacing: 18,
-      fontSize: 16
+      fontSize: 16,
     },
     loud: {
       fontStyle: "Condensed Black",
       textTransform: "uppercase",
       letterSpacing: 50,
-      fontSize: 22
+      fontSize: 22,
     },
   };
 
-  if (props.theme && props.theme.text) {
+  if (props.theme && props.theme.persona) {
     props.theme.text = {
       ...props.theme.text,
-      ...(textBehaviorMap[props.theme.text.behavior] || {}),
+      ...(personaMap[props.theme.persona] || {}),
     };
   }
 
   const [bg, container] = createNavBackground({ ...props, ...props.theme });
   props.container = container;
 
-  const leftSlot = createNavSlot({ ...props, ...props.theme }, [
-    "logo",
-    // "menu",
-    // "socials",
-  ]);
+  const leftSlot = createNavSlot({ ...props, ...props.theme }, props.leftSlot);
   leftSlot.name = "FernNavLeftSlot";
 
-  const middleSlot = createNavSlot({ ...props, ...props.theme }, [
-    // "logo",
-    "menu",
-    // "socials"
-  ]);
+  const middleSlot = createNavSlot({ ...props, ...props.theme, alignment: "center" }, props.middleSlot);
   middleSlot.name = "FernNavMiddleSlot";
 
   const rightSlot = createNavSlot(
     { ...props, ...props.theme, alignment: "right" },
-    [
-      // "search",
-      // "dp",
-      // "menu",
-      "socials",
-      "buttons",
-    ]
+    props.rightSlot
   );
   rightSlot.name = "FernNavRightSlot";
 
@@ -121,7 +107,7 @@ function assembleNavbar(props = {}, images) {
 
   selection.items = [bg, container, leftSlot, middleSlot, rightSlot];
   commands.group();
-  
+
   const navbar = selection.items[0];
   bg.resize(bg.localBounds.width, navbar.localBounds.height);
   container.resize(container.localBounds.width, navbar.localBounds.height);

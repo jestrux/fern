@@ -65,16 +65,16 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
   const children = !data ? [] : schemaToFields(field.children, data);
 
   return (
-    <div className={rootLevel ? "border-t border-b mb-2 mt-2 -mx-12px" : data && "mb-1"}>
+    <div className={rootLevel ? "border-t mb-3 -mx-12px" : data && "mb-1"}>
       <div
         className={`flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 border-t ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26 ${data && 'bg-black26'}`}
       `}
       >
         <label
           className={`text-sm tracking-widest ${rootLevel && "text-blue"}`}
         >
-          {field.label.toUpperCase()}
+          {camelCaseToSentenceCase(field.label).toUpperCase()}
         </label>
 
         {field.optional && <Toggle checked={data} onChange={handleToggle} />}
@@ -134,7 +134,7 @@ function ComponentFieldGroup({ field, data, onChange }) {
     onChange(newProps);
   }
 
-  const checked = field.children.every(child => child.value);
+  const checked = field.children.some(child => child.value);
 
   return (
     <div className="mb-2">

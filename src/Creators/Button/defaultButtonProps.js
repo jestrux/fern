@@ -6,5 +6,5 @@ module.exports = {
     color: "#333",
     shadow: false, 
     style: "filled", // "outlined", "flat", "link"
-    roundness: "normal",
+    roundness: "sm",
 };

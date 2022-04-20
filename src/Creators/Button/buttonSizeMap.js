@@ -2,7 +2,7 @@ module.exports = {
     "xs": {
         size: [82, 38],
         fontSize: 14,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [2, 4],
         padding: {
             top: 10,
@@ -14,7 +14,7 @@ module.exports = {
     "sm": {
         size: [82, 38],
         fontSize: 16,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [4, 8],
         padding: {
             top: 12,
@@ -26,7 +26,7 @@ module.exports = {
     "md": {
         size: [82, 38],
         fontSize: 18,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [6, 10],
         padding: {
             top: 16,
@@ -38,7 +38,7 @@ module.exports = {
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Regular",
+        fontStyle: "Medium",
         cornerRadius: [8, 14],
         padding: {
             top: 20,
