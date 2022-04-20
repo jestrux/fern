@@ -1,55 +1,56 @@
 const { selection, SceneNode } = require("scenegraph");
 const commands = require("commands");
 
-function assembleButton(buttonComponents, buttonProps){
-    const [bgRectangle, buttonText, iconNode] = buttonComponents;
-    
-    if(iconNode){
-        if(buttonText){
-            selection.items = [iconNode, buttonText];
-            if(buttonProps.iconPlacement == "right")
-                commands.alignRight();
-            else
-                commands.alignLeft();
+function assembleButton(buttonComponents, buttonProps) {
+  const [bgRectangle, buttonText, iconNode] = buttonComponents;
 
-            commands.alignVerticalCenter();
-            commands.group();
-    
-            const buttonContent = selection.items[0];
+  if (iconNode) {
+    if (buttonText) {
+      selection.items = [iconNode, buttonText];
+      if (buttonProps.iconPlacement == "right") commands.alignRight();
+      else commands.alignLeft();
 
-            let iconSpacing = buttonProps.iconSize + 10;
-            if(buttonProps.iconPlacement == "right") iconSpacing *= -1;
-            buttonText.moveInParentCoordinates(iconSpacing, 0);
-    
-            selection.items = [bgRectangle, buttonContent];
-            commands.alignHorizontalCenter()
-            commands.alignVerticalCenter()
-            commands.group();
-    
-            buttonText.moveInParentCoordinates(0, -0.5);
-        }
-        else{
-            selection.items = [bgRectangle, iconNode];
-            commands.group();
-        }
+      commands.alignVerticalCenter();
+      commands.group();
+
+      const buttonContent = selection.items[0];
+
+      let iconSpacing = buttonProps.iconSize + 10;
+      if (buttonProps.iconPlacement == "right") iconSpacing *= -1;
+      buttonText.moveInParentCoordinates(iconSpacing, 0);
+
+      selection.items = [bgRectangle, buttonContent];
+      commands.alignHorizontalCenter();
+      commands.alignVerticalCenter();
+      commands.group();
+
+      buttonText.moveInParentCoordinates(0, -0.5);
+    } else {
+      selection.items = [bgRectangle, iconNode];
+      commands.group();
     }
-    else{
-        selection.items = [bgRectangle, buttonText];
-        commands.alignHorizontalCenter()
-        commands.alignVerticalCenter()
-        commands.group();
-    }
+  } else {
+    selection.items = [bgRectangle, buttonText];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+  }
 
-    const button = selection.items[0];
-    button.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: bgRectangle,
-            values: buttonProps.padding,
-        }
-    };
+  const button = selection.items[0];
+  button.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bgRectangle,
+      values: {
+        ...buttonProps.padding,
+        ...(["flat", "link"].includes(buttonProps.style)
+          ? { left: 0, right: 0 }
+          : {}),
+      },
+    },
+  };
 
-    return button;
+  return button;
 }
 
 module.exports = assembleButton;

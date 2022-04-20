@@ -29408,53 +29408,55 @@ module.exports = App;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 
 function assembleButton(buttonComponents, buttonProps) {
-    const [bgRectangle, buttonText, iconNode] = buttonComponents;
+  const [bgRectangle, buttonText, iconNode] = buttonComponents;
 
-    if (iconNode) {
-        if (buttonText) {
-            selection.items = [iconNode, buttonText];
-            if (buttonProps.iconPlacement == "right") commands.alignRight();else commands.alignLeft();
+  if (iconNode) {
+    if (buttonText) {
+      selection.items = [iconNode, buttonText];
+      if (buttonProps.iconPlacement == "right") commands.alignRight();else commands.alignLeft();
 
-            commands.alignVerticalCenter();
-            commands.group();
+      commands.alignVerticalCenter();
+      commands.group();
 
-            const buttonContent = selection.items[0];
+      const buttonContent = selection.items[0];
 
-            let iconSpacing = buttonProps.iconSize + 10;
-            if (buttonProps.iconPlacement == "right") iconSpacing *= -1;
-            buttonText.moveInParentCoordinates(iconSpacing, 0);
+      let iconSpacing = buttonProps.iconSize + 10;
+      if (buttonProps.iconPlacement == "right") iconSpacing *= -1;
+      buttonText.moveInParentCoordinates(iconSpacing, 0);
 
-            selection.items = [bgRectangle, buttonContent];
-            commands.alignHorizontalCenter();
-            commands.alignVerticalCenter();
-            commands.group();
+      selection.items = [bgRectangle, buttonContent];
+      commands.alignHorizontalCenter();
+      commands.alignVerticalCenter();
+      commands.group();
 
-            buttonText.moveInParentCoordinates(0, -0.5);
-        } else {
-            selection.items = [bgRectangle, iconNode];
-            commands.group();
-        }
+      buttonText.moveInParentCoordinates(0, -0.5);
     } else {
-        selection.items = [bgRectangle, buttonText];
-        commands.alignHorizontalCenter();
-        commands.alignVerticalCenter();
-        commands.group();
+      selection.items = [bgRectangle, iconNode];
+      commands.group();
     }
+  } else {
+    selection.items = [bgRectangle, buttonText];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+  }
 
-    const button = selection.items[0];
-    button.layout = {
-        type: SceneNode.LAYOUT_PADDING,
-        padding: {
-            background: bgRectangle,
-            values: buttonProps.padding
-        }
-    };
+  const button = selection.items[0];
+  button.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bgRectangle,
+      values: _extends({}, buttonProps.padding, ["flat", "link"].includes(buttonProps.style) ? { left: 0, right: 0 } : {})
+    }
+  };
 
-    return button;
+  return button;
 }
 
 module.exports = assembleButton;
@@ -29473,48 +29475,48 @@ module.exports = {
         size: [82, 38],
         fontSize: 14,
         fontStyle: "Regular",
-        cornerRadius: 4,
+        cornerRadius: [2, 4],
         padding: {
+            top: 10,
             bottom: 10,
             left: 14,
-            right: 14,
-            top: 10
+            right: 14
         }
     },
     "sm": {
         size: [82, 38],
-        fontSize: 17,
+        fontSize: 16,
         fontStyle: "Regular",
-        cornerRadius: 4,
+        cornerRadius: [4, 8],
         padding: {
-            bottom: 13,
-            top: 13,
+            top: 12,
+            bottom: 12,
             left: 16,
             right: 16
         }
     },
     "md": {
         size: [82, 38],
-        fontSize: 22,
+        fontSize: 18,
         fontStyle: "Regular",
-        cornerRadius: 4,
+        cornerRadius: [6, 10],
         padding: {
+            top: 16,
             bottom: 16,
-            left: 24,
-            right: 24,
-            top: 16
+            left: 20,
+            right: 20
         }
     },
     "lg": {
         size: [101, 48],
         fontSize: 22,
-        fontStyle: "Medium",
-        cornerRadius: 4,
+        fontStyle: "Regular",
+        cornerRadius: [8, 14],
         padding: {
-            bottom: 18,
+            top: 20,
+            bottom: 20,
             left: 26,
-            right: 26,
-            top: 18
+            right: 26
         }
     }
 };
@@ -29545,64 +29547,58 @@ const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators
 const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 
 function createButton(props = {}) {
-  let {
-    iconPlacement,
-    icon,
-    text,
-    size,
-    color,
-    shadow,
-    outlined,
-    link,
-    underline,
-    roundness
-  } = _extends({}, defaultButtonProps, props);
-
-  if (!text && !text.length && !icon && !icon.length) text = "Submit";
+  let { iconPlacement, icon, text, size, color, shadow, style, roundness } = _extends({}, defaultButtonProps, props);
 
   const buttonProps = buttonSizeMap[size];
   const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
 
   const bgRectangle = new Rectangle();
   bgRectangle.resize(...buttonProps.size);
-  bgRectangle.fill = new Color(color, outlined || link ? 0 : 1);
-  bgRectangle.strokeEnabled = !link;
+  bgRectangle.fill = new Color(color);
+  bgRectangle.stroke = new Color(color);
+  bgRectangle.strokeEnabled = true;
   bgRectangle.strokeWidth = 1.2;
-
-  bgRectangle.setAllCornerRadii((["none", "full"].includes(roundness) ? { none: 0, full: 999 }[roundness] : buttonProps.cornerRadius) || 0);
+  const [sm, md] = buttonProps.cornerRadius;
+  bgRectangle.setAllCornerRadii({ none: 0, sm, md, full: 999 }[roundness]);
   bgRectangle.name = "BG";
-  if (!shadow) bgRectangle.stroke = new Color(color);else bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
 
   insertNode(bgRectangle);
+
+  const textColor = style != "fill" ? color : tinyColor(color).isLight() ? "black" : "white";
 
   let buttonText,
       iconNode,
       showIcon = icon && iconData[icon];
-
-  let textColor = "#FFF";
-  if (outlined || link) textColor = color;else textColor = tinyColor(color).isLight() ? "black" : "white";
 
   if (showIcon) {
     iconNode = createIcon(iconData[icon], { fill: textColor, size: iconSize });
     if (iconPlacement == "right") insertNode(iconNode);
   }
 
+  if (!text && !text.length && !icon && !icon.length) text = "Submit";
+
   if (text && text.length) {
     buttonText = new Text();
     buttonText.text = text;
 
-    buttonText.fill = new Color(textColor);
     buttonText.fontFamily = "Helvetica Neue";
     buttonText.fontSize = buttonProps.fontSize;
     buttonText.fontStyle = buttonProps.fontStyle;
-    buttonText.underline = underline;
+    buttonText.fill = new Color(textColor);
+    buttonText.underline = style == "link";
 
     insertNode(buttonText);
   }
 
   if (showIcon && iconPlacement != "right") insertNode(iconNode);
 
+  if (style != "fill") {
+    bgRectangle.fill = new Color(color, 0);
+    bgRectangle.stroke = new Color(color, style == "outline" ? 1 : 0);
+  } else if (shadow) bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
+
   return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, {
+    style,
     iconPlacement,
     iconSize
   }));
@@ -29626,9 +29622,7 @@ module.exports = {
     size: "md",
     color: "#333",
     shadow: false,
-    outlined: false,
-    link: false,
-    underline: false,
+    style: "filled", // "outlined", "flat", "link"
     roundness: "normal"
 };
 
@@ -31498,23 +31492,23 @@ module.exports = Input;
 module.exports = {
     "md": {
         size: [82, 38],
-        fontSize: 20,
+        fontSize: 21,
         fontStyle: "Regular",
         labelFontSize: 17,
         cornerRadius: 6,
         padding: {
-            bottom: 12, top: 12,
+            bottom: 13, top: 13,
             left: 16, right: 16
         }
     },
     "lg": {
         size: [101, 48],
-        fontSize: 22,
+        fontSize: 23,
         fontStyle: "Regular",
         labelFontSize: 20,
         cornerRadius: 6,
         padding: {
-            bottom: 16, top: 16,
+            bottom: 18, top: 18,
             left: 20, right: 20
         }
     }
@@ -33890,11 +33884,14 @@ const schema = {
     choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"]
   },
   shadow: "boolean",
-  outlined: "boolean",
+  style: {
+    type: "radio",
+    choices: ["fill", "outline", "flat", "link"]
+  },
   roundness: {
     label: "Rounded Corners",
     type: "radio",
-    choices: ["none", "normal", "full"]
+    choices: ["none", "sm", "md", "full"]
   }
 };
 

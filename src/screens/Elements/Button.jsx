@@ -32,11 +32,14 @@ const schema = {
     choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"],
   },
   shadow: "boolean",
-  outlined: "boolean",
+  style: {
+    type: "radio",
+    choices: ["fill", "outline", "flat", "link"],
+  },
   roundness: {
     label: "Rounded Corners",
     type: "radio",
-    choices: ["none", "normal", "full"],
+    choices: ["none", "sm", "md", "full"],
   },
 };
 

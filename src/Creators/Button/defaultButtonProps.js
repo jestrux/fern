@@ -5,8 +5,6 @@ module.exports = {
     size: "md",
     color: "#333",
     shadow: false, 
-    outlined: false,
-    link: false,
-    underline: false,
+    style: "filled", // "outlined", "flat", "link"
     roundness: "normal",
 };
