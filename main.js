@@ -29617,12 +29617,12 @@ module.exports = createButton;
 
 module.exports = {
     icon: null,
-    iconPlacement: "right",
+    // iconPlacement: "right",
     text: "Get Started",
     size: "md",
     color: "#333",
     shadow: false,
-    style: "filled", // "outlined", "flat", "link"
+    style: "fill", // "outlined", "flat", "link"
     roundness: "sm"
 };
 
@@ -31492,13 +31492,13 @@ module.exports = Input;
 module.exports = {
     "md": {
         size: [82, 38],
-        fontSize: 21,
+        fontSize: 20,
         fontStyle: "Regular",
         labelFontSize: 17,
         cornerRadius: 6,
         padding: {
-            bottom: 13, top: 13,
-            left: 16, right: 16
+            bottom: 16, top: 16,
+            left: 18, right: 18
         }
     },
     "lg": {
@@ -33444,12 +33444,12 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
 
   return React.createElement(
     "div",
-    { className: rootLevel ? "border-t mb-3 -mx-12px" : data && "mb-1" },
+    { className: rootLevel ? "border-t mb-3 -mx-12px bg-white pb-1" : data && "mb-1" },
     React.createElement(
       "div",
       {
         className: `flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26 ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black12 ${data && 'bg-black26'}`}
       `
       },
       React.createElement(

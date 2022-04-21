@@ -1,13 +1,13 @@
 module.exports = {
     "md": {
         size: [82, 38],
-        fontSize: 21,
+        fontSize: 20,
         fontStyle: "Regular",
         labelFontSize: 17,
         cornerRadius: 6,
         padding: {
-            bottom: 13, top: 13,
-            left: 16, right: 16,
+            bottom: 16, top: 16,
+            left: 18, right: 18,
         }
     },
     "lg": {

@@ -65,10 +65,10 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
   const children = !data ? [] : schemaToFields(field.children, data);
 
   return (
-    <div className={rootLevel ? "border-t mb-3 -mx-12px" : data && "mb-1"}>
+    <div className={rootLevel ? "border-t mb-3 -mx-12px bg-white pb-1" : data && "mb-1"}>
       <div
         className={`flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26 ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black12 ${data && 'bg-black26'}`}
       `}
       >
         <label
