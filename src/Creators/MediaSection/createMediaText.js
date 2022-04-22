@@ -35,8 +35,8 @@ function createMediaText({
   const subHeadingNode = createText(subHeading, {
     width: theme.subHeading.width,
     fill: new Color(color),
-    fontSize: 18,
-    lineSpacing: 37,
+    fontSize: 22,
+    lineSpacing: 40,
     fontStyle: "Regular",
   });
 

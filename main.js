@@ -31746,8 +31746,8 @@ function createMediaText({
   const subHeadingNode = createText(subHeading, {
     width: theme.subHeading.width,
     fill: new Color(color),
-    fontSize: 18,
-    lineSpacing: 37,
+    fontSize: 22,
+    lineSpacing: 40,
     fontStyle: "Regular"
   });
 
@@ -31812,18 +31812,18 @@ const defaultMediaSectionProps = {
     backgroundColor: "#F8F7F7",
     color: "#333",
     image: "5",
-    heading: "Supporting mothers in their time of need",
-    subHeading: "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
+    heading: "Supporting all county mothers in need",
+    subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
     buttons: "More about us, See beneficiaries",
     theme: {
         heading: {
-            width: 500
+            width: 530
         },
         subHeading: {
-            width: 500
+            width: 530
         },
         buttons: {
-            icons: true,
+            icons: false,
             activeColor: "#F44663",
             iconPlacement: "right",
             size: "md",
