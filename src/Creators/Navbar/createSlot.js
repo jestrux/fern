@@ -17,7 +17,19 @@ function createNavSlot(props, components = {}) {
     dp: navDpComponent,
     socials: (props, icons) => createSocialMediaIcons({...props, icons}),
     search: navSearchInputComponent,
-    buttons: navButtonsComponent,
+    buttons: (props, buttons) => navButtonsComponent({
+      ...props,
+      mainButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "fill",
+      },
+      secondaryButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "outline",
+      },
+    }, buttons),
   };
 
   try {

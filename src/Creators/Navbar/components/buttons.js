@@ -7,8 +7,11 @@ function navButtonsComponent(
   {
     color,
     activeColor,
-    secondaryButtonStyle = "outline", // "link",
-    mainButtonStyle = "fill",
+    size = "sm",
+    roundness = "sm",
+    iconPlacement = "left",
+    mainButton,
+    secondaryButton,
   },
   buttons = "Sign In, Get Started"
 ) {
@@ -16,30 +19,27 @@ function navButtonsComponent(
   let button1, button2;
 
   if (buttons.length == 2) {
-    button1 = createButton({
-      text: buttons[1],
-      size: "sm",
-      color: activeColor || color,
-      style: mainButtonStyle,
-      roundness: "sm",
-    });
-
     button2 = createButton({
-      text: buttons[0],
-      size: "sm",
-      color: color,
-      style: secondaryButtonStyle,
-      roundness: "sm",
-    });
-  } else {
-    button1 = createButton({
-      text: buttons[0],
-      size: "sm",
-      color: activeColor || color,
-      style: mainButtonStyle,
-      roundness: "sm",
+      text: buttons[1],
+      color,
+      size,
+      roundness,
+      iconPlacement,
+      ...(mainButton ? mainButton : {}),
     });
   }
+  
+  let button1Styling = mainButton ? mainButton : {};
+  if(buttons.length == 2) button1Styling = secondaryButton ? secondaryButton : {};
+
+  button1 = createButton({
+    text: buttons[0],
+    color: activeColor || color,
+    size,
+    roundness,
+    iconPlacement,
+    ...button1Styling,
+  });
 
   selection.items = buttons.length == 2 ? [button1, button2] : [button1];
   commands.alignVerticalCenter();
@@ -53,7 +53,7 @@ function navButtonsComponent(
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_HORIZONTAL,
-        spacings: secondaryButtonStyle == "outline" ? 8 : 14,
+        spacings: secondaryButton && secondaryButton.style == "outline" ? 8 : 14,
       },
     };
   }

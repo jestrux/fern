@@ -11,7 +11,6 @@ function createNavBackground({
   border,
   shadow,
 }) {
-  console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
   let bg = new Rectangle();
   bg.resize(width, height);
   bg.fill =

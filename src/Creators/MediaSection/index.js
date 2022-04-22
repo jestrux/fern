@@ -1,54 +1,36 @@
-const { selection } = require("scenegraph");
 const { PLUGIN_ID } = require("../../constants");
-const { editDom, getAssetFileFromPath, placeInParent, } = require("../../utils");
-const createMedia = require("./createMedia");
+const { selection } = require("scenegraph");
+const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
+const assembleMediaSection = require("./assemble");
+const defaultMediaSectionProps = require("./defaultProps");
 const getMediaImages = require("./getMediaImages");
 
-const defaultShadowProps = {
-    size: "lg",
-    placement: "B-R",
-    color: "#000",
-};
+async function MediaSection(userProps){
+    const props = {
+        ...defaultMediaSectionProps,
+        ...(userProps || {}),
+    };
 
-const defaultMediaSectionProps = {
-    style: "basic",
-    playIcon: {
-        color: "#EA4949",
-        invertColors: false,
-        smoothCorners: false,
-    },
-    shadow: defaultShadowProps,
-    cornerRadius: 'xs',
-    video: false,
-    orientation: 'landscape',
-    overLayout: "T-R",
-};
-
-async function MediaSection(props){
-    const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
-    const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
-    let imageFills = [null, null];
-
+    const bannerImages = await getAssetsByType("banner");
+    let imageFills;
+    
     try {
-        const oldMediaSection = props ? selection.items[0] : null;
-        let media;
-
+        const oldMediaSection = userProps ? selection.items[0] : null;
         if(oldMediaSection){
-            const mediaImageNodes = getMediaImages(oldMediaSection);
-            if(mediaImageNodes)
-                imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            if (props.logo == "custom") {
+                const mediaImageNodes = getMediaImages(oldMediaSection);
+                if(mediaImageNodes)
+                    imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            }
+
         }
         
         editDom(async (selection) => {
             try {
-                const [mediaNode] = createMedia(
-                    props || defaultMediaSectionProps, 
-                    [
-                        defaultMediaImage, portraitMediaImage, 
-                        ...imageFills
-                    ]
+                const media = assembleMediaSection(
+                    props, 
+                    bannerImages
                 );
-                media = mediaNode;
                 
                 selection.items = [media];
                 media.name = "FernMedia";

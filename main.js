@@ -31516,6 +31516,121 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./src/Creators/MediaSection/assemble.js":
+/*!***********************************************!*\
+  !*** ./src/Creators/MediaSection/assemble.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { createBorder, insertNode, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
+const createMediaText = __webpack_require__(/*! ./createMediaText */ "./src/Creators/MediaSection/createMediaText.js");
+
+function createSectionBackground({
+  width,
+  height,
+  backgroundColor,
+  color,
+  border
+}) {
+  let bg = new Rectangle();
+  bg.resize(width, height);
+  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
+  bg.strokeEnabled = false;
+  bg.name = "BG";
+  insertNode(bg);
+
+  if (border) {
+    const borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [bg, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    bg = selection.items[0];
+  }
+
+  const container = new Rectangle();
+  const containerWidth = 1400; // 1600;
+  container.resize(Math.min(width, containerWidth), height);
+  container.fill = new Color("white", 0);
+  container.strokeEnabled = false;
+  container.name = "Container";
+  insertNode(container);
+
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+
+  return [bg, container];
+}
+
+function assembleMediaSection(props = {}, images) {
+  props = _extends({}, props, {
+    images,
+    width: 1600,
+    // width: 1920,
+    height: 620
+  });
+
+  const [bg, container] = createSectionBackground(_extends({}, props));
+  props.container = container;
+
+  const media = createMedia(props);
+  const mediaText = createMediaText(props);
+
+  console.log("Container bounds: ", container);
+
+  const { x, y } = container.topLeftInParent;
+
+  placeInParent(mediaText, { x, y });
+  placeInParent(media, {
+    x: container.localBounds.width - media.localBounds.width + x,
+    y
+  });
+
+  container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
+
+  selection.items = [media, mediaText, container];
+  commands.alignVerticalCenter();
+  mediaText.moveInParentCoordinates(0, -32);
+  commands.group();
+  const content = selection.items[0];
+
+  selection.items = [bg, content];
+  commands.group();
+
+  const mediaSection = selection.items[0];
+
+  mediaSection.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bg,
+      values: { left: 130, right: 130, top: 90, bottom: 90 }
+    }
+  };
+
+  mediaSection.resize(props.width, mediaSection.localBounds.height);
+
+  return mediaSection;
+}
+
+module.exports = assembleMediaSection;
+
+/***/ }),
+
 /***/ "./src/Creators/MediaSection/createMedia.js":
 /*!**************************************************!*\
   !*** ./src/Creators/MediaSection/createMedia.js ***!
@@ -31523,215 +31638,232 @@ module.exports = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { selection, Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const {
+  Color,
+  Rectangle,
+  ImageFill,
+  Shadow
+} = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createIcon, insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function createMedia(props, [defaultImage, portraitImage, mainImageFill, bottomImageFill]) {
-    let {
-        style,
-        playIcon,
-        shadow,
-        cornerRadius,
-        video,
-        orientation,
-        overLayout
-    } = props || {};
+function getShadow({ size, placement, color } = {}) {
+  const shadowPropsMap = {
+    "sm": [5, 15, 30],
+    "md": [10, 22, 60],
+    "lg": [15, 30, 90]
+  };
 
-    function playButton() {
-        const {
-            color,
-            invertColors,
-            smoothCorners
-        } = playIcon;
+  if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
 
-        const playButtonBg = new Ellipse();
-        playButtonBg.radiusX = 40;
-        playButtonBg.radiusY = 40;
-        playButtonBg.fill = new Color(invertColors ? color : "#fff");
+  const shadowProps = shadowPropsMap[size];
+  let shadowOffsets = shadowProps.slice(0, 2);
+  const shadowBlur = shadowProps[2];
 
-        insertNode(playButtonBg);
+  if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
 
-        const playIconNode = createIcon("M8 5v14l11-7z", {
-            fill: invertColors ? "#fff" : color,
-            stroke: invertColors ? "#fff" : color,
-            strokeWidth: 5,
-            strokeJoins: smoothCorners ? GraphicNode.STROKE_JOIN_ROUND : GraphicNode.STROKE_JOIN_MITER,
-            size: 30
-        });
+  console.log("Shadow offsets: ", shadowOffsets);
+  return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
+}
 
-        insertNode(playIconNode);
+function createMedia({
+  roundness = "sm",
+  shadow,
+  images,
+  image,
+  theme = {
+    media: {}
+  }
+}) {
+  const { width, height } = theme.media;
+  const roundnessMap = {
+    "none": 0,
+    "sm": 6,
+    "md": 12,
+    "lg": 20
+  };
 
-        selection.items = [playButtonBg, playIconNode];
-        commands.alignHorizontalCenter();
-        commands.alignVerticalCenter();
-        commands.group();
-        playIconNode.moveInParentCoordinates(3, 0);
+  const imageNode = new Rectangle();
+  imageNode.resize(width, height);
+  imageNode.fill = new ImageFill(images[`banner${image}`]);
+  imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
-        const button = selection.items[0];
-        button.name = 'playButton';
-        return button;
-    }
+  // try {
+  //     imageNode.fill = imageNodeImage;
+  // } catch (error) {
+  //     imageNode.fill = new ImageFill(imageNodeImage);
+  // }
 
-    function getShadow() {
-        let { size, placement, color } = shadow || {};
-        const shadowPropsMap = {
-            "sm": [5, 15, 30],
-            "md": [10, 22, 60],
-            "lg": [15, 30, 90]
-        };
+  insertNode(imageNode);
 
-        if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
+  if (shadow) imageNode.shadow = getShadow(shadow);
 
-        const shadowProps = shadowPropsMap[size];
-        let shadowOffsets = shadowProps.slice(0, 2);
-        const shadowBlur = shadowProps[2];
-
-        console.log("Shadow blur: ", shadowBlur);
-
-        if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
-
-        console.log("Shadow offsets: ", shadowOffsets);
-        return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
-    }
-
-    function createOverlayMedia() {
-        let bgRectangle = new Rectangle();
-        bgRectangle.resize(510, 340);
-        bgRectangle.name = "BG";
-        bgRectangle.fill = bottomImageFill ? bottomImageFill : new ImageFill(portraitImage);
-        if (cornerRadius) bgRectangle.setAllCornerRadii(5);
-
-        insertNode(bgRectangle);
-
-        if (shadow) bgRectangle.shadow = getShadow();
-
-        let overlayImage;
-        selection.items = [bgRectangle];
-        commands.duplicate();
-
-        if (video) {
-            overlayImage = selection.items[0];
-            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
-
-            commands.duplicate();
-            const scrim = selection.items[0];
-            scrim.name = "Scrim";
-            scrim.fill = new Color("black", 0.3);
-
-            commands.duplicate();
-            const overlayScrim = selection.items[0];
-
-            selection.items = [bgRectangle, scrim];
-
-            commands.group();
-            bgRectangle = selection.items[0];
-            bgRectangle.name = "Underlay";
-
-            selection.items = [overlayImage, overlayScrim, playButton()];
-            commands.alignHorizontalCenter();
-            commands.alignVerticalCenter();
-            commands.group();
-            overlayImage = selection.items[0];
-            overlayImage.name = "Overlay";
-        } else {
-            overlayImage = selection.items[0];
-            overlayImage.name = "Overlay";
-            overlayImage.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
-        }
-
-        selection.items = [bgRectangle, overlayImage];
-        commands.group();
-
-        const overLayouts = {
-            "T-R": [70, -60],
-            "T-L": [-70, -60],
-            "B-R": [70, 60],
-            "B-L": [-70, 60]
-        };
-
-        overlayImage.moveInParentCoordinates(...overLayouts[overLayout]);
-
-        return selection.items[0];
-    }
-
-    function createRegularMedia() {
-        const bgRectangle = new Rectangle();
-        bgRectangle.name = "BG";
-        bgRectangle.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
-
-        if (orientation == 'portrait') bgRectangle.resize(540, 580);else bgRectangle.resize(580, 440);
-
-        if (cornerRadius) bgRectangle.setAllCornerRadii(10);
-
-        insertNode(bgRectangle);
-
-        if (video) {
-            const radiusMap = { 'xs': 10, 'sm': 40, 'md': 120, 'lg': 500 };
-            bgRectangle.setAllCornerRadii(radiusMap[cornerRadius]);
-
-            selection.items = [bgRectangle];
-            commands.duplicate();
-
-            if (shadow) bgRectangle.shadow = getShadow();
-
-            const scrim = selection.items[0];
-            scrim.name = "Scrim";
-            scrim.fill = new Color("black", 0.3);
-
-            selection.items = [bgRectangle, scrim, playButton()];
-
-            commands.alignHorizontalCenter();
-            commands.alignVerticalCenter();
-            commands.group();
-            return selection.items[0];
-        } else if (shadow) bgRectangle.shadow = getShadow();
-
-        return bgRectangle;
-    }
-
-    function createCircularMedia() {
-        const bg = new Ellipse();
-        bg.name = "BG";
-        bg.radiusX = 246;
-        bg.radiusY = 246;
-        bg.fill = mainImageFill ? mainImageFill : new ImageFill(defaultImage);
-
-        insertNode(bg);
-
-        if (video) {
-            selection.items = [bg];
-            commands.duplicate();
-
-            if (shadow) bg.shadow = getShadow();
-
-            const scrim = selection.items[0];
-            scrim.name = "Scrim";
-            scrim.fill = new Color("black", 0.3);
-
-            selection.items = [bg, scrim, playButton()];
-
-            commands.alignHorizontalCenter();
-            commands.alignVerticalCenter();
-            commands.group();
-            return selection.items[0];
-        } else if (shadow) bg.shadow = getShadow();
-
-        return bg;
-    }
-
-    const styleMap = {
-        'basic': createRegularMedia,
-        'circle': createCircularMedia,
-        'overlay': createOverlayMedia
-    };
-
-    const mediaCreator = styleMap[style] || createRegularMedia;
-
-    return [mediaCreator()];
+  return imageNode;
 }
 
 module.exports = createMedia;
+
+/***/ }),
+
+/***/ "./src/Creators/MediaSection/createMediaText.js":
+/*!******************************************************!*\
+  !*** ./src/Creators/MediaSection/createMediaText.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const {
+  selection,
+  Color,
+  SceneNode
+} = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const navButtonsComponent = __webpack_require__(/*! ../Navbar/components/buttons */ "./src/Creators/Navbar/components/buttons.js");
+
+function createMediaText({
+  heading = "Supporting mothers in their time of need",
+  subHeading = "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
+  buttons = "More about us, See beneficiaries",
+  color = "#333",
+  activeColor,
+  theme
+}) {
+  let buttonsNode;
+
+  if (buttons && buttons.split(",").length) {
+    buttonsNode = navButtonsComponent(_extends({
+      color,
+      activeColor
+    }, _extends({}, theme.buttons, {
+      mainButton: !theme.buttons.icons ? null : theme.buttons.secondaryButton,
+      secondaryButton: !theme.buttons.icons ? null : theme.buttons.mainButton
+    })), buttons);
+  }
+
+  const subHeadingNode = createText(subHeading, {
+    width: theme.subHeading.width,
+    fill: new Color(color),
+    fontSize: 18,
+    lineSpacing: 37,
+    fontStyle: "Regular"
+  });
+
+  insertNode(subHeadingNode);
+
+  const headingNode = createText(heading, {
+    width: theme.heading.width,
+    fill: new Color(color),
+    fontSize: 48,
+    lineSpacing: 62,
+    fontStyle: "Bold"
+  });
+
+  insertNode(headingNode);
+
+  selection.items = [headingNode, subHeadingNode];
+  commands.alignLeft();
+  commands.group();
+
+  const headingAndSubHeading = selection.items[0];
+  if (headingAndSubHeading.children.length > 1) {
+    headingAndSubHeading.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_VERTICAL,
+        spacings: 20
+      }
+    };
+  }
+
+  selection.items = [headingAndSubHeading, buttonsNode];
+  commands.alignLeft();
+  commands.group();
+
+  const mediaTextElement = selection.items[0];
+  if (mediaTextElement.children.length > 1) {
+    mediaTextElement.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_VERTICAL,
+        spacings: 30
+      }
+    };
+  }
+  mediaTextElement.name = "FernMediaText";
+
+  return mediaTextElement;
+}
+
+module.exports = createMediaText;
+
+/***/ }),
+
+/***/ "./src/Creators/MediaSection/defaultProps.js":
+/*!***************************************************!*\
+  !*** ./src/Creators/MediaSection/defaultProps.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultMediaSectionProps = {
+    backgroundColor: "#F8F7F7",
+    color: "#333",
+    image: "5",
+    heading: "Supporting mothers in their time of need",
+    subHeading: "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
+    buttons: "More about us, See beneficiaries",
+    theme: {
+        heading: {
+            width: 500
+        },
+        subHeading: {
+            width: 500
+        },
+        buttons: {
+            icons: true,
+            activeColor: "#F44663",
+            iconPlacement: "right",
+            size: "md",
+            roundness: "sm",
+            mainButton: {
+                // color: "#333",
+                icon: "chevron-right",
+                style: "fill"
+            },
+            secondaryButton: {
+                // color: "#333",
+                icon: "chevron-right",
+                style: "outline"
+            }
+        },
+        media: {
+            width: 680,
+            height: 448,
+            cornerRadius: 'sm',
+            video: {
+                overlay: "none", //"blur", "scrim",
+                playIcon: {
+                    color: "#EA4949",
+                    invertColors: false,
+                    smoothCorners: false
+                }
+            }
+            // orientation: 'landscape',
+            // style: "basic",
+            // shadow: {
+            //     size: "lg",
+            //     placement: "B-R",
+            //     color: "#000",
+            // },
+            // overLayout: "T-R",
+        }
+    }
+};
+
+module.exports = defaultMediaSectionProps;
 
 /***/ }),
 
@@ -31789,50 +31921,31 @@ module.exports = getMediaImages;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
-const { editDom, getAssetFileFromPath, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleMediaSection = __webpack_require__(/*! ./assemble */ "./src/Creators/MediaSection/assemble.js");
+const defaultMediaSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
 const getMediaImages = __webpack_require__(/*! ./getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
 
-const defaultShadowProps = {
-    size: "lg",
-    placement: "B-R",
-    color: "#000"
-};
+async function MediaSection(userProps) {
+    const props = _extends({}, defaultMediaSectionProps, userProps || {});
 
-const defaultMediaSectionProps = {
-    style: "basic",
-    playIcon: {
-        color: "#EA4949",
-        invertColors: false,
-        smoothCorners: false
-    },
-    shadow: defaultShadowProps,
-    cornerRadius: 'xs',
-    video: false,
-    orientation: 'landscape',
-    overLayout: "T-R"
-};
-
-async function MediaSection(props) {
-    const defaultMediaImage = await getAssetFileFromPath("images/media-section-default.jpg");
-    const portraitMediaImage = await getAssetFileFromPath("images/media-section-portrait.jpg");
-    let imageFills = [null, null];
+    const bannerImages = await getAssetsByType("banner");
+    let imageFills;
 
     try {
-        const oldMediaSection = props ? selection.items[0] : null;
-        let media;
-
+        const oldMediaSection = userProps ? selection.items[0] : null;
         if (oldMediaSection) {
-            const mediaImageNodes = getMediaImages(oldMediaSection);
-            if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            if (props.logo == "custom") {
+                const mediaImageNodes = getMediaImages(oldMediaSection);
+                if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            }
         }
 
         editDom(async selection => {
             try {
-                const [mediaNode] = createMedia(props || defaultMediaSectionProps, [defaultMediaImage, portraitMediaImage, ...imageFills]);
-                media = mediaNode;
+                const media = assembleMediaSection(props, bannerImages);
 
                 selection.items = [media];
                 media.name = "FernMedia";
@@ -31882,7 +31995,6 @@ function createNavBackground({
   border,
   shadow
 }) {
-  console.log("BG Color: ", backgroundColor, backgroundColor == "transparent");
   let bg = new Rectangle();
   bg.resize(width, height);
   bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
@@ -31986,6 +32098,8 @@ module.exports = assembleNavbar;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 
@@ -31994,37 +32108,35 @@ const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src
 function navButtonsComponent({
   color,
   activeColor,
-  secondaryButtonStyle = "outline", // "link",
-  mainButtonStyle = "fill"
+  size = "sm",
+  roundness = "sm",
+  iconPlacement = "left",
+  mainButton,
+  secondaryButton
 }, buttons = "Sign In, Get Started") {
   buttons = buttons.split(",").map(button => button.trim());
   let button1, button2;
 
   if (buttons.length == 2) {
-    button1 = createButton({
+    button2 = createButton(_extends({
       text: buttons[1],
-      size: "sm",
-      color: activeColor || color,
-      style: mainButtonStyle,
-      roundness: "sm"
-    });
-
-    button2 = createButton({
-      text: buttons[0],
-      size: "sm",
-      color: color,
-      style: secondaryButtonStyle,
-      roundness: "sm"
-    });
-  } else {
-    button1 = createButton({
-      text: buttons[0],
-      size: "sm",
-      color: activeColor || color,
-      style: mainButtonStyle,
-      roundness: "sm"
-    });
+      color,
+      size,
+      roundness,
+      iconPlacement
+    }, mainButton ? mainButton : {}));
   }
+
+  let button1Styling = mainButton ? mainButton : {};
+  if (buttons.length == 2) button1Styling = secondaryButton ? secondaryButton : {};
+
+  button1 = createButton(_extends({
+    text: buttons[0],
+    color: activeColor || color,
+    size,
+    roundness,
+    iconPlacement
+  }, button1Styling));
 
   selection.items = buttons.length == 2 ? [button1, button2] : [button1];
   commands.alignVerticalCenter();
@@ -32038,7 +32150,7 @@ function navButtonsComponent({
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_HORIZONTAL,
-        spacings: secondaryButtonStyle == "outline" ? 8 : 14
+        spacings: secondaryButton && secondaryButton.style == "outline" ? 8 : 14
       }
     };
   }
@@ -32343,7 +32455,18 @@ function createNavSlot(props, components = {}) {
     dp: navDpComponent,
     socials: (props, icons) => createSocialMediaIcons(_extends({}, props, { icons })),
     search: navSearchInputComponent,
-    buttons: navButtonsComponent
+    buttons: (props, buttons) => navButtonsComponent(_extends({}, props, {
+      mainButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "fill"
+      },
+      secondaryButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "outline"
+      }
+    }), buttons)
   };
 
   try {
@@ -35194,426 +35317,57 @@ module.exports = Input;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { selection, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 
-const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
-const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
-const ColorList = __webpack_require__(/*! ../../components/ColorList */ "./src/components/ColorList.jsx");
-const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
-const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
-const { editDom, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const getMediaImages = __webpack_require__(/*! ../../Creators/MediaSection/getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
-const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const schema = {
+  backgroundColor: {
+    label: "Background",
+    type: "color",
+    meta: {
+      showTransparent: true
+    }
+  },
+  color: {
+    label: "Text Color",
+    type: "color",
+    choices: ["transparent", "#333", "#FFF"]
+  },
+  heading: "text",
+  subHeading: "text",
+  buttons: "text",
+  theme: {
+    type: "section",
+    children: {
+      buttons: {
+        type: "section",
+        children: {
+          icons: "boolean",
+          activeColor: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["black", "white"],
+            meta: { small: true }
+          },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            defaultValue: "sm",
+            choices: ["none", "sm"]
+          }
+        }
+      }
+    }
+  }
+};
 
 function MediaSection({ value, onClose }) {
-    const style = value ? value.style : 'basic';
-    const orientation = value ? value.orientation : 'landscape';
-    let overLayout = value ? value.overLayout : "T-R";
-
-    const shadow = value ? value.shadow : false;
-    const defaultShadowProps = {
-        size: "lg",
-        placement: "B-R",
-        color: "#000"
-    };
-    const shadowSize = shadow ? shadow.size : "lg";
-    const shadowPlacement = shadow ? shadow.placement : "B-R";
-    const shadowColor = shadow ? shadow.color : "red";
-
-    const video = value ? value.video : false;
-    const playIcon = value ? value.playIcon || {} : {};
-    const playIconColor = playIcon.color || "red";
-    const invertPlayIconColors = playIcon.invertColors;
-    const smoothPlayIconCorners = playIcon.smoothCorners;
-
-    const cornerRadius = value ? value.cornerRadius : 'sm';
-
-    const [editImage, setEditImage] = React.useState(false);
-    const [editUnderlayImage, setEditUnderlayImage] = React.useState(false);
-
-    const [showShadowStyles, setShowShadowStyles] = React.useState(value.showShadowStyles);
-    const [showPlayIconStyles, setShowPlayIconStyles] = React.useState(value.showPlayIconStyles);
-
-    React.useEffect(() => {
-        if (showShadowStyles != value.showShadowStyles || showPlayIconStyles != value.showPlayIconStyles) {
-            value.showShadowStyles = showShadowStyles;
-            value.showPlayIconStyles = showPlayIconStyles;
-
-            editDom(() => {
-                selection.items[0].sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(value));
-            });
-        }
-    }, [showShadowStyles, showPlayIconStyles]);
-
-    function handleSetImage(image) {
-        const [topImage] = getMediaImages(selection.items[0]);
-        editDom(() => {
-            topImage.fill = new ImageFill(image);
-        });
-    }
-
-    function handleSetUnderlayImage(image) {
-        const [topImage, bottomImage] = getMediaImages(selection.items[0]);
-        editDom(() => {
-            bottomImage.fill = new ImageFill(image);
-        });
-    }
-
-    function handleSetStyle(style) {
-        Creators.MediaSection(_extends({}, value, { style }));
-    }
-
-    function handleSetOrientation(orientation) {
-        Creators.MediaSection(_extends({}, value, { orientation }));
-    }
-
-    function handleSetOverLayout(overLayout) {
-        Creators.MediaSection(_extends({}, value, { overLayout }));
-    }
-
-    function handleSetShadow(shadow) {
-        if (shadow) shadow = _extends({}, defaultShadowProps);
-        Creators.MediaSection(_extends({}, value, { shadow }));
-    }
-
-    function handleSetShadowSize(size) {
-        if (!shadow) shadow = _extends({}, defaultShadowProps);
-        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { size }) }));
-    }
-
-    function handleSetShadowColor(color) {
-        if (!shadow) shadow = _extends({}, defaultShadowProps);
-        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { color }) }));
-    }
-
-    function handleSetShadowPlacement(placement) {
-        if (!shadow) shadow = _extends({}, defaultShadowProps);
-        Creators.MediaSection(_extends({}, value, { shadow: _extends({}, shadow, { placement }) }));
-    }
-
-    function handleSetVideo(video) {
-        Creators.MediaSection(_extends({}, value, { video }));
-    }
-
-    function handleSetPlayIconColor(color) {
-        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { color }) }));
-    }
-
-    function handleSetInvertPlayIconColors(invertColors) {
-        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { invertColors }) }));
-    }
-
-    function handleSetSmoothPlayIconCorners(smoothCorners) {
-        Creators.MediaSection(_extends({}, value, { playIcon: _extends({}, playIcon, { smoothCorners }) }));
-    }
-
-    function handleSetCornerRadius(cornerRadius) {
-        if (cornerRadius == true) cornerRadius = 'sm';
-        Creators.MediaSection(_extends({}, value, { cornerRadius }));
-    }
-
-    if (editImage || editUnderlayImage) return React.createElement(Image, {
-        value: 'office space',
-        onClose: () => {
-            setEditImage(false);setEditUnderlayImage(false);
-        },
-        onSelect: editUnderlayImage ? handleSetUnderlayImage : handleSetImage
-    });
-
-    return React.createElement(
-        'div',
-        { style: { margin: "0.5rem -12px" } },
-        React.createElement(
-            'div',
-            { className: 'flex items-center px-1' },
-            React.createElement(
-                'span',
-                { className: 'cursor-pointer opacity-65', onClick: onClose },
-                React.createElement(
-                    'svg',
-                    { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
-                )
-            ),
-            React.createElement(
-                'h2',
-                { className: 'px-0 text-md ml-1' },
-                'MediaSection'
-            )
-        ),
-        React.createElement(
-            'div',
-            { className: 'px-3 pt-2 mt-3 flex flex-col items-start' },
-            React.createElement(
-                'label',
-                { className: 'mb-1 text-md' },
-                'Style'
-            ),
-            React.createElement(ButtonGroup, {
-                value: style,
-                choices: ["basic", "circle", "overlay"],
-                onChange: handleSetStyle
-            })
-        ),
-        style == 'basic' && React.createElement(
-            'div',
-            { className: 'px-3 mt-2 flex flex-col items-start' },
-            React.createElement(
-                'label',
-                { className: 'mb-1 text-md' },
-                'Orientation'
-            ),
-            React.createElement(ButtonGroup, {
-                value: orientation,
-                choices: ["landscape", "portrait"],
-                onChange: handleSetOrientation
-            })
-        ),
-        style == 'overlay' && React.createElement(
-            'div',
-            { className: 'px-3 mt-2 flex flex-col items-start' },
-            React.createElement(
-                'label',
-                { className: 'mb-1 text-md' },
-                'Overlay Placement'
-            ),
-            React.createElement(ButtonGroup, {
-                value: overLayout,
-                choices: ["T-R", "T-L", "B-R", "B-L"],
-                onChange: handleSetOverLayout
-            })
-        ),
-        React.createElement(
-            'div',
-            { className: 'px-3 pt-1 mt-3 flex items-center justify-between' },
-            React.createElement(
-                'label',
-                { className: 'text-md' },
-                style == "overlay" ? 'Top Picture' : 'Picture'
-            ),
-            React.createElement(
-                'span',
-                { className: 'text-sm border-b border-current text-blue cursor-pointer',
-                    onClick: () => setEditImage(true)
-                },
-                'CHANGE'
-            )
-        ),
-        style == "overlay" && React.createElement(
-            'div',
-            { className: 'px-3 mt-3 flex items-center justify-between' },
-            React.createElement(
-                'label',
-                { className: 'text-md' },
-                'Bottom Picture'
-            ),
-            React.createElement(
-                'span',
-                { className: 'text-sm border-b border-current text-blue cursor-pointer',
-                    onClick: () => setEditUnderlayImage(true)
-                },
-                'CHANGE'
-            )
-        ),
-        React.createElement(
-            'div',
-            { className: '' },
-            React.createElement(
-                'div',
-                { className: 'px-3 flex items-center justify-between mt-3' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Shadow'
-                ),
-                React.createElement(Toggle, { checked: shadow, onChange: handleSetShadow })
-            ),
-            shadow && React.createElement(
-                'div',
-                { className: `-mx-12px px-12px mt-1 bg-white ${showShadowStyles && 'border-b'}` },
-                React.createElement(
-                    'div',
-                    { className: 'py-2 px-3 border-b border-light-gray flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-base' },
-                        'SHADOW STYLES'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'visible-on-parent-hover cursor-pointer rounded-full flex center-center',
-                            style: { width: "20px", height: "20px" },
-                            onClick: () => setShowShadowStyles(!showShadowStyles)
-                        },
-                        React.createElement(
-                            'svg',
-                            { className: 'opacity-50', width: '15px', height: '15px', viewBox: '0 0 24 24' },
-                            React.createElement('path', { d: 'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z' })
-                        )
-                    )
-                ),
-                showShadowStyles && React.createElement(
-                    'div',
-                    { className: 'pt-1 pb-3 px-3 bg-black12' },
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-start' },
-                        React.createElement(
-                            'label',
-                            { className: 'mb-1 text-md' },
-                            'Size'
-                        ),
-                        React.createElement(ButtonGroup, {
-                            value: shadowSize,
-                            choices: ["sm", "md", "lg"],
-                            onChange: handleSetShadowSize
-                        })
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'mt-3 flex flex-col items-start' },
-                        React.createElement(
-                            'label',
-                            { className: 'mb-1 text-md' },
-                            'Placement'
-                        ),
-                        React.createElement(ButtonGroup, {
-                            value: shadowPlacement,
-                            choices: ["B-L", "B-R"],
-                            onChange: handleSetShadowPlacement
-                        })
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'mt-3 flex flex-col items-start' },
-                        React.createElement(
-                            'label',
-                            { className: 'mb-1 text-md' },
-                            'Color'
-                        ),
-                        React.createElement(ColorList, {
-                            choiceSize: 8,
-                            colors: ["#000", "#5A2F15", "#9EE52C", "#22A4B5"],
-                            selectedColor: shadowColor,
-                            onChange: handleSetShadowColor
-                        })
-                    )
-                )
-            )
-        ),
-        React.createElement(
-            'div',
-            { className: '' },
-            React.createElement(
-                'div',
-                { className: 'px-3 flex items-center justify-between mt-3' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Video'
-                ),
-                React.createElement(Toggle, { checked: video, onChange: handleSetVideo })
-            ),
-            video && React.createElement(
-                'div',
-                { className: `-mx-12px px-12px mt-1 bg-white ${showPlayIconStyles && 'border-b'}` },
-                React.createElement(
-                    'div',
-                    { className: 'py-2 px-3 border-b border-light-gray flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-base' },
-                        'PLAY ICON'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'visible-on-parent-hover cursor-pointer rounded-full flex center-center',
-                            style: { width: "20px", height: "20px" },
-                            onClick: () => setShowPlayIconStyles(!showPlayIconStyles)
-                        },
-                        React.createElement(
-                            'svg',
-                            { className: 'opacity-50', width: '15px', height: '15px', viewBox: '0 0 24 24' },
-                            React.createElement('path', { d: 'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z' })
-                        )
-                    )
-                ),
-                showPlayIconStyles && React.createElement(
-                    'div',
-                    { className: 'pt-1 pb-3 px-3 bg-black12' },
-                    React.createElement(
-                        'div',
-                        { className: 'flex flex-col items-start' },
-                        React.createElement(
-                            'label',
-                            { className: 'mb-1 text-md' },
-                            'Color'
-                        ),
-                        React.createElement(ColorList, {
-                            choiceSize: 8,
-                            colors: ["#EA4949", "#00DF7F", "#333"],
-                            selectedColor: playIconColor,
-                            onChange: handleSetPlayIconColor
-                        })
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex items-center justify-between pt-1 mt-3' },
-                        React.createElement(
-                            'label',
-                            { className: 'text-md' },
-                            'Invert Colors'
-                        ),
-                        React.createElement(Toggle, {
-                            checked: invertPlayIconColors,
-                            onChange: handleSetInvertPlayIconColors
-                        })
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'flex items-center justify-between mt-2' },
-                        React.createElement(
-                            'label',
-                            { className: 'text-md' },
-                            'Smooth Corners ',
-                            smoothPlayIconCorners,
-                            ' '
-                        ),
-                        React.createElement(Toggle, {
-                            checked: smoothPlayIconCorners,
-                            onChange: handleSetSmoothPlayIconCorners
-                        })
-                    )
-                )
-            )
-        ),
-        style !== 'circle' && React.createElement(
-            'div',
-            { className: 'px-3 mt-3' },
-            React.createElement(
-                'div',
-                { className: 'flex items-center justify-between' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Rounded Corners'
-                ),
-                React.createElement(Toggle, { checked: cornerRadius, onChange: handleSetCornerRadius })
-            ),
-            style == 'basic' && cornerRadius && video && React.createElement(
-                'div',
-                { className: 'mt-1' },
-                React.createElement(ButtonGroup, {
-                    value: cornerRadius,
-                    choices: ["xs", "sm", "md", "lg"],
-                    onChange: handleSetCornerRadius
-                })
-            )
-        )
-    );
+  return React.createElement(ComponentPage, {
+    title: "MediaSection",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
 }
 
 module.exports = MediaSection;
@@ -37140,6 +36894,9 @@ async function getAssetsByType(type = "logo") {
   } else if (type == "dp") {
     const [dp1, dp2, dp3, dp4, dp5, dp6] = await Promise.all(Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/dps/${i + 1}.jpg`)));
     return { dp1, dp2, dp3, dp4, dp5, dp6 };
+  } else if (type == "banner") {
+    const [banner1, banner2, banner3, banner4, banner5, banner6] = await Promise.all(Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/banner/${i + 1}.jpg`)));
+    return { banner1, banner2, banner3, banner4, banner5, banner6 };
   }
 }
 
