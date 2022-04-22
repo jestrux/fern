@@ -482,10 +482,10 @@ async function getAssetsByType(type = "logo") {
     return { dp1, dp2, dp3, dp4, dp5, dp6 };
   }
   else if (type == "banner") {
-    const [banner1, banner2, banner3, banner4, banner5, banner6] = await Promise.all(
-      Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/banner/${i+1}.jpg`))
+    const [banner1, banner2, banner3, banner4, banner5, banner6, banner7, banner8] = await Promise.all(
+      Array(8).fill('fa').map((_, i) => getAssetFileFromPath(`images/banner/${i+1}.jpg`))
     );
-    return { banner1, banner2, banner3, banner4, banner5, banner6 };
+    return { banner1, banner2, banner3, banner4, banner5, banner6, banner7, banner8 };
   }
 }
 

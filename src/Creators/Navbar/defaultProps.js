@@ -26,6 +26,20 @@ const defaultNavbarProps = {
       fontStyle: "Regular", // "Condensed Black",
       textTransform: "none", // "titlecase", "lowercase", "uppercase",
     },
+    buttons: {
+      size: "sm",
+      roundness: "sm",
+      mainButton: {
+          // color: "#333",
+          // icon: "chevron-right",
+          style: "fill",
+      },
+      secondaryButton: {
+          // color: "#333",
+          // icon: "chevron-right",
+          style: "outline",
+      },
+    },
     // buttons: {
     //     size: "sm",
     //     style: "outline", //fill,

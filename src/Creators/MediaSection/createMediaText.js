@@ -18,15 +18,19 @@ function createMediaText({
   let buttonsNode;
 
   if(buttons && buttons.split(",").length){
+    const icon = theme.buttons.icons ? "chevron-right" : "";
+    theme.buttons.mainButton.icon = icon;
+    theme.buttons.secondaryButton.icon = icon;
+
     buttonsNode = navButtonsComponent(
       {
         color,
         activeColor,
-        ...{
-          ...theme.buttons,
-          mainButton: !theme.buttons.icons ? null : theme.buttons.secondaryButton,
-          secondaryButton: !theme.buttons.icons ? null : theme.buttons.mainButton,
-        },
+        ...theme.buttons,
+        ...(buttons.split(",").length == 2 ? {
+          mainButton: theme.buttons.secondaryButton,
+          secondaryButton: theme.buttons.mainButton,
+        } : {})
       },
       buttons
     );

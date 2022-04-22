@@ -19,16 +19,7 @@ function createNavSlot(props, components = {}) {
     search: navSearchInputComponent,
     buttons: (props, buttons) => navButtonsComponent({
       ...props,
-      mainButton: {
-        // color: "#333",
-        // icon: "chevron-right",
-        style: "fill",
-      },
-      secondaryButton: {
-        // color: "#333",
-        // icon: "chevron-right",
-        style: "outline",
-      },
+      ...props.theme.buttons,
     }, buttons),
   };
 

@@ -126,6 +126,23 @@ const schema = {
           },
         },
       },
+      buttons: {
+        type: "section",
+        children: {
+          // activeColor: {
+          //   type: "color",
+          //   defaultValue: "black",
+          //   choices: ["black", "white"],
+          //   meta: { small: true },
+          // },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            defaultValue: "sm",
+            choices: ["none", "sm", "full"],
+          },
+        },
+      },
       // text: {
       //   type: "section",
       //   optional: true,

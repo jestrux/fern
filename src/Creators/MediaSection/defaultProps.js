@@ -1,10 +1,11 @@
 const defaultMediaSectionProps = {
     backgroundColor: "#F8F7F7",
     color: "#333",
-    image: "5",
     heading: "Supporting all county mothers in need",
     subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
     buttons: "More about us, See beneficiaries",
+    image: "5",
+    playButton: false,
     theme: {
         heading: {
             width: 530,
@@ -29,18 +30,10 @@ const defaultMediaSectionProps = {
                 style: "outline",
             },
         },
-        media: {
+        image: {
             width: 680,
             height: 448,
-            cornerRadius: 'sm',
-            video: {
-                overlay: "none", //"blur", "scrim",
-                playIcon: {
-                    color: "#EA4949",
-                    invertColors: false,
-                    smoothCorners: false,
-                }
-            },
+            roundness: 'sm',
             // orientation: 'landscape',
             // style: "basic",
             // shadow: {
@@ -49,6 +42,12 @@ const defaultMediaSectionProps = {
             //     color: "#000",
             // },
             // overLayout: "T-R",
+        },
+        playButton: {
+            // color: "#EA4949",
+            color: "#000",
+            invertColors: false,
+            smoothCorners: true,
         },
     },
 }

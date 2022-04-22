@@ -31638,20 +31638,44 @@ module.exports = assembleMediaSection;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {
-  Color,
-  Rectangle,
-  ImageFill,
-  Shadow
-} = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function getPlayButton({ color, invertColors, smoothCorners }) {
+  const playButtonBg = new Ellipse();
+  playButtonBg.radiusX = 35;
+  playButtonBg.radiusY = 35;
+  playButtonBg.fill = new Color(invertColors ? color : "#fff");
+
+  insertNode(playButtonBg);
+
+  const playIconNode = createIcon("M8 5v14l11-7z", {
+    fill: invertColors ? "#fff" : color,
+    stroke: invertColors ? "#fff" : color,
+    strokeWidth: 5,
+    strokeJoins: smoothCorners ? GraphicNode.STROKE_JOIN_ROUND : GraphicNode.STROKE_JOIN_MITER,
+    size: 18
+  });
+
+  insertNode(playIconNode);
+
+  selection.items = [playButtonBg, playIconNode];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+  commands.group();
+  playIconNode.moveInParentCoordinates(3, 0);
+
+  const button = selection.items[0];
+  button.name = "playButton";
+  return button;
+}
 
 function getShadow({ size, placement, color } = {}) {
   const shadowPropsMap = {
-    "sm": [5, 15, 30],
-    "md": [10, 22, 60],
-    "lg": [15, 30, 90]
+    sm: [5, 15, 30],
+    md: [10, 22, 60],
+    lg: [15, 30, 90]
   };
 
   if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
@@ -31667,20 +31691,20 @@ function getShadow({ size, placement, color } = {}) {
 }
 
 function createMedia({
-  roundness = "sm",
-  shadow,
   images,
   image,
+  playButton,
   theme = {
-    media: {}
+    image: {},
+    playButton: {}
   }
 }) {
-  const { width, height } = theme.media;
+  const { width, height, roundness, shadow } = theme.image;
   const roundnessMap = {
-    "none": 0,
-    "sm": 6,
-    "md": 12,
-    "lg": 20
+    none: 0,
+    sm: 6,
+    md: 12,
+    lg: 20
   };
 
   const imageNode = new Rectangle();
@@ -31696,7 +31720,24 @@ function createMedia({
 
   insertNode(imageNode);
 
-  if (shadow) imageNode.shadow = getShadow(shadow);
+  if (playButton) {
+    selection.items = [imageNode];
+    commands.duplicate();
+
+    if (shadow) imageNode.shadow = getShadow(shadow);
+
+    const scrim = selection.items[0];
+    scrim.name = "Scrim";
+    scrim.fill = new Color("black", 0.3);
+    scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
+
+    selection.items = [imageNode, scrim, getPlayButton(theme.playButton)];
+
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    return selection.items[0];
+  } else if (shadow) imageNode.shadow = getShadow(shadow);
 
   return imageNode;
 }
@@ -31734,13 +31775,17 @@ function createMediaText({
   let buttonsNode;
 
   if (buttons && buttons.split(",").length) {
+    const icon = theme.buttons.icons ? "chevron-right" : "";
+    theme.buttons.mainButton.icon = icon;
+    theme.buttons.secondaryButton.icon = icon;
+
     buttonsNode = navButtonsComponent(_extends({
       color,
       activeColor
-    }, _extends({}, theme.buttons, {
-      mainButton: !theme.buttons.icons ? null : theme.buttons.secondaryButton,
-      secondaryButton: !theme.buttons.icons ? null : theme.buttons.mainButton
-    })), buttons);
+    }, theme.buttons, buttons.split(",").length == 2 ? {
+      mainButton: theme.buttons.secondaryButton,
+      secondaryButton: theme.buttons.mainButton
+    } : {}), buttons);
   }
 
   const subHeadingNode = createText(subHeading, {
@@ -31811,10 +31856,11 @@ module.exports = createMediaText;
 const defaultMediaSectionProps = {
     backgroundColor: "#F8F7F7",
     color: "#333",
-    image: "5",
     heading: "Supporting all county mothers in need",
     subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
     buttons: "More about us, See beneficiaries",
+    image: "5",
+    playButton: false,
     theme: {
         heading: {
             width: 530
@@ -31839,18 +31885,10 @@ const defaultMediaSectionProps = {
                 style: "outline"
             }
         },
-        media: {
+        image: {
             width: 680,
             height: 448,
-            cornerRadius: 'sm',
-            video: {
-                overlay: "none", //"blur", "scrim",
-                playIcon: {
-                    color: "#EA4949",
-                    invertColors: false,
-                    smoothCorners: false
-                }
-            }
+            roundness: 'sm'
             // orientation: 'landscape',
             // style: "basic",
             // shadow: {
@@ -31859,6 +31897,12 @@ const defaultMediaSectionProps = {
             //     color: "#000",
             // },
             // overLayout: "T-R",
+        },
+        playButton: {
+            // color: "#EA4949",
+            color: "#000",
+            invertColors: false,
+            smoothCorners: true
         }
     }
 };
@@ -32455,18 +32499,7 @@ function createNavSlot(props, components = {}) {
     dp: navDpComponent,
     socials: (props, icons) => createSocialMediaIcons(_extends({}, props, { icons })),
     search: navSearchInputComponent,
-    buttons: (props, buttons) => navButtonsComponent(_extends({}, props, {
-      mainButton: {
-        // color: "#333",
-        // icon: "chevron-right",
-        style: "fill"
-      },
-      secondaryButton: {
-        // color: "#333",
-        // icon: "chevron-right",
-        style: "outline"
-      }
-    }), buttons)
+    buttons: (props, buttons) => navButtonsComponent(_extends({}, props, props.theme.buttons), buttons)
   };
 
   try {
@@ -32600,6 +32633,20 @@ const defaultNavbarProps = {
       fontFamily: "Helvetica Neue",
       fontStyle: "Regular", // "Condensed Black",
       textTransform: "none" // "titlecase", "lowercase", "uppercase",
+    },
+    buttons: {
+      size: "sm",
+      roundness: "sm",
+      mainButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "fill"
+      },
+      secondaryButton: {
+        // color: "#333",
+        // icon: "chevron-right",
+        style: "outline"
+      }
     }
     // buttons: {
     //     size: "sm",
@@ -35324,18 +35371,21 @@ const schema = {
   backgroundColor: {
     label: "Background",
     type: "color",
-    meta: {
-      showTransparent: true
-    }
+    choices: ["transparent", "#333", "#FFF"]
   },
   color: {
     label: "Text Color",
     type: "color",
-    choices: ["transparent", "#333", "#FFF"]
+    choices: ["#333", "#FFF"]
   },
   heading: "text",
   subHeading: "text",
   buttons: "text",
+  image: {
+    type: "radio",
+    choices: ["1", "2", "3", "4", "5", "6", "7", "8"]
+  },
+  playButton: "boolean",
   theme: {
     type: "section",
     children: {
@@ -35353,8 +35403,32 @@ const schema = {
             label: "Corner Radius",
             type: "radio",
             defaultValue: "sm",
+            choices: ["none", "sm", "full"]
+          }
+        }
+      },
+      image: {
+        type: "section",
+        children: {
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            defaultValue: "sm",
             choices: ["none", "sm"]
           }
+        }
+      },
+      playButton: {
+        type: "section",
+        children: {
+          color: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["#EA4949", "black", "white"],
+            meta: { small: true }
+          },
+          invertColors: "boolean",
+          smoothCorners: "boolean"
         }
       }
     }
@@ -35503,6 +35577,23 @@ const schema = {
             defaultValue: 0.1,
             min: 0.1,
             max: 1
+          }
+        }
+      },
+      buttons: {
+        type: "section",
+        children: {
+          // activeColor: {
+          //   type: "color",
+          //   defaultValue: "black",
+          //   choices: ["black", "white"],
+          //   meta: { small: true },
+          // },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            defaultValue: "sm",
+            choices: ["none", "sm", "full"]
           }
         }
       }
@@ -36895,8 +36986,8 @@ async function getAssetsByType(type = "logo") {
     const [dp1, dp2, dp3, dp4, dp5, dp6] = await Promise.all(Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/dps/${i + 1}.jpg`)));
     return { dp1, dp2, dp3, dp4, dp5, dp6 };
   } else if (type == "banner") {
-    const [banner1, banner2, banner3, banner4, banner5, banner6] = await Promise.all(Array(6).fill('fa').map((_, i) => getAssetFileFromPath(`images/banner/${i + 1}.jpg`)));
-    return { banner1, banner2, banner3, banner4, banner5, banner6 };
+    const [banner1, banner2, banner3, banner4, banner5, banner6, banner7, banner8] = await Promise.all(Array(8).fill('fa').map((_, i) => getAssetFileFromPath(`images/banner/${i + 1}.jpg`)));
+    return { banner1, banner2, banner3, banner4, banner5, banner6, banner7, banner8 };
   }
 }
 
