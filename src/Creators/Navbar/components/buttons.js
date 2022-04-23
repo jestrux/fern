@@ -6,17 +6,24 @@ const createButton = require("../../Button/createButton");
 function navButtonsComponent(
   {
     color,
-    activeColor,
+    themeColor,
     size = "sm",
     roundness = "sm",
     iconPlacement = "left",
     mainButton,
     secondaryButton,
+    reversed = false,
   },
-  buttons = "Sign In, Get Started"
+  buttons = "Sign In, Get Started",
 ) {
   buttons = buttons.split(",").map(button => button.trim());
   let button1, button2;
+
+  if(reversed) {
+    const mainButtonCopy = {...mainButton};
+    mainButton = {...secondaryButton};
+    secondaryButton = {...mainButtonCopy};
+  }
 
   if (buttons.length == 2) {
     button2 = createButton({
@@ -34,7 +41,7 @@ function navButtonsComponent(
 
   button1 = createButton({
     text: buttons[0],
-    color: activeColor || color,
+    color: themeColor || color,
     size,
     roundness,
     iconPlacement,

@@ -9,7 +9,7 @@ const defaultFooterProps = {
         "Careers", "Newsroom", "Privacy Policy",
     ],
     activeLink: "Home",
-    activeColor: "#00A860",
+    themeColor: "#00A860",
     buttons: ["Get Started"],
     socialMediaIcons: ["facebook", "twitter", "instagram"],
     profile: true,

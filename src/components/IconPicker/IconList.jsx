@@ -6,7 +6,7 @@ const IconList = ({
     icons = iconData, 
     iconSize=20,
     iconNames,
-    selectedColor="#fff",
+    selectedColor="white",
     showEmptyIcon = false, centerIcons = false, selectedIcon, onChange,
 }) => {
     if(!iconNames) iconNames = Object.keys(icons);

@@ -29,7 +29,7 @@ const schema = {
   },
   color: {
     type: "color",
-    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"],
+    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"],
   },
   shadow: "boolean",
   style: {

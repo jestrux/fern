@@ -57,12 +57,12 @@ function assembleMediaSection(props = {}, images) {
   props = {
     ...props,
     images,
-    width: 1600,
+    width: props.theme.width,
     // width: 1920,
     height: 620,
   };
 
-  const [bg, container] = createSectionBackground({ ...props, });
+  const [bg, container] = createSectionBackground({ ...props, ...props.theme });
   props.container = container;
 
   const media = createMedia(props);
@@ -82,7 +82,7 @@ function assembleMediaSection(props = {}, images) {
 
   selection.items = [media, mediaText, container];
   commands.alignVerticalCenter();
-  mediaText.moveInParentCoordinates(0, -32);
+  mediaText.moveInParentCoordinates(0, -props.theme.textNegativeMargin);
   commands.group();
   const content = selection.items[0];
 
@@ -90,12 +90,17 @@ function assembleMediaSection(props = {}, images) {
   commands.group();
 
   const mediaSection = selection.items[0];
+  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bg,
-      values: { left: 130, right: 130, top: 90, bottom: 90, },
+      values: {
+        left: horizontalPadding, right: horizontalPadding, 
+        top: verticalPadding, bottom: verticalPadding, 
+      },
     },
   }
 

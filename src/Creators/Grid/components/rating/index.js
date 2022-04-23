@@ -45,7 +45,7 @@ function gridRatingComponent(props = {}){
 
         ratingText = createText(`${rating.toFixed(1)} ( 20 reviews )`, {
             name: "FernRatingText",
-            fill: new Color(darkMode ? "#FFF" : "#4D4D4D"),
+            fill: new Color(darkMode ? "white" : "#4D4D4D"),
             fontStyle: "Regular", fontSize: 16,
             type: Text.POINT, height: 24,
             styleRanges: [

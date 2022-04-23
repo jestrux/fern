@@ -25,13 +25,13 @@ function createMedia(props, [
         const playButtonBg = new Ellipse();
         playButtonBg.radiusX = 40;
         playButtonBg.radiusY = 40;
-        playButtonBg.fill = new Color(invertColors ? color : "#fff");
+        playButtonBg.fill = new Color(invertColors ? color : "white");
 
         insertNode(playButtonBg);
 
         const playIconNode = createIcon("M8 5v14l11-7z", {
-            fill: invertColors ? "#fff" : color,
-            stroke: invertColors ? "#fff" : color,
+            fill: invertColors ? "white" : color,
+            stroke: invertColors ? "white" : color,
             strokeWidth: 5,
             strokeJoins: smoothCorners 
                 ? GraphicNode.STROKE_JOIN_ROUND

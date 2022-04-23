@@ -566,6 +566,7 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 
 function createText(text = "Acacia Grove | The Right Inn..", props) {
   const { Text, Color } = require("scenegraph");
+  console.log("Create Text: ", text);
 
   const defaultTextProps = {
     name: "Text",
@@ -584,7 +585,13 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
   };
 
   const textNode = new Text();
-  textNode.text = text;
+  const splitText = text.split("\\n");
+  let actualText = "";
+  splitText.forEach((paragraph, index) => {
+    actualText += paragraph;
+    if(index != splitText.length -1) actualText += "\n";
+  });
+  textNode.text = actualText;
   Object.assign(textNode, props);
 
   return textNode;

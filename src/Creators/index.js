@@ -2,18 +2,20 @@ const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNo
 const Button = require("./Button");
 const Input = require("./Input");
 const Navbar = require("./Navbar");
-const Footer = require("./Footer");
+const Hero = require("./Hero");
 const MediaSection = require("./MediaSection");
 const Grid = require("./Grid");
+const Footer = require("./Footer");
 const FernComponent = require("./FernComponent");
 
 class Creators {
     static Button = Button
     static Input = Input
     static Navbar = Navbar
-    static Footer = Footer
-    static Grid = Grid
+    static Hero = Hero
     static MediaSection = MediaSection
+    static Grid = Grid
+    static Footer = Footer
     static FernComponent = FernComponent
     
     static Rating(selection, props = {}){
@@ -76,7 +78,7 @@ class Creators {
     
                         ratingText = new Text();
                         ratingText.text = `${rating.toFixed(1)} ( 20 reviews )`;
-                        ratingText.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+                        ratingText.fill = new Color(darkMode ? "white" : "#4D4D4D");
                         ratingText.fontFamily = "Helvetica Neue";
                         ratingText.fontSize = 20;
                         ratingText.fontStyle = "Light";
@@ -155,7 +157,7 @@ class Creators {
             let imageRectangle, bgRectangle, location, price;
             bgRectangle = new Rectangle();
             bgRectangle.resize(bgWidth, bgHeight);
-            bgRectangle.fill = new Color(darkMode ? "#1A2637" : "#fff");
+            bgRectangle.fill = new Color(darkMode ? "#1A2637" : "white");
             bgRectangle.strokeEnabled = true;
             bgRectangle.strokeWidth = 1;
 
@@ -201,7 +203,7 @@ class Creators {
             // TEXT
             location = new Text();
             location.text = "Acacia Grove | The Right Inn..";
-            location.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+            location.fill = new Color(darkMode ? "white" : "#4D4D4D");
             location.fontFamily = "Helvetica Neue";
             location.fontSize = 24;
             location.fontStyle = "Light";
@@ -211,7 +213,7 @@ class Creators {
 
             price = new Text();
             price.text = "$65 / night";
-            price.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+            price.fill = new Color(darkMode ? "white" : "#4D4D4D");
             price.fontFamily = "Helvetica Neue";
             price.fontSize = 22;
             price.fontStyle = "Light";

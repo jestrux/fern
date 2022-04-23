@@ -17,15 +17,16 @@ function schemaToFields(schema, data) {
     // if(data) props.value = data;
     props.value = data ? data[label] : props.defaultValue;
 
-    if (!props.group) fields.push(props);
+    if (!props.group && !props.sectionedGroup) fields.push(props);
     else {
-      const groupIndex = fields.findIndex(group => group.label == props.group);
+      const groupIndex = fields.findIndex(group => [props.group, props.sectionedGroup].includes(group.label));
 
       if (groupIndex != -1) fields[groupIndex].children.push(props);
       else {
         const group = {
           type: "group",
-          label: props.group,
+          label: props.group || props.sectionedGroup,
+          section: props.sectionedGroup,
           optional: props.optional == "group",
           children: [props],
         };
@@ -65,10 +66,10 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
   const children = !data ? [] : schemaToFields(field.children, data);
 
   return (
-    <div className={rootLevel ? "border-t mb-3 -mx-12px bg-white pb-1" : data && "mb-1"}>
+    <div className={rootLevel ? "RootSection border-t-2 border-b-2 mb-3 -mx-12px pb-1" : 'pb-1'}>
       <div
         className={`flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black12 ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26`}
       `}
       >
         <label
@@ -104,7 +105,7 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
                 );
 
               return (
-                <div className="mb-2" key={index}>
+                <div className="mb-1" key={index}>
                   <ComponentFieldEditor
                     field={{ ...field, __data: data }}
                     onChange={handleChange}
@@ -135,12 +136,14 @@ function ComponentFieldGroup({ field, data, onChange }) {
   }
 
   const checked = field.children.some(child => child.value);
+  let label = camelCaseToSentenceCase(field.label);
+  if(field.section) label = label.toUpperCase();
 
   return (
-    <div className="mb-2">
+    <div className={`${field.section ? 'mb-3 border-t-2 border-b-2 -mx-12px px-12px pb-1' : 'mb-2'}`}>
       <div className="flex items-center justify-between">
-        <label className="mt-2 text-md">
-          {camelCaseToSentenceCase(field.label)}
+        <label className={`mt-2 ${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}`}>
+          {label}
         </label>
 
         {field.optional && <Toggle checked={checked} onChange={handleToggle} />}
@@ -148,11 +151,12 @@ function ComponentFieldGroup({ field, data, onChange }) {
 
       {checked &&
         field.children.map((child, index) => (
-          <ComponentFieldEditor
-            key={index}
-            field={{ ...child, __data: data }}
-            onChange={onChange}
-          />
+          <div className="mb-1" key={index}>
+            <ComponentFieldEditor
+              field={{ ...child, __data: data }}
+              onChange={onChange}
+            />
+          </div>
         ))}
     </div>
   );
@@ -185,7 +189,7 @@ function ComponentFields({ schema, data, onChange }) {
           );
 
         return (
-          <div className="mb-2" key={index}>
+          <div className="mb-1" key={index}>
             <ComponentFieldEditor
               field={{ ...field, __data: data }}
               onChange={onChange}

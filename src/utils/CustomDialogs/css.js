@@ -48,7 +48,7 @@ input, button{
     background: #1473E6;
 }
 .button[uxp-variant="action"] svg path{
-    fill: #fff;
+    fill: white;
     width: 20px;
     height: 20px;
 }
@@ -59,7 +59,7 @@ input, button{
     font-weight: 600;
     font-size: 13px;
     background: #1473E6;
-    color: #fff;
+    color: white;
     border-radius: 14px;
     margin: 0;
 }

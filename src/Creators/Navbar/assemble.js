@@ -58,8 +58,7 @@ function assembleNavbar(props = {}, images) {
   props = {
     ...props,
     images,
-    width: 1600,
-    // width: 1920,
+    width: props.theme.width,
     height: 70,
   };
 
@@ -110,6 +109,7 @@ function assembleNavbar(props = {}, images) {
   const navbar = selection.items[0];
   bg.resize(bg.localBounds.width, navbar.localBounds.height);
   container.resize(container.localBounds.width, navbar.localBounds.height);
+  navbar.resize(navbar.localBounds.width + 60, navbar.localBounds.height);
 
   return navbar;
 }

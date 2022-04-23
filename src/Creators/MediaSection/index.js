@@ -17,7 +17,7 @@ async function MediaSection(userProps){
     try {
         const oldMediaSection = userProps ? selection.items[0] : null;
         if(oldMediaSection){
-            if (props.logo == "custom") {
+            if (props.image == "custom") {
                 const mediaImageNodes = getMediaImages(oldMediaSection);
                 if(mediaImageNodes)
                     imageFills = mediaImageNodes.map(image => image ? image.fill : null);

@@ -107,7 +107,7 @@ function createCard(props){
     if(showPrice){
         priceText = createText("$" + price, {
             name: "Price", 
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
+            fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             type: Text.POINT, 
             fontSize: 18, fontStyle: "Bold", 
         });
@@ -119,7 +119,7 @@ function createCard(props){
     if(showTitle){
         cardTitle = createText(title, {
             name: "Title", 
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"), 
+            fill: overlay ? new Color("white", 0.8) : new Color("#000"), 
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
             height: showDescription || showPrice ? 21 : null, 
             type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT, 
@@ -132,7 +132,7 @@ function createCard(props){
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#6D6D6D"), 
+            fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"), 
             fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
         });
@@ -247,7 +247,7 @@ function createCard(props){
 
     const bg = new Rectangle();
     bg.resize(width, cardContent.localBounds.height);
-    bg.fill = new Color("#fff", padding ? 1 : 0);
+    bg.fill = new Color("white", padding ? 1 : 0);
     bg.setAllCornerRadii(getCornerRadius(props));
 
     if(border && !shadow){

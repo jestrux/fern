@@ -58,7 +58,7 @@ const schema = {
   },
   color: {
     type: "color",
-    choices: ["#333", "#FFF"],
+    choices: ["black", "white"],
   },
   shadow: "boolean",
   outlined: "boolean",

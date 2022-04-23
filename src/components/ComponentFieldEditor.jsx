@@ -166,11 +166,13 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     onChange(__id, newValue);
   }
 
+  const isCustomFieldType = ["boolean", "color", "icon", "radio"].includes(type);
+
   return (
     <div className="ComponentFieldEditor">
       {label && label.length && (
         <div className="flex items-center justify-between">
-          <label className="mt-2 text-md" style={{ marginBottom: "0.1rem" }}>
+          <label className="mt-2 text-md" style={{ marginBottom: isCustomFieldType ? "0.1rem" : 0 }}>
             {camelCaseToSentenceCase(label)}
           </label>
 
@@ -212,7 +214,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
             </div>
           )}
 
-          {!["boolean", "color", "icon", "radio"].includes(type) && (
+          {!isCustomFieldType && (
             <form
               className="w-full"
               onSubmit={e => {

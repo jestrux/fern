@@ -71,6 +71,10 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      width: {
+        type: "radio",
+        choices: [1600, 1920],
+      },
       persona: {
         type: "radio",
         defaultValue: "normal",
@@ -86,14 +90,14 @@ const schema = {
       color: {
         label: "Text Color",
         type: "color",
-        choices: ["transparent", "#333", "#FFF"],
+        choices: ["black", "white"],
       },
-      activeColor: {
+      themeColor: {
         label: "Active Color",
         type: "color",
         optional: true,
         defaultValue: "#0083F6",
-        choices: ["#333", "white", "#0083F6", "#28A745", "#DC3535"],
+        choices: ["black", "white", "#0083F6", "#28A745", "#DC3535"],
       },
       // inActiveOpacity: {
       //   optional: true,
@@ -129,7 +133,7 @@ const schema = {
       buttons: {
         type: "section",
         children: {
-          // activeColor: {
+          // themeColor: {
           //   type: "color",
           //   defaultValue: "black",
           //   choices: ["black", "white"],

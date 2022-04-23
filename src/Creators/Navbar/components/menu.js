@@ -59,21 +59,21 @@ function createNavActiveIndicator({
   showIndicator,
   activeLink,
   color,
-  activeColor,
+  themeColor,
   navMenu,
 }) {
   getGroupChildByName(navMenu, activeLink, navActiveLink => {
     try {
       const { width, height } = navActiveLink.localBounds;
       getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
-        linkText.fill = new Color(activeColor || color);
+        linkText.fill = new Color(themeColor || color);
       });
 
       if (showIndicator) {
         const navActiveIndicator = createBorder({
           width: width,
           thickness: 2,
-          color: activeColor || color,
+          color: themeColor || color,
         });
 
         selection.items = [navMenu];

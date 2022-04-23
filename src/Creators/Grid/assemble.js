@@ -41,7 +41,7 @@ function assembleGrid(props = {}, images){
         height: 800,
     };
 
-    let [bg, container] = createGridBackground(props);
+    let [bg, container] = createGridBackground({...props, ...props.theme});
     props.container = container;
     const gridCards = createGridCards(props);
     container.height = gridCards.localBounds.height + 40;

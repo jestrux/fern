@@ -8,6 +8,23 @@
     /* color: #6e490e; */
 }
 
+.InternalSection:last-child{
+    border-bottom: 1px solid white !important;
+}
+
+.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{
+    border-top: 0px solid transparent !important;
+}
+
+label {
+    color: #737373;
+    font-weight: 500;
+}
+
+label:not(.text-sm) {
+    font-size: 0.75rem !important;
+}
+
 h1{
     font-size: 1.25rem;
     font-weight: bold;
@@ -59,7 +76,7 @@ input, button{
     background: #1473E6;
 }
 .button[uxp-variant="action"] svg path{
-    fill: #fff;
+    fill: white;
     width: 20px;
     height: 20px;
 }
@@ -70,7 +87,7 @@ input, button{
     font-weight: 600;
     font-size: 13px;
     background: #1473E6;
-    color: #fff;
+    color: white;
     border-radius: 14px;
     margin: 0;
 }
@@ -558,6 +575,9 @@ input, button{
 }
 .border-light-gray{
     border-color: #f0f0f0;
+}
+.border-gray{
+    border-color: #e8e8e8;
 }
 .border-dark-gray{
     border-color: #888;

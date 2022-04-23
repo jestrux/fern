@@ -14,9 +14,10 @@ const defaultNavbarProps = {
   shoppingCart: false,
   socialMediaIcons: [], //["facebook", "twitter", "instagram"],
   theme: {
+    width: 1600,
     backgroundColor: "white",
-    color: "#333",
-    // activeColor: "#17FD9B",
+    color: "black",
+    // themeColor: "#17FD9B",
     // inActiveOpacity: 0.5,
     shadow: null,
     border: null,
@@ -30,12 +31,12 @@ const defaultNavbarProps = {
       size: "sm",
       roundness: "sm",
       mainButton: {
-          // color: "#333",
+          // color: "black",
           // icon: "chevron-right",
           style: "fill",
       },
       secondaryButton: {
-          // color: "#333",
+          // color: "black",
           // icon: "chevron-right",
           style: "outline",
       },

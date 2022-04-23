@@ -99,7 +99,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: #fff;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: #fff;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.5;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
+exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\n.InternalSection:last-child{\n    border-bottom: 1px solid white !important;\n}\n\n.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{\n    border-top: 0px solid transparent !important;\n}\n\nlabel {\n    color: #737373;\n    font-weight: 500;\n}\n\nlabel:not(.text-sm) {\n    font-size: 0.75rem !important;\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: white;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: white;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-gray{\n    border-color: #e8e8e8;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.5;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
 
 // exports
 
@@ -29323,7 +29323,7 @@ __webpack_require__(/*! ./App.css */ "./src/App.css");
 
 const { PLUGIN_ID } = __webpack_require__(/*! ./constants */ "./src/constants.js");
 const Elements = __webpack_require__(/*! ./screens/Elements */ "./src/screens/Elements/index.jsx");
-const { getNodeTag } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
+const { getNodeTag, getGroupChildByName } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 
 class App extends React.Component {
     constructor(props) {
@@ -29345,6 +29345,10 @@ class App extends React.Component {
 
         if (selection.items && selection.items.length > 0) {
             const node = selection.items[0];
+            getGroupChildByName(node, "Groupy/FernMediaText/Groupy/Text", childNode => {
+                console.log("Description node: ", childNode);
+            });
+            console.log("Element: ", node.children);
             const nodeProps = getNodeTag(node);
 
             if (nodeProps) {
@@ -29620,7 +29624,7 @@ module.exports = {
     // iconPlacement: "right",
     text: "Get Started",
     size: "md",
-    color: "#333",
+    color: "black",
     shadow: false,
     style: "fill", // "outlined", "flat", "link"
     roundness: "sm"
@@ -30304,7 +30308,7 @@ const defaultFooterProps = {
     // "About Us",
     "Careers", "Newsroom", "Privacy Policy"],
     activeLink: "Home",
-    activeColor: "#00A860",
+    themeColor: "#00A860",
     buttons: ["Get Started"],
     socialMediaIcons: ["facebook", "twitter", "instagram"],
     profile: true,
@@ -30443,7 +30447,7 @@ function assembleGrid(props = {}, images) {
         height: 800
     });
 
-    let [bg, container] = createGridBackground(props);
+    let [bg, container] = createGridBackground(_extends({}, props, props.theme));
     props.container = container;
     const gridCards = createGridCards(props);
     container.height = gridCards.localBounds.height + 40;
@@ -30528,7 +30532,7 @@ function gridRatingComponent(props = {}) {
 
         ratingText = createText(`${rating.toFixed(1)} ( 20 reviews )`, {
             name: "FernRatingText",
-            fill: new Color(darkMode ? "#FFF" : "#4D4D4D"),
+            fill: new Color(darkMode ? "white" : "#4D4D4D"),
             fontStyle: "Regular", fontSize: 16,
             type: Text.POINT, height: 24,
             styleRanges: [{ fontStyle: "Medium", length: 3 }, {
@@ -30717,7 +30721,7 @@ function createCard(props) {
     if (showPrice) {
         priceText = createText("$" + price, {
             name: "Price",
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
+            fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             type: Text.POINT,
             fontSize: 18, fontStyle: "Bold"
         });
@@ -30729,7 +30733,7 @@ function createCard(props) {
     if (showTitle) {
         cardTitle = createText(title, {
             name: "Title",
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#000"),
+            fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2),
             height: showDescription || showPrice ? 21 : null,
             type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT,
@@ -30742,7 +30746,7 @@ function createCard(props) {
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
-            fill: overlay ? new Color("#fff", 0.8) : new Color("#6D6D6D"),
+            fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"),
             fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2)
         });
@@ -30851,7 +30855,7 @@ function createCard(props) {
 
     const bg = new Rectangle();
     bg.resize(width, cardContent.localBounds.height);
-    bg.fill = new Color("#fff", padding ? 1 : 0);
+    bg.fill = new Color("white", padding ? 1 : 0);
     bg.setAllCornerRadii(getCornerRadius(props));
 
     if (border && !shadow) {
@@ -31241,6 +31245,87 @@ module.exports = Grid;
 
 /***/ }),
 
+/***/ "./src/Creators/Hero/index.js":
+/*!************************************!*\
+  !*** ./src/Creators/Hero/index.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleMediaSection = __webpack_require__(/*! ../MediaSection/assemble */ "./src/Creators/MediaSection/assemble.js");
+const defaultMediaSectionProps = __webpack_require__(/*! ../MediaSection/defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
+const getMediaImages = __webpack_require__(/*! ../MediaSection/getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
+
+async function Hero(userProps) {
+    const props = _extends({}, defaultMediaSectionProps, {
+        heading: "Supporting all county mothers in need",
+        subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
+        buttons: "More about us, See beneficiaries",
+        image: "5",
+        theme: _extends({}, defaultMediaSectionProps.theme, {
+            backgroundColor: "white",
+            verticalPadding: 90,
+            textNegativeMargin: 30,
+            heading: _extends({}, defaultMediaSectionProps.theme.heading, {
+                size: "lg"
+            }),
+            subHeading: _extends({}, defaultMediaSectionProps.theme.subHeading, {
+                size: "md"
+            }),
+            buttons: _extends({}, defaultMediaSectionProps.theme.buttons, {
+                size: "md",
+                icons: true,
+                themeColor: "#F44663"
+            }),
+            image: _extends({}, defaultMediaSectionProps.theme.image, {
+                height: 448
+            })
+        })
+    }, userProps || {});
+
+    const heroImages = await getAssetsByType("banner");
+    let imageFills;
+
+    try {
+        const oldHero = userProps ? selection.items[0] : null;
+        if (oldHero) {
+            if (props.image == "custom") {
+                const mediaImageNodes = getMediaImages(oldHero);
+                if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            }
+        }
+
+        editDom(async selection => {
+            try {
+                const media = assembleMediaSection(props, heroImages);
+
+                selection.items = [media];
+                media.name = "FernHero";
+                media.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(_extends({
+                    type: "Hero" }, props)));
+
+                if (oldHero) {
+                    placeInParent(media, oldHero.topLeftInParent);
+                    oldHero.removeFromParent();
+                } else placeInParent(media, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating mediaSection: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = Hero;
+
+/***/ }),
+
 /***/ "./src/Creators/Input/assembleInput.js":
 /*!*********************************************!*\
   !*** ./src/Creators/Input/assembleInput.js ***!
@@ -31421,8 +31506,8 @@ const defaultInputProps = {
     icon: null,
     // iconColor: "#ACACAC",
     iconOpacity: 0.5,
-    backgroundColor: "#fff",
-    color: "#333",
+    backgroundColor: "white",
+    color: "black",
     value: "",
     // label: "Email Address",
     labelOpacity: 0.5,
@@ -31580,12 +31665,12 @@ function createSectionBackground({
 function assembleMediaSection(props = {}, images) {
   props = _extends({}, props, {
     images,
-    width: 1600,
+    width: props.theme.width,
     // width: 1920,
     height: 620
   });
 
-  const [bg, container] = createSectionBackground(_extends({}, props));
+  const [bg, container] = createSectionBackground(_extends({}, props, props.theme));
   props.container = container;
 
   const media = createMedia(props);
@@ -31605,7 +31690,7 @@ function assembleMediaSection(props = {}, images) {
 
   selection.items = [media, mediaText, container];
   commands.alignVerticalCenter();
-  mediaText.moveInParentCoordinates(0, -32);
+  mediaText.moveInParentCoordinates(0, -props.theme.textNegativeMargin);
   commands.group();
   const content = selection.items[0];
 
@@ -31613,12 +31698,17 @@ function assembleMediaSection(props = {}, images) {
   commands.group();
 
   const mediaSection = selection.items[0];
+  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bg,
-      values: { left: 130, right: 130, top: 90, bottom: 90 }
+      values: {
+        left: horizontalPadding, right: horizontalPadding,
+        top: verticalPadding, bottom: verticalPadding
+      }
     }
   };
 
@@ -31646,13 +31736,13 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
   const playButtonBg = new Ellipse();
   playButtonBg.radiusX = 35;
   playButtonBg.radiusY = 35;
-  playButtonBg.fill = new Color(invertColors ? color : "#fff");
+  playButtonBg.fill = new Color(invertColors ? color : "white");
 
   insertNode(playButtonBg);
 
   const playIconNode = createIcon("M8 5v14l11-7z", {
-    fill: invertColors ? "#fff" : color,
-    stroke: invertColors ? "#fff" : color,
+    fill: invertColors ? "white" : color,
+    stroke: invertColors ? "white" : color,
     strokeWidth: 5,
     strokeJoins: smoothCorners ? GraphicNode.STROKE_JOIN_ROUND : GraphicNode.STROKE_JOIN_MITER,
     size: 18
@@ -31726,9 +31816,10 @@ function createMedia({
 
     if (shadow) imageNode.shadow = getShadow(shadow);
 
+    console.log("Overlay opacity: ", theme.playButton.overlayOpacity);
     const scrim = selection.items[0];
     scrim.name = "Scrim";
-    scrim.fill = new Color("black", 0.3);
+    scrim.fill = new Color("black", theme.playButton.overlayOpacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
     selection.items = [imageNode, scrim, getPlayButton(theme.playButton)];
@@ -31768,8 +31859,7 @@ function createMediaText({
   heading = "Supporting mothers in their time of need",
   subHeading = "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
   buttons = "More about us, See beneficiaries",
-  color = "#333",
-  activeColor,
+  themeColor,
   theme
 }) {
   let buttonsNode;
@@ -31780,29 +31870,34 @@ function createMediaText({
     theme.buttons.secondaryButton.icon = icon;
 
     buttonsNode = navButtonsComponent(_extends({
-      color,
-      activeColor
-    }, theme.buttons, buttons.split(",").length == 2 ? {
-      mainButton: theme.buttons.secondaryButton,
-      secondaryButton: theme.buttons.mainButton
-    } : {}), buttons);
+      color: theme.color,
+      themeColor
+    }, theme.buttons), buttons);
   }
 
   const subHeadingNode = createText(subHeading, {
     width: theme.subHeading.width,
-    fill: new Color(color),
-    fontSize: 22,
-    lineSpacing: 40,
+    fill: new Color(theme.color),
+    fontSize: theme.subHeading.size == "sm" ? 16 : 22,
+    lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
     fontStyle: "Regular"
   });
 
   insertNode(subHeadingNode);
 
+  const fontFamily = {
+    "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
+    "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
+    "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
+    "fancy": "Didot"
+  }[theme.heading.font || "sans"];
+
   const headingNode = createText(heading, {
     width: theme.heading.width,
-    fill: new Color(color),
-    fontSize: 48,
-    lineSpacing: 62,
+    fill: new Color(theme.color),
+    fontSize: theme.heading.size == "md" ? 36 : 48,
+    lineSpacing: theme.heading.size == "md" ? 50 : 62,
+    fontFamily,
     fontStyle: "Bold"
   });
 
@@ -31854,40 +31949,48 @@ module.exports = createMediaText;
 /***/ (function(module, exports) {
 
 const defaultMediaSectionProps = {
-    backgroundColor: "#F8F7F7",
-    color: "#333",
-    heading: "Supporting all county mothers in need",
-    subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
-    buttons: "More about us, See beneficiaries",
-    image: "5",
+    heading: "Experts you can trust",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    buttons: "Get to know us",
+    image: "4",
     playButton: false,
+    layout: "normal", // "flip-x", "center", "overlay"
     theme: {
+        width: 1600,
+        backgroundColor: "#F8F7F7",
+        color: "black",
+        verticalPadding: 65,
+        textNegativeMargin: 16,
         heading: {
-            width: 530
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
+            width: 530,
+            size: "md" // "lg"
         },
         subHeading: {
-            width: 530
+            width: 530,
+            size: "sm" // "md"
         },
         buttons: {
             icons: false,
-            activeColor: "#F44663",
             iconPlacement: "right",
-            size: "md",
+            size: "sm",
             roundness: "sm",
+            reversed: true,
             mainButton: {
-                // color: "#333",
+                // color: "black",
                 icon: "chevron-right",
                 style: "fill"
             },
             secondaryButton: {
-                // color: "#333",
+                // color: "black",
                 icon: "chevron-right",
                 style: "outline"
             }
         },
         image: {
             width: 680,
-            height: 448,
+            height: 400, // 448,
             roundness: 'sm'
             // orientation: 'landscape',
             // style: "basic",
@@ -31900,6 +32003,7 @@ const defaultMediaSectionProps = {
         },
         playButton: {
             // color: "#EA4949",
+            overlayOpacity: 0.3,
             color: "#000",
             invertColors: false,
             smoothCorners: true
@@ -31981,7 +32085,7 @@ async function MediaSection(userProps) {
     try {
         const oldMediaSection = userProps ? selection.items[0] : null;
         if (oldMediaSection) {
-            if (props.logo == "custom") {
+            if (props.image == "custom") {
                 const mediaImageNodes = getMediaImages(oldMediaSection);
                 if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
             }
@@ -32081,8 +32185,7 @@ function createNavBackground({
 function assembleNavbar(props = {}, images) {
   props = _extends({}, props, {
     images,
-    width: 1600,
-    // width: 1920,
+    width: props.theme.width,
     height: 70
   });
 
@@ -32127,6 +32230,7 @@ function assembleNavbar(props = {}, images) {
   const navbar = selection.items[0];
   bg.resize(bg.localBounds.width, navbar.localBounds.height);
   container.resize(container.localBounds.width, navbar.localBounds.height);
+  navbar.resize(navbar.localBounds.width + 60, navbar.localBounds.height);
 
   return navbar;
 }
@@ -32151,15 +32255,22 @@ const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src
 
 function navButtonsComponent({
   color,
-  activeColor,
+  themeColor,
   size = "sm",
   roundness = "sm",
   iconPlacement = "left",
   mainButton,
-  secondaryButton
+  secondaryButton,
+  reversed = false
 }, buttons = "Sign In, Get Started") {
   buttons = buttons.split(",").map(button => button.trim());
   let button1, button2;
+
+  if (reversed) {
+    const mainButtonCopy = _extends({}, mainButton);
+    mainButton = _extends({}, secondaryButton);
+    secondaryButton = _extends({}, mainButtonCopy);
+  }
 
   if (buttons.length == 2) {
     button2 = createButton(_extends({
@@ -32176,7 +32287,7 @@ function navButtonsComponent({
 
   button1 = createButton(_extends({
     text: buttons[0],
-    color: activeColor || color,
+    color: themeColor || color,
     size,
     roundness,
     iconPlacement
@@ -32345,21 +32456,21 @@ function createNavActiveIndicator({
   showIndicator,
   activeLink,
   color,
-  activeColor,
+  themeColor,
   navMenu
 }) {
   getGroupChildByName(navMenu, activeLink, navActiveLink => {
     try {
       const { width, height } = navActiveLink.localBounds;
       getGroupChildByName(navActiveLink, "FernNavLinkText", linkText => {
-        linkText.fill = new Color(activeColor || color);
+        linkText.fill = new Color(themeColor || color);
       });
 
       if (showIndicator) {
         const navActiveIndicator = createBorder({
           width: width,
           thickness: 2,
-          color: activeColor || color
+          color: themeColor || color
         });
 
         selection.items = [navMenu];
@@ -32622,9 +32733,10 @@ const defaultNavbarProps = {
   shoppingCart: false,
   socialMediaIcons: [], //["facebook", "twitter", "instagram"],
   theme: {
+    width: 1600,
     backgroundColor: "white",
-    color: "#333",
-    // activeColor: "#17FD9B",
+    color: "black",
+    // themeColor: "#17FD9B",
     // inActiveOpacity: 0.5,
     shadow: null,
     border: null,
@@ -32638,12 +32750,12 @@ const defaultNavbarProps = {
       size: "sm",
       roundness: "sm",
       mainButton: {
-        // color: "#333",
+        // color: "black",
         // icon: "chevron-right",
         style: "fill"
       },
       secondaryButton: {
-        // color: "#333",
+        // color: "black",
         // icon: "chevron-right",
         style: "outline"
       }
@@ -32752,10 +32864,13 @@ async function Navbar(userProps) {
 
         tagNode(navbar, _extends({ type: "Navbar" }, props));
 
-        if (oldNavbar) {
-          placeInParent(navbar, oldNavbar.topLeftInParent);
-          oldNavbar.removeFromParent();
-        } else placeInParent(navbar, { x: 0, y: 0 });
+        placeInParent(navbar, { x: -30, y: 0 });
+        if (oldNavbar) oldNavbar.removeFromParent();
+
+        // if (oldNavbar) {
+        //   placeInParent(navbar, oldNavbar.topLeftInParent);
+        //   oldNavbar.removeFromParent();
+        // } else placeInParent(navbar, { x: -30, y: 0 });
       } catch (error) {
         console.log("Error creating navbar: ", error);
       }
@@ -32835,9 +32950,10 @@ const { placeInParent, createIcon, editDom, base64ArrayBuffer, insertNode, tagNo
 const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.js");
 const Input = __webpack_require__(/*! ./Input */ "./src/Creators/Input/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
-const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
+const Hero = __webpack_require__(/*! ./Hero */ "./src/Creators/Hero/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
+const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/Creators/FernComponent/index.js");
 
 class Creators {
@@ -32894,7 +33010,7 @@ class Creators {
 
                     ratingText = new Text();
                     ratingText.text = `${rating.toFixed(1)} ( 20 reviews )`;
-                    ratingText.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+                    ratingText.fill = new Color(darkMode ? "white" : "#4D4D4D");
                     ratingText.fontFamily = "Helvetica Neue";
                     ratingText.fontSize = 20;
                     ratingText.fontStyle = "Light";
@@ -32932,9 +33048,10 @@ class Creators {
 Creators.Button = Button;
 Creators.Input = Input;
 Creators.Navbar = Navbar;
-Creators.Footer = Footer;
-Creators.Grid = Grid;
+Creators.Hero = Hero;
 Creators.MediaSection = MediaSection;
+Creators.Grid = Grid;
+Creators.Footer = Footer;
 Creators.FernComponent = FernComponent;
 
 Creators.Card = async function (props) {
@@ -32977,7 +33094,7 @@ Creators.Card = async function (props) {
         let imageRectangle, bgRectangle, location, price;
         bgRectangle = new Rectangle();
         bgRectangle.resize(bgWidth, bgHeight);
-        bgRectangle.fill = new Color(darkMode ? "#1A2637" : "#fff");
+        bgRectangle.fill = new Color(darkMode ? "#1A2637" : "white");
         bgRectangle.strokeEnabled = true;
         bgRectangle.strokeWidth = 1;
 
@@ -33021,7 +33138,7 @@ Creators.Card = async function (props) {
         // TEXT
         location = new Text();
         location.text = "Acacia Grove | The Right Inn..";
-        location.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+        location.fill = new Color(darkMode ? "white" : "#4D4D4D");
         location.fontFamily = "Helvetica Neue";
         location.fontSize = 24;
         location.fontStyle = "Light";
@@ -33031,7 +33148,7 @@ Creators.Card = async function (props) {
 
         price = new Text();
         price.text = "$65 / night";
-        price.fill = new Color(darkMode ? "#FFF" : "#4D4D4D");
+        price.fill = new Color(darkMode ? "white" : "#4D4D4D");
         price.fontFamily = "Helvetica Neue";
         price.fontSize = 22;
         price.fontStyle = "Light";
@@ -33228,14 +33345,18 @@ const ColorList = ({
   colors = DEFAULT_COLORS,
   centerColors = false,
   selectedColor,
-  small = false,
+  small = true,
   choiceSize,
   spacing = 4,
   showCustomPicker = true,
   showTransparent,
   onChange
 }) => {
-  if (colors && colors.length && showTransparent) colors = ["transparent", ...colors];
+  if (colors && colors.length) {
+    if (showTransparent) colors = ["transparent", ...colors];
+
+    if (!colors.includes(selectedColor)) colors = [...colors, selectedColor];
+  }
 
   function handleCustomColorChanged(color) {
     if (!color) return;
@@ -33247,7 +33368,7 @@ const ColorList = ({
   }
 
   let customColorIconSize = choiceSize;
-  if (!choiceSize) customColorIconSize = small ? 10 : 14;
+  if (!choiceSize) customColorIconSize = small ? 12 : 14;
   customColorIconSize += 4;
 
   return React.createElement(
@@ -33276,32 +33397,36 @@ const ColorList = ({
     colors.map((color, index) => {
       const selected = selectedColor == color;
       let size = choiceSize + "px";
-      if (!choiceSize) size = small ? "10px" : "14px";
-      const unselectedBgColor = color == "#ffffff" ? "black" : "transparent";
+      if (!choiceSize) size = small ? "12px" : "14px";
+      const unselectedBgColor = color == "white" ? "#EEE" : "transparent";
 
       return React.createElement(
         "div",
-        { key: index, style: { padding: spacing + "px" } },
+        { title: color, key: index, style: { padding: spacing + "px" } },
         React.createElement(
           "div",
           {
             className: `cursor-pointer rounded-full ${small ? "border" : "border-2"}`,
             style: {
               padding: "2px",
-              borderColor: color == "transparent" ? "#ddd" : color,
+              borderColor: color == "transparent" ? selected ? "#bbb" : "#e7e7e7" : color,
               backgroundColor: selected ? unselectedBgColor : color
             },
             onClick: () => onChange(color)
           },
-          React.createElement("div", {
-            className: "rounded-full",
-            style: {
-              width: size,
-              height: size,
-              backgroundColor: color,
-              borderColor: selected ? "#fff" : "transparent"
-            }
-          })
+          React.createElement(
+            "div",
+            {
+              className: "rounded-full overflow-hidden",
+              style: {
+                width: size,
+                height: size,
+                backgroundColor: color,
+                borderColor: selected ? "white" : "transparent"
+              }
+            },
+            color == "transparent" && React.createElement("img", { className: "bg-white w-full h-full object-cover", src: "images/transparency.jpg", alt: "" })
+          )
         )
       );
     })
@@ -33487,6 +33612,8 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     onChange(__id, newValue);
   }
 
+  const isCustomFieldType = ["boolean", "color", "icon", "radio"].includes(type);
+
   return React.createElement(
     "div",
     { className: "ComponentFieldEditor" },
@@ -33495,7 +33622,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
       { className: "flex items-center justify-between" },
       React.createElement(
         "label",
-        { className: "mt-2 text-md", style: { marginBottom: "0.1rem" } },
+        { className: "mt-2 text-md", style: { marginBottom: isCustomFieldType ? "0.1rem" : 0 } },
         camelCaseToSentenceCase(label)
       ),
       type == "boolean" && React.createElement(Toggle, { checked: value, onChange: handleChange }),
@@ -33522,7 +33649,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
         },
         React.createElement(IconList, _extends({ onChange: handleChange }, meta))
       ),
-      !["boolean", "color", "icon", "radio"].includes(type) && React.createElement(
+      !isCustomFieldType && React.createElement(
         "form",
         {
           className: "w-full",
@@ -33573,13 +33700,14 @@ function schemaToFields(schema, data) {
     // if(data) props.value = data;
     props.value = data ? data[label] : props.defaultValue;
 
-    if (!props.group) fields.push(props);else {
-      const groupIndex = fields.findIndex(group => group.label == props.group);
+    if (!props.group && !props.sectionedGroup) fields.push(props);else {
+      const groupIndex = fields.findIndex(group => [props.group, props.sectionedGroup].includes(group.label));
 
       if (groupIndex != -1) fields[groupIndex].children.push(props);else {
         const group = {
           type: "group",
-          label: props.group,
+          label: props.group || props.sectionedGroup,
+          section: props.sectionedGroup,
           optional: props.optional == "group",
           children: [props]
         };
@@ -33614,12 +33742,12 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
 
   return React.createElement(
     "div",
-    { className: rootLevel ? "border-t mb-3 -mx-12px bg-white pb-1" : data && "mb-1" },
+    { className: rootLevel ? "RootSection border-t-2 border-b-2 mb-3 -mx-12px pb-1" : 'pb-1' },
     React.createElement(
       "div",
       {
         className: `flex items-center justify-between
-        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black12 ${data && 'bg-black26'}`}
+        ${rootLevel ? "mt-3 mb-1 px-12px" : `-mx-12px px-12px py-2 bg-black26`}
       `
       },
       React.createElement(
@@ -33652,7 +33780,7 @@ function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
 
           return React.createElement(
             "div",
-            { className: "mb-2", key: index },
+            { className: "mb-1", key: index },
             React.createElement(ComponentFieldEditor, {
               field: _extends({}, field, { __data: data }),
               onChange: handleChange
@@ -33678,25 +33806,30 @@ function ComponentFieldGroup({ field, data, onChange }) {
   }
 
   const checked = field.children.some(child => child.value);
+  let label = camelCaseToSentenceCase(field.label);
+  if (field.section) label = label.toUpperCase();
 
   return React.createElement(
     "div",
-    { className: "mb-2" },
+    { className: `${field.section ? 'mb-3 border-t-2 border-b-2 -mx-12px px-12px pb-1' : 'mb-2'}` },
     React.createElement(
       "div",
       { className: "flex items-center justify-between" },
       React.createElement(
         "label",
-        { className: "mt-2 text-md" },
-        camelCaseToSentenceCase(field.label)
+        { className: `mt-2 ${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}` },
+        label
       ),
       field.optional && React.createElement(Toggle, { checked: checked, onChange: handleToggle })
     ),
-    checked && field.children.map((child, index) => React.createElement(ComponentFieldEditor, {
-      key: index,
-      field: _extends({}, child, { __data: data }),
-      onChange: onChange
-    }))
+    checked && field.children.map((child, index) => React.createElement(
+      "div",
+      { className: "mb-1", key: index },
+      React.createElement(ComponentFieldEditor, {
+        field: _extends({}, child, { __data: data }),
+        onChange: onChange
+      })
+    ))
   );
 }
 
@@ -33722,7 +33855,7 @@ function ComponentFields({ schema, data, onChange }) {
 
       return React.createElement(
         "div",
-        { className: "mb-2", key: index },
+        { className: "mb-1", key: index },
         React.createElement(ComponentFieldEditor, {
           field: _extends({}, field, { __data: data }),
           onChange: onChange
@@ -33768,7 +33901,7 @@ const ComponentPage = function ({ title, onClose, schema, data, children }) {
           "svg",
           { height: "16", viewBox: "0 0 24 24", width: "24" },
           React.createElement("path", {
-            fill: "#333",
+            fill: "black",
             d: "M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"
           })
         )
@@ -33815,7 +33948,7 @@ const IconList = ({
     icons = iconData,
     iconSize = 20,
     iconNames,
-    selectedColor = "#fff",
+    selectedColor = "white",
     showEmptyIcon = false, centerIcons = false, selectedIcon, onChange
 }) => {
     if (!iconNames) iconNames = Object.keys(icons);
@@ -33938,8 +34071,8 @@ module.exports = Toggle;
 
 module.exports = {
   PLUGIN_ID: "f6e24b19",
-  DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "white"],
-  ELEMENT_TYPES: ["Button", "Input", "Navbar", "Footer", "Grid", "FernComponent", "MediaSection", "card", "Image"]
+  DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"],
+  ELEMENT_TYPES: ["Button", "Input", "card", "Image", "Navbar", "Hero", "Footer", "Grid", "FernComponent", "MediaSection"]
 };
 
 /***/ }),
@@ -34067,7 +34200,7 @@ const schema = {
   },
   color: {
     type: "color",
-    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "#333", "#FFF"]
+    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"]
   },
   shadow: "boolean",
   style: {
@@ -34182,7 +34315,7 @@ function Card({ value, onClose }) {
                 React.createElement(
                     'svg',
                     { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                    React.createElement('path', { fill: 'black', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
                 )
             ),
             React.createElement(
@@ -34362,7 +34495,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Input', 'Navbar', 'Footer', 'Grid', 'MediaSection'].map((element, index) => React.createElement(
+            ['Button', 'Input', 'Navbar', 'Hero', 'MediaSection', 'Grid', 'Footer'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -34424,7 +34557,7 @@ function FernComponent({ value, onClose }) {
                 React.createElement(
                     'svg',
                     { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                    React.createElement('path', { fill: 'black', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
                 )
             ),
             React.createElement(
@@ -34607,7 +34740,7 @@ function Footer({ value, onClose }) {
                 React.createElement(
                     'svg',
                     { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                    React.createElement('path', { fill: 'black', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
                 )
             ),
             React.createElement(
@@ -34736,7 +34869,7 @@ function Grid({ value, onClose }) {
                 React.createElement(
                     'svg',
                     { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: '#333', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
+                    React.createElement('path', { fill: 'black', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
                 )
             ),
             React.createElement(
@@ -35022,6 +35155,30 @@ module.exports = Grid;
 
 /***/ }),
 
+/***/ "./src/screens/Elements/Hero.jsx":
+/*!***************************************!*\
+  !*** ./src/screens/Elements/Hero.jsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const mediaSectionSchema = __webpack_require__(/*! ./MediaSection/schema */ "./src/screens/Elements/MediaSection/schema.js");
+
+function Hero({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "Hero",
+    onClose: onClose,
+    schema: mediaSectionSchema,
+    data: value
+  });
+}
+
+module.exports = Hero;
+
+/***/ }),
+
 /***/ "./src/screens/Elements/Image/BcImageSearch.js":
 /*!*****************************************************!*\
   !*** ./src/screens/Elements/Image/BcImageSearch.js ***!
@@ -35260,7 +35417,7 @@ function Image({ value, onSelect, onClose }) {
                 React.createElement(
                     "svg",
                     { height: "16", viewBox: "0 0 24 24", width: "24" },
-                    React.createElement("path", { fill: "#333", d: "M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z" })
+                    React.createElement("path", { fill: "black", d: "M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z" })
                 )
             ),
             React.createElement(
@@ -35333,7 +35490,7 @@ const schema = {
   },
   color: {
     type: "color",
-    choices: ["#333", "#FFF"]
+    choices: ["black", "white"]
   },
   shadow: "boolean",
   outlined: "boolean",
@@ -35357,46 +35514,91 @@ module.exports = Input;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/MediaSection.jsx":
-/*!***********************************************!*\
-  !*** ./src/screens/Elements/MediaSection.jsx ***!
-  \***********************************************/
+/***/ "./src/screens/Elements/MediaSection/index.jsx":
+/*!*****************************************************!*\
+  !*** ./src/screens/Elements/MediaSection/index.jsx ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const mediaSectionSchema = __webpack_require__(/*! ./schema */ "./src/screens/Elements/MediaSection/schema.js");
 
-const schema = {
-  backgroundColor: {
-    label: "Background",
-    type: "color",
-    choices: ["transparent", "#333", "#FFF"]
-  },
-  color: {
-    label: "Text Color",
-    type: "color",
-    choices: ["#333", "#FFF"]
-  },
-  heading: "text",
-  subHeading: "text",
-  buttons: "text",
+function MediaSection({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "MediaSection",
+    onClose: onClose,
+    schema: mediaSectionSchema,
+    data: value
+  });
+}
+
+module.exports = MediaSection;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/MediaSection/schema.js":
+/*!*****************************************************!*\
+  !*** ./src/screens/Elements/MediaSection/schema.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const mediaSectionSchema = {
+  heading: { type: "text", sectionedGroup: "content" },
+  subHeading: { type: "text", sectionedGroup: "content" },
+  buttons: { type: "text", sectionedGroup: "content" },
   image: {
     type: "radio",
-    choices: ["1", "2", "3", "4", "5", "6", "7", "8"]
+    choices: ["1", "2", "3", "4", "5", "6", "7", "8"],
+    sectionedGroup: "content"
   },
-  playButton: "boolean",
+  playButton: {
+    type: "boolean",
+    sectionedGroup: "content"
+  },
   theme: {
     type: "section",
     children: {
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        choices: ["transparent", "black", "white"]
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["black", "white"]
+      },
+      heading: {
+        type: "section",
+        children: {
+          size: {
+            type: "radio",
+            choices: ["md", "lg"]
+          },
+          font: {
+            type: "radio",
+            choices: ["sans", "serif", "quirky", "fancy"]
+          },
+          brazen: "boolean"
+        }
+      },
       buttons: {
         type: "section",
         children: {
           icons: "boolean",
-          activeColor: {
+          reversed: "boolean",
+          themeColor: {
             type: "color",
-            defaultValue: "black",
-            choices: ["black", "white"],
+            defaultValue: "#F44663",
+            choices: ["#F44663", "#007BFF"],
+            optional: true,
             meta: { small: true }
           },
           roundness: {
@@ -35421,10 +35623,15 @@ const schema = {
       playButton: {
         type: "section",
         children: {
+          overlayOpacity: {
+            type: "number",
+            min: 0.1,
+            max: 0.8
+          },
           color: {
             type: "color",
             defaultValue: "black",
-            choices: ["#EA4949", "black", "white"],
+            choices: ["#EA4949", "black"],
             meta: { small: true }
           },
           invertColors: "boolean",
@@ -35435,16 +35642,7 @@ const schema = {
   }
 };
 
-function MediaSection({ value, onClose }) {
-  return React.createElement(ComponentPage, {
-    title: "MediaSection",
-    onClose: onClose,
-    schema: schema,
-    data: value
-  });
-}
-
-module.exports = MediaSection;
+module.exports = mediaSectionSchema;
 
 /***/ }),
 
@@ -35525,6 +35723,10 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
       persona: {
         type: "radio",
         defaultValue: "normal",
@@ -35540,14 +35742,14 @@ const schema = {
       color: {
         label: "Text Color",
         type: "color",
-        choices: ["transparent", "#333", "#FFF"]
+        choices: ["black", "white"]
       },
-      activeColor: {
+      themeColor: {
         label: "Active Color",
         type: "color",
         optional: true,
         defaultValue: "#0083F6",
-        choices: ["#333", "white", "#0083F6", "#28A745", "#DC3535"]
+        choices: ["black", "white", "#0083F6", "#28A745", "#DC3535"]
       },
       // inActiveOpacity: {
       //   optional: true,
@@ -35583,7 +35785,7 @@ const schema = {
       buttons: {
         type: "section",
         children: {
-          // activeColor: {
+          // themeColor: {
           //   type: "color",
           //   defaultValue: "black",
           //   choices: ["black", "white"],
@@ -35649,8 +35851,9 @@ const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/i
 const Input = __webpack_require__(/*! ./Input */ "./src/screens/Elements/Input.jsx");
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar.jsx");
+const Hero = __webpack_require__(/*! ./Hero */ "./src/screens/Elements/Hero.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
-const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection.jsx");
+const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection/index.jsx");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/screens/Elements/FernComponent.jsx");
 const { getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
@@ -35699,10 +35902,12 @@ function Elements({ value, subscription, onUpgrade }) {
 
     function RenderElement() {
         const uiElements = {
-            Button, Input,
-            Navbar, Footer, Grid,
+            Button, Input, Card, Image,
+            Navbar,
+            Hero,
             MediaSection,
-            Card, Image,
+            Grid,
+            Footer,
             FernComponent
         };
 
@@ -35956,7 +36161,7 @@ input, button{
     background: #1473E6;
 }
 .button[uxp-variant="action"] svg path{
-    fill: #fff;
+    fill: white;
     width: 20px;
     height: 20px;
 }
@@ -35967,7 +36172,7 @@ input, button{
     font-weight: 600;
     font-size: 13px;
     background: #1473E6;
-    color: #fff;
+    color: white;
     border-radius: 14px;
     margin: 0;
 }
@@ -37064,6 +37269,7 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 
 function createText(text = "Acacia Grove | The Right Inn..", props) {
   const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  console.log("Create Text: ", text);
 
   const defaultTextProps = {
     name: "Text",
@@ -37078,7 +37284,13 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
   props = _extends({}, defaultTextProps, props);
 
   const textNode = new Text();
-  textNode.text = text;
+  const splitText = text.split("\\n");
+  let actualText = "";
+  splitText.forEach((paragraph, index) => {
+    actualText += paragraph;
+    if (index != splitText.length - 1) actualText += "\n";
+  });
+  textNode.text = actualText;
   Object.assign(textNode, props);
 
   return textNode;
@@ -37563,7 +37775,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// TinyColor v1.4.1
         g,
         h,
         i = null,
-        j = 0;d = d || {}, f = d.includeFallbackColors, g = d.level, h = d.size;for (var k = 0; k < c.length; k++) e = b.readability(a, c[k]), e > j && (j = e, i = b(c[k]));return b.isReadable(a, i, { level: g, size: h }) || !f ? i : (d.includeFallbackColors = !1, b.mostReadable(a, ["#fff", "#000"], d));
+        j = 0;d = d || {}, f = d.includeFallbackColors, g = d.level, h = d.size;for (var k = 0; k < c.length; k++) e = b.readability(a, c[k]), e > j && (j = e, i = b(c[k]));return b.isReadable(a, i, { level: g, size: h }) || !f ? i : (d.includeFallbackColors = !1, b.mostReadable(a, ["white", "#000"], d));
   };var T = b.names = { aliceblue: "f0f8ff", antiquewhite: "faebd7", aqua: "0ff", aquamarine: "7fffd4", azure: "f0ffff", beige: "f5f5dc", bisque: "ffe4c4", black: "000", blanchedalmond: "ffebcd", blue: "00f", blueviolet: "8a2be2", brown: "a52a2a", burlywood: "deb887", burntsienna: "ea7e5d", cadetblue: "5f9ea0", chartreuse: "7fff00", chocolate: "d2691e", coral: "ff7f50", cornflowerblue: "6495ed", cornsilk: "fff8dc", crimson: "dc143c", cyan: "0ff", darkblue: "00008b", darkcyan: "008b8b", darkgoldenrod: "b8860b", darkgray: "a9a9a9", darkgreen: "006400", darkgrey: "a9a9a9", darkkhaki: "bdb76b", darkmagenta: "8b008b", darkolivegreen: "556b2f", darkorange: "ff8c00", darkorchid: "9932cc", darkred: "8b0000", darksalmon: "e9967a", darkseagreen: "8fbc8f", darkslateblue: "483d8b", darkslategray: "2f4f4f", darkslategrey: "2f4f4f", darkturquoise: "00ced1", darkviolet: "9400d3", deeppink: "ff1493", deepskyblue: "00bfff", dimgray: "696969", dimgrey: "696969", dodgerblue: "1e90ff", firebrick: "b22222", floralwhite: "fffaf0", forestgreen: "228b22", fuchsia: "f0f", gainsboro: "dcdcdc", ghostwhite: "f8f8ff", gold: "ffd700", goldenrod: "daa520", gray: "808080", green: "008000", greenyellow: "adff2f", grey: "808080", honeydew: "f0fff0", hotpink: "ff69b4", indianred: "cd5c5c", indigo: "4b0082", ivory: "fffff0", khaki: "f0e68c", lavender: "e6e6fa", lavenderblush: "fff0f5", lawngreen: "7cfc00", lemonchiffon: "fffacd", lightblue: "add8e6", lightcoral: "f08080", lightcyan: "e0ffff", lightgoldenrodyellow: "fafad2", lightgray: "d3d3d3", lightgreen: "90ee90", lightgrey: "d3d3d3", lightpink: "ffb6c1", lightsalmon: "ffa07a", lightseagreen: "20b2aa", lightskyblue: "87cefa", lightslategray: "789", lightslategrey: "789", lightsteelblue: "b0c4de", lightyellow: "ffffe0", lime: "0f0", limegreen: "32cd32", linen: "faf0e6", magenta: "f0f", maroon: "800000", mediumaquamarine: "66cdaa", mediumblue: "0000cd", mediumorchid: "ba55d3", mediumpurple: "9370db", mediumseagreen: "3cb371", mediumslateblue: "7b68ee", mediumspringgreen: "00fa9a", mediumturquoise: "48d1cc", mediumvioletred: "c71585", midnightblue: "191970", mintcream: "f5fffa", mistyrose: "ffe4e1", moccasin: "ffe4b5", navajowhite: "ffdead", navy: "000080", oldlace: "fdf5e6", olive: "808000", olivedrab: "6b8e23", orange: "ffa500", orangered: "ff4500", orchid: "da70d6", palegoldenrod: "eee8aa", palegreen: "98fb98", paleturquoise: "afeeee", palevioletred: "db7093", papayawhip: "ffefd5", peachpuff: "ffdab9", peru: "cd853f", pink: "ffc0cb", plum: "dda0dd", powderblue: "b0e0e6", purple: "800080", rebeccapurple: "663399", red: "f00", rosybrown: "bc8f8f", royalblue: "4169e1", saddlebrown: "8b4513", salmon: "fa8072", sandybrown: "f4a460", seagreen: "2e8b57", seashell: "fff5ee", sienna: "a0522d", silver: "c0c0c0", skyblue: "87ceeb", slateblue: "6a5acd", slategray: "708090", slategrey: "708090", snow: "fffafa", springgreen: "00ff7f", steelblue: "4682b4", tan: "d2b48c", teal: "008080", thistle: "d8bfd8", tomato: "ff6347", turquoise: "40e0d0", violet: "ee82ee", wheat: "f5deb3", white: "fff", whitesmoke: "f5f5f5", yellow: "ff0", yellowgreen: "9acd32" },
       U = b.hexNames = y(T),
       V = function () {

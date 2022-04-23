@@ -7,15 +7,20 @@ const ColorList = ({
   colors = DEFAULT_COLORS,
   centerColors = false,
   selectedColor,
-  small = false,
+  small = true,
   choiceSize,
   spacing = 4,
   showCustomPicker = true,
   showTransparent,
   onChange,
 }) => {
-  if (colors && colors.length && showTransparent)
-    colors = ["transparent", ...colors];
+  if (colors && colors.length){
+    if(showTransparent)
+      colors = ["transparent", ...colors];
+
+    if(!colors.includes(selectedColor))
+      colors = [...colors, selectedColor];
+  }
 
   function handleCustomColorChanged(color) {
     if (!color) return;
@@ -27,7 +32,7 @@ const ColorList = ({
   }
 
   let customColorIconSize = choiceSize;
-  if (!choiceSize) customColorIconSize = small ? 10 : 14;
+  if (!choiceSize) customColorIconSize = small ? 12 : 14;
   customColorIconSize += 4;
 
   return (
@@ -56,29 +61,33 @@ const ColorList = ({
       {colors.map((color, index) => {
         const selected = selectedColor == color;
         let size = choiceSize + "px";
-        if (!choiceSize) size = small ? "10px" : "14px";
-        const unselectedBgColor = color == "#ffffff" ? "black" : "transparent";
+        if (!choiceSize) size = small ? "12px" : "14px";
+        const unselectedBgColor = color == "white" ? "#EEE" : "transparent";
 
         return (
-          <div key={index} style={{ padding: spacing + "px" }}>
+          <div title={color} key={index} style={{ padding: spacing + "px" }}>
             <div
               className={`cursor-pointer rounded-full ${small ? "border" : "border-2"}`}
               style={{
                 padding: "2px",
-                borderColor: color == "transparent" ? "#ddd" : color,
+                borderColor: color == "transparent" ? selected ? "#bbb" : "#e7e7e7" : color,
                 backgroundColor: selected ? unselectedBgColor : color,
               }}
               onClick={() => onChange(color)}
             >
               <div
-                className="rounded-full"
+                className="rounded-full overflow-hidden"
                 style={{
                   width: size,
                   height: size,
                   backgroundColor: color,
-                  borderColor: selected ? "#fff" : "transparent",
+                  borderColor: selected ? "white" : "transparent",
                 }}
-              ></div>
+              >
+                { color == "transparent" && ( 
+                  <img className="bg-white w-full h-full object-cover" src="images/transparency.jpg" alt="" />
+                )}
+              </div>
             </div>
           </div>
         );

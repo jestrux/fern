@@ -11,8 +11,7 @@ function createMediaText({
   heading = "Supporting mothers in their time of need",
   subHeading = "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
   buttons = "More about us, See beneficiaries",
-  color = "#333",
-  activeColor,
+  themeColor,
   theme,
 }) {
   let buttonsNode;
@@ -24,13 +23,9 @@ function createMediaText({
 
     buttonsNode = navButtonsComponent(
       {
-        color,
-        activeColor,
+        color: theme.color,
+        themeColor,
         ...theme.buttons,
-        ...(buttons.split(",").length == 2 ? {
-          mainButton: theme.buttons.secondaryButton,
-          secondaryButton: theme.buttons.mainButton,
-        } : {})
       },
       buttons
     );
@@ -38,19 +33,27 @@ function createMediaText({
 
   const subHeadingNode = createText(subHeading, {
     width: theme.subHeading.width,
-    fill: new Color(color),
-    fontSize: 22,
-    lineSpacing: 40,
+    fill: new Color(theme.color),
+    fontSize: theme.subHeading.size == "sm" ? 16 : 22,
+    lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
     fontStyle: "Regular",
   });
 
   insertNode(subHeadingNode);
 
+  const fontFamily = {
+    "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
+    "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
+    "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
+    "fancy": "Didot",
+  }[theme.heading.font || "sans"];
+
   const headingNode = createText(heading, {
     width: theme.heading.width,
-    fill: new Color(color),
-    fontSize: 48,
-    lineSpacing: 62,
+    fill: new Color(theme.color),
+    fontSize: theme.heading.size == "md" ? 36 : 48,
+    lineSpacing: theme.heading.size == "md" ? 50 : 62,
+    fontFamily,
     fontStyle: "Bold",
   });
 

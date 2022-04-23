@@ -6,13 +6,13 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
   const playButtonBg = new Ellipse();
   playButtonBg.radiusX = 35;
   playButtonBg.radiusY = 35;
-  playButtonBg.fill = new Color(invertColors ? color : "#fff");
+  playButtonBg.fill = new Color(invertColors ? color : "white");
 
   insertNode(playButtonBg);
 
   const playIconNode = createIcon("M8 5v14l11-7z", {
-    fill: invertColors ? "#fff" : color,
-    stroke: invertColors ? "#fff" : color,
+    fill: invertColors ? "white" : color,
+    stroke: invertColors ? "white" : color,
     strokeWidth: 5,
     strokeJoins: smoothCorners
       ? GraphicNode.STROKE_JOIN_ROUND
@@ -88,9 +88,10 @@ function createMedia({
 
     if (shadow) imageNode.shadow = getShadow(shadow);
 
+    console.log("Overlay opacity: ", theme.playButton.overlayOpacity);
     const scrim = selection.items[0];
     scrim.name = "Scrim";
-    scrim.fill = new Color("black", 0.3);
+    scrim.fill = new Color("black", theme.playButton.overlayOpacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
     selection.items = [imageNode, scrim, getPlayButton(theme.playButton)];

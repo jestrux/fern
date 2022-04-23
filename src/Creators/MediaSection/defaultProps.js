@@ -1,38 +1,46 @@
 const defaultMediaSectionProps = {
-    backgroundColor: "#F8F7F7",
-    color: "#333",
-    heading: "Supporting all county mothers in need",
-    subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
-    buttons: "More about us, See beneficiaries",
-    image: "5",
+    heading: "Experts you can trust",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    buttons: "Get to know us",
+    image: "4",
     playButton: false,
+    layout: "normal", // "flip-x", "center", "overlay"
     theme: {
+        width: 1600,
+        backgroundColor: "#F8F7F7",
+        color: "black",
+        verticalPadding: 65,
+        textNegativeMargin: 16,
         heading: {
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
             width: 530,
+            size: "md", // "lg"
         },
         subHeading: {
             width: 530,
+            size: "sm", // "md"
         },
         buttons: {
             icons: false,
-            activeColor: "#F44663",
             iconPlacement: "right",
-            size: "md",
+            size: "sm",
             roundness: "sm",
+            reversed: true,
             mainButton: {
-                // color: "#333",
+                // color: "black",
                 icon: "chevron-right",
                 style: "fill",
             },
             secondaryButton: {
-                // color: "#333",
+                // color: "black",
                 icon: "chevron-right",
                 style: "outline",
             },
         },
         image: {
             width: 680,
-            height: 448,
+            height: 400, // 448,
             roundness: 'sm',
             // orientation: 'landscape',
             // style: "basic",
@@ -45,6 +53,7 @@ const defaultMediaSectionProps = {
         },
         playButton: {
             // color: "#EA4949",
+            overlayOpacity: 0.3,
             color: "#000",
             invertColors: false,
             smoothCorners: true,

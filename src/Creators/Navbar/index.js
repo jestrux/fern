@@ -50,10 +50,13 @@ async function Navbar(userProps) {
 
         tagNode(navbar, { type: "Navbar", ...props });
 
-        if (oldNavbar) {
-          placeInParent(navbar, oldNavbar.topLeftInParent);
-          oldNavbar.removeFromParent();
-        } else placeInParent(navbar, { x: 0, y: 0 });
+        placeInParent(navbar, { x: -30, y: 0 });
+        if (oldNavbar) oldNavbar.removeFromParent();
+
+        // if (oldNavbar) {
+        //   placeInParent(navbar, oldNavbar.topLeftInParent);
+        //   oldNavbar.removeFromParent();
+        // } else placeInParent(navbar, { x: -30, y: 0 });
       } catch (error) {
         console.log("Error creating navbar: ", error);
       }
