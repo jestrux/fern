@@ -31262,7 +31262,9 @@ async function Hero(userProps) {
             verticalPadding: 90,
             textNegativeMargin: 30,
             heading: _extends({}, defaultMediaSectionProps.theme.heading, {
-                size: "lg"
+                size: "lg",
+                width: 600,
+                brazen: true
             }),
             subHeading: _extends({}, defaultMediaSectionProps.theme.subHeading, {
                 size: "md"
@@ -31273,7 +31275,8 @@ async function Hero(userProps) {
                 themeColor: "#F44663"
             }),
             image: _extends({}, defaultMediaSectionProps.theme.image, {
-                height: 448
+                height: 464,
+                width: 760
             })
         })
     }, userProps || {});
@@ -32064,8 +32067,8 @@ const defaultMediaSectionProps = {
             }
         },
         image: {
-            width: 680,
-            height: 400, // 448,
+            width: 680, // 760
+            height: 400, // 464,
             roundness: 'sm'
             // orientation: 'landscape',
             // style: "basic",
@@ -35742,7 +35745,11 @@ const mediaSectionSchema = {
           },
           height: {
             type: "radio",
-            choices: [400, 448]
+            choices: [400, 464]
+          },
+          width: {
+            type: "radio",
+            choices: [680, 760]
           },
           fullWidth: "boolean",
           shadow: {

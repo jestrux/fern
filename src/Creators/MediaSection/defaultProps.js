@@ -40,8 +40,8 @@ const defaultMediaSectionProps = {
             },
         },
         image: {
-            width: 680,
-            height: 400, // 448,
+            width: 680, // 760
+            height: 400, // 464,
             roundness: 'sm',
             // orientation: 'landscape',
             // style: "basic",

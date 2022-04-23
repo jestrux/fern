@@ -130,7 +130,11 @@ const mediaSectionSchema = {
             },
             height: {
               type: "radio",
-              choices: [400, 448],
+              choices: [400, 464],
+            },
+            width: {
+              type: "radio",
+              choices: [680, 760],
             },
             fullWidth: "boolean",
             shadow: {

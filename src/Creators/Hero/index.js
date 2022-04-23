@@ -20,6 +20,8 @@ async function Hero(userProps){
             heading: {
                 ...defaultMediaSectionProps.theme.heading,
                 size: "lg",
+                width: 600,
+                brazen: true,
             },
             subHeading: {
                 ...defaultMediaSectionProps.theme.subHeading,
@@ -33,7 +35,8 @@ async function Hero(userProps){
             },
             image: {
                 ...defaultMediaSectionProps.theme.image,
-                height: 448,
+                height: 464,
+                width: 760,
             },
         },
         ...(userProps || {}),
