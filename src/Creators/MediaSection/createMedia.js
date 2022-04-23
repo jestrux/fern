@@ -1,4 +1,4 @@
-const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, GraphicNode, selection } = require("scenegraph");
+const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, SceneNode, GraphicNode, selection } = require("scenegraph");
 const commands = require("commands");
 const { insertNode, createIcon } = require("../../utils");
 
@@ -87,23 +87,43 @@ function createMedia({
 
   console.log("Media shadow: ", shadow);
 
-  if (playButton || theme.layout == "overlay") {
+  const overlay = theme.layout == "overlay";
+  const fullWidthImage = theme.layout == "center" && theme.image.fullWidth;
+
+  if (playButton || overlay) {
     selection.items = [imageNode];
     commands.duplicate();
 
-    if (shadow) imageNode.shadow = getShadow(shadow);
+    if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
 
     const scrim = selection.items[0];
     scrim.name = "Scrim";
     scrim.fill = new Color(theme.overlay.color, theme.overlay.opacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
-    if(theme.overlay.blur){
-      const blurMap = {
-        "sm": [8, -9, 10],
-        "md": [15, -20, 0.4],
-      };
-      const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
-      scrim.blur = new Blur(...blurValues, true);
+
+    if(overlay){
+      if(theme.image.blend){
+        const blendMap = {
+          "multiply": SceneNode.BLEND_MODE_MULTIPLY,
+          "screen": SceneNode.BLEND_MODE_SCREEN,
+          "overlay": SceneNode.BLEND_MODE_OVERLAY,
+          "color": SceneNode.BLEND_MODE_COLOR,
+          "luminosity": SceneNode.BLEND_MODE_LUMINOSITY
+        };
+  
+        const blendMode = blendMap[theme.image.blend || "multiply"] || blendMap.multiply;
+  
+        imageNode.blendMode = blendMode;
+      }
+
+      if(theme.overlay.blur){
+        const blurMap = {
+          "sm": [8, -9, 10],
+          "md": [15, -20, 0.4],
+        };
+        const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
+        scrim.blur = new Blur(...blurValues, true);
+      }
     }
 
     selection.items = !playButton ? [imageNode, scrim] : [imageNode, scrim, getPlayButton({...theme.playButton, large })];
@@ -112,7 +132,7 @@ function createMedia({
     commands.alignVerticalCenter();
     commands.group();
     return selection.items[0];
-  } else if (shadow) imageNode.shadow = getShadow(shadow);
+  } else if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
 
   return imageNode;
 }

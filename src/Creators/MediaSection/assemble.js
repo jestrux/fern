@@ -1,4 +1,4 @@
-const { selection, Color, Rectangle, SceneNode } = require("scenegraph");
+const { selection, Color, LinearGradient, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = require("../../utils");
 const createMedia = require("./createMedia");
@@ -10,15 +10,46 @@ function createSectionBackground({
   backgroundColor,
   color,
   border,
+  layout,
+  fadeBackground,
 }) {
+  const transparentColor = new Color("white", 0);
+  const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
+
   let bg = new Rectangle();
   bg.resize(width, height);
-  bg.fill =
-    backgroundColor == "transparent"
-      ? new Color("white", 0)
-      : new Color(backgroundColor);
   bg.strokeEnabled = false;
   bg.name = "BG";
+  bg.fill = bgColor;
+
+  if(layout == "center" && fadeBackground){
+    const {
+      fadeTo = "#F8F7F7",
+      softFade = false,
+      slant = "down",
+    } = fadeBackground;
+
+    const fadeToColor = fadeTo == "transparent" ? transparentColor : new Color(fadeTo);
+    const gradient = new LinearGradient();
+    let endPoints = [0.5, 0.56, 0.5, 0.73];
+    
+    if(slant == "up") endPoints = [0.5, 0.56, 0.516, 0.759];
+    else if(slant == "down") endPoints = [0.5, 0.56, 0.491, 0.762];
+    
+    gradient.setEndPoints(...endPoints);
+    
+    gradient.colorStops = [
+        { color: bgColor, stop: 0 },
+        ...(softFade ? [] : [
+          { color: bgColor, stop: 0.39 },
+          { color: fadeToColor, stop: 0.4 },
+        ]),
+        { color: fadeToColor, stop: 1 }
+    ];
+
+    bg.fill = gradient;
+  }
+
   insertNode(bg);
 
   if (border) {
@@ -109,7 +140,7 @@ function assembleMediaSection(props = {}, images) {
         container.resize(container.localBounds.width, media.localBounds.height + mediaText.localBounds.height + 60);
       }
       else{
-        const textNegativeMargin = props.playButton ? -20 : 30;
+        const textNegativeMargin = props.playButton ? -30 : 30;
         mediaText.moveInParentCoordinates(0, (media.localBounds.height / 2) - (mediaText.localBounds.height / 2) - textNegativeMargin);
         container.resize(container.localBounds.width, media.localBounds.height);
 
@@ -124,11 +155,13 @@ function assembleMediaSection(props = {}, images) {
       container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
 
       // const textNegativeMargin = props.theme.textNegativeMargin;
-      const textNegativeMargin = props.theme.image.height == 448 ? 30 : 16;
+      const textNegativeMargin = props.theme.image.height == 464 ? 30 : 16;
       const { x, y } = container.topLeftInParent;
       const leftSlot = {x, y};
+      const mediaRight = container.localBounds.width - media.localBounds.width + x;
+      const textRight =  x + media.localBounds.width + 75;
       const rightSlot = {
-        x: container.localBounds.width - media.localBounds.width + x + (flipX ? 60 : 0),
+        x: flipX ? textRight : mediaRight,
         y
       };
       
@@ -154,7 +187,7 @@ function assembleMediaSection(props = {}, images) {
 
   const mediaSection = selection.items[0];
   const horizontalPadding = overlay || fullWidthImage ? 0 : (props.theme.width - container.localBounds.width) / 2;
-  const verticalPadding = overlay ? 0 : props.theme.verticalPadding;
+  const verticalPadding = overlay || noText ? 0 : props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,

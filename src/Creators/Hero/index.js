@@ -31,7 +31,7 @@ async function Hero(userProps){
                 ...defaultMediaSectionProps.theme.buttons,
                 size: "md",
                 icons: true,
-                themeColor: "#F44663",
+                themeColor: "#E2406C",
             },
             image: {
                 ...defaultMediaSectionProps.theme.image,

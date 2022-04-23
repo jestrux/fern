@@ -31272,7 +31272,7 @@ async function Hero(userProps) {
             buttons: _extends({}, defaultMediaSectionProps.theme.buttons, {
                 size: "md",
                 icons: true,
-                themeColor: "#F44663"
+                themeColor: "#E2406C"
             }),
             image: _extends({}, defaultMediaSectionProps.theme.image, {
                 height: 464,
@@ -31603,7 +31603,7 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { selection, Color, LinearGradient, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
@@ -31614,13 +31614,39 @@ function createSectionBackground({
   height,
   backgroundColor,
   color,
-  border
+  border,
+  layout,
+  fadeBackground
 }) {
+  const transparentColor = new Color("white", 0);
+  const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
+
   let bg = new Rectangle();
   bg.resize(width, height);
-  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
   bg.strokeEnabled = false;
   bg.name = "BG";
+  bg.fill = bgColor;
+
+  if (layout == "center" && fadeBackground) {
+    const {
+      fadeTo = "#F8F7F7",
+      softFade = false,
+      slant = "down"
+    } = fadeBackground;
+
+    const fadeToColor = fadeTo == "transparent" ? transparentColor : new Color(fadeTo);
+    const gradient = new LinearGradient();
+    let endPoints = [0.5, 0.56, 0.5, 0.73];
+
+    if (slant == "up") endPoints = [0.5, 0.56, 0.516, 0.759];else if (slant == "down") endPoints = [0.5, 0.56, 0.491, 0.762];
+
+    gradient.setEndPoints(...endPoints);
+
+    gradient.colorStops = [{ color: bgColor, stop: 0 }, ...(softFade ? [] : [{ color: bgColor, stop: 0.39 }, { color: fadeToColor, stop: 0.4 }]), { color: fadeToColor, stop: 1 }];
+
+    bg.fill = gradient;
+  }
+
   insertNode(bg);
 
   if (border) {
@@ -31703,7 +31729,7 @@ function assembleMediaSection(props = {}, images) {
         media.moveInParentCoordinates(0, mediaText.localBounds.height + 60);
         container.resize(container.localBounds.width, media.localBounds.height + mediaText.localBounds.height + 60);
       } else {
-        const textNegativeMargin = props.playButton ? -20 : 30;
+        const textNegativeMargin = props.playButton ? -30 : 30;
         mediaText.moveInParentCoordinates(0, media.localBounds.height / 2 - mediaText.localBounds.height / 2 - textNegativeMargin);
         container.resize(container.localBounds.width, media.localBounds.height);
 
@@ -31717,11 +31743,13 @@ function assembleMediaSection(props = {}, images) {
       container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
 
       // const textNegativeMargin = props.theme.textNegativeMargin;
-      const textNegativeMargin = props.theme.image.height == 448 ? 30 : 16;
+      const textNegativeMargin = props.theme.image.height == 464 ? 30 : 16;
       const { x, y } = container.topLeftInParent;
       const leftSlot = { x, y };
+      const mediaRight = container.localBounds.width - media.localBounds.width + x;
+      const textRight = x + media.localBounds.width + 75;
       const rightSlot = {
-        x: container.localBounds.width - media.localBounds.width + x + (flipX ? 60 : 0),
+        x: flipX ? textRight : mediaRight,
         y
       };
 
@@ -31746,7 +31774,7 @@ function assembleMediaSection(props = {}, images) {
 
   const mediaSection = selection.items[0];
   const horizontalPadding = overlay || fullWidthImage ? 0 : (props.theme.width - container.localBounds.width) / 2;
-  const verticalPadding = overlay ? 0 : props.theme.verticalPadding;
+  const verticalPadding = overlay || noText ? 0 : props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,
@@ -31778,7 +31806,7 @@ module.exports = assembleMediaSection;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, SceneNode, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
@@ -31865,23 +31893,43 @@ function createMedia({
 
   console.log("Media shadow: ", shadow);
 
-  if (playButton || theme.layout == "overlay") {
+  const overlay = theme.layout == "overlay";
+  const fullWidthImage = theme.layout == "center" && theme.image.fullWidth;
+
+  if (playButton || overlay) {
     selection.items = [imageNode];
     commands.duplicate();
 
-    if (shadow) imageNode.shadow = getShadow(shadow);
+    if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
 
     const scrim = selection.items[0];
     scrim.name = "Scrim";
     scrim.fill = new Color(theme.overlay.color, theme.overlay.opacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
-    if (theme.overlay.blur) {
-      const blurMap = {
-        "sm": [8, -9, 10],
-        "md": [15, -20, 0.4]
-      };
-      const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
-      scrim.blur = new Blur(...blurValues, true);
+
+    if (overlay) {
+      if (theme.image.blend) {
+        const blendMap = {
+          "multiply": SceneNode.BLEND_MODE_MULTIPLY,
+          "screen": SceneNode.BLEND_MODE_SCREEN,
+          "overlay": SceneNode.BLEND_MODE_OVERLAY,
+          "color": SceneNode.BLEND_MODE_COLOR,
+          "luminosity": SceneNode.BLEND_MODE_LUMINOSITY
+        };
+
+        const blendMode = blendMap[theme.image.blend || "multiply"] || blendMap.multiply;
+
+        imageNode.blendMode = blendMode;
+      }
+
+      if (theme.overlay.blur) {
+        const blurMap = {
+          "sm": [8, -9, 10],
+          "md": [15, -20, 0.4]
+        };
+        const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
+        scrim.blur = new Blur(...blurValues, true);
+      }
     }
 
     selection.items = !playButton ? [imageNode, scrim] : [imageNode, scrim, getPlayButton(_extends({}, theme.playButton, { large }))];
@@ -31890,7 +31938,7 @@ function createMedia({
     commands.alignVerticalCenter();
     commands.group();
     return selection.items[0];
-  } else if (shadow) imageNode.shadow = getShadow(shadow);
+  } else if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
 
   return imageNode;
 }
@@ -35621,13 +35669,13 @@ module.exports = MediaSection;
 const mediaSectionSchema = {
   heading: {
     type: "text",
-    defaultValue: "Experts you can trust",
+    defaultValue: "Supporting all county mothers in need",
     sectionedGroup: "text",
     optional: "group"
   },
   subHeading: {
     type: "text",
-    defaultValue: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    defaultValue: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
     sectionedGroup: "text"
   },
   buttons: {
@@ -35679,6 +35727,26 @@ const mediaSectionSchema = {
         type: "color",
         choices: ["black", "white"]
       },
+      fadeBackground: {
+        type: "section",
+        optional: true,
+        children: {
+          fadeTo: {
+            type: "color",
+            choices: ["white", "black", "#F8F7F7"],
+            defaultValue: "white",
+            meta: { small: true }
+          },
+          softFade: {
+            type: "boolean"
+          },
+          slant: {
+            type: "radio",
+            choices: ["none", "up", "down"],
+            defaultValue: "none"
+          }
+        }
+      },
       heading: {
         type: "section",
         children: {
@@ -35719,8 +35787,8 @@ const mediaSectionSchema = {
           reversed: "boolean",
           themeColor: {
             type: "color",
-            defaultValue: "#F44663",
-            choices: ["#F44663", "#007BFF"],
+            defaultValue: "#E2406C",
+            choices: ["#E2406C", "#007BFF", "black", "white"],
             optional: true,
             meta: { small: true }
           },
@@ -35738,6 +35806,14 @@ const mediaSectionSchema = {
       image: {
         type: "section",
         children: {
+          blend: {
+            type: "radio",
+            choices: [{ label: "mltply", value: "mulitply" }, { label: "scrn", value: "screen" }, { label: "ovly", value: "overlay" },
+            // {label: "clr", value: "color"},
+            { label: "lmnsty", value: "luminosity" }],
+            defaultValue: "mulitply",
+            optional: true
+          },
           roundness: {
             label: "Corner Radius",
             type: "radio",

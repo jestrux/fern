@@ -1,13 +1,13 @@
 const mediaSectionSchema = {
     heading: {
       type: "text", 
-      defaultValue: "Experts you can trust",
+      defaultValue: "Supporting all county mothers in need",
       sectionedGroup: "text", 
       optional: "group",
     },
     subHeading: {
       type: "text", 
-      defaultValue: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+      defaultValue: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
       sectionedGroup: "text",
     },
     buttons: {
@@ -64,6 +64,26 @@ const mediaSectionSchema = {
           type: "color",
           choices: ["black", "white"],
         },
+        fadeBackground: {
+          type: "section",
+          optional: true,
+          children: {
+            fadeTo: {
+              type: "color",
+              choices: ["white", "black", "#F8F7F7"],
+              defaultValue: "white",
+              meta: { small: true },
+            },
+            softFade: {
+              type: "boolean",
+            },
+            slant: {
+              type: "radio",
+              choices: ["none", "up", "down"],
+              defaultValue: "none",
+            },
+          },
+        },
         heading: {
           type: "section",
           children: {
@@ -104,8 +124,8 @@ const mediaSectionSchema = {
             reversed: "boolean",
             themeColor: {
               type: "color",
-              defaultValue: "#F44663",
-              choices: ["#F44663", "#007BFF"],
+              defaultValue: "#E2406C",
+              choices: ["#E2406C", "#007BFF", "black", "white"],
               optional: true,
               meta: { small: true },
             },
@@ -123,6 +143,18 @@ const mediaSectionSchema = {
         image: {
           type: "section",
           children: {
+            blend: {
+              type: "radio",
+              choices: [
+                {label: "mltply", value: "mulitply"},
+                {label: "scrn", value: "screen"},
+                {label: "ovly", value: "overlay"},
+                // {label: "clr", value: "color"},
+                {label: "lmnsty", value: "luminosity"},
+              ],
+              defaultValue: "mulitply",
+              optional: true,
+            },
             roundness: {
               label: "Corner Radius",
               type: "radio",
