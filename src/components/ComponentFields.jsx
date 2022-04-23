@@ -140,8 +140,8 @@ function ComponentFieldGroup({ field, data, onChange }) {
 
   return (
     <div className={`${field.section ? 'mb-3 border-t-2 border-b-2 -mx-12px px-12px pb-1' : 'mb-2'}`}>
-      <div className="flex items-center justify-between">
-        <label className={`mt-2 ${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}`}>
+      <div className="mt-2 flex items-center justify-between">
+        <label className={`${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}`}>
           {label}
         </label>
 

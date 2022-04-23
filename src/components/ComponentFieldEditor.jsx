@@ -170,8 +170,8 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
   return (
     <div className="ComponentFieldEditor">
       {label && label.length && (
-        <div className="flex items-center justify-between">
-          <label className="mt-2 text-md" style={{ marginBottom: isCustomFieldType ? "0.1rem" : 0 }}>
+        <div className="mt-2 flex items-center justify-between" style={{ marginBottom: isCustomFieldType ? "0.1rem" : 0 }}>
+          <label className="text-md">
             {camelCaseToSentenceCase(label)}
           </label>
 

@@ -13,6 +13,7 @@ function createMediaText({
   buttons = "More about us, See beneficiaries",
   themeColor,
   theme,
+  center
 }) {
   let buttonsNode;
 
@@ -32,6 +33,7 @@ function createMediaText({
   }
 
   const subHeadingNode = createText(subHeading, {
+    align: center ? "center" : "left",
     width: theme.subHeading.width,
     fill: new Color(theme.color),
     fontSize: theme.subHeading.size == "sm" ? 16 : 22,
@@ -49,6 +51,7 @@ function createMediaText({
   }[theme.heading.font || "sans"];
 
   const headingNode = createText(heading, {
+    align: center ? "center" : "left",
     width: theme.heading.width,
     fill: new Color(theme.color),
     fontSize: theme.heading.size == "md" ? 36 : 48,
@@ -60,10 +63,15 @@ function createMediaText({
   insertNode(headingNode);
 
   selection.items = [headingNode, subHeadingNode];
-  commands.alignLeft();
-  commands.group();
 
+  if(center) commands.alignHorizontalCenter();
+  else commands.alignLeft();
+
+  commands.group();
+  
   const headingAndSubHeading = selection.items[0];
+  headingAndSubHeading.name = "FernSectionText";
+
   if (headingAndSubHeading.children.length > 1) {
     headingAndSubHeading.layout = {
       type: SceneNode.LAYOUT_STACK,
@@ -74,22 +82,32 @@ function createMediaText({
     };
   }
 
-  selection.items = [headingAndSubHeading, buttonsNode];
-  commands.alignLeft();
-  commands.group();
+  let mediaTextElement;
 
-  const mediaTextElement = selection.items[0];
-  if (mediaTextElement.children.length > 1) {
-    mediaTextElement.layout = {
-      type: SceneNode.LAYOUT_STACK,
-      stack: {
-        orientation: SceneNode.STACK_VERTICAL,
-        spacings: 30,
-      },
-    };
+  if(buttonsNode){
+    selection.items = [headingAndSubHeading, buttonsNode];
+    
+    if(center) commands.alignHorizontalCenter();
+    else commands.alignLeft();
+    
+    commands.group();
+  
+    mediaTextElement = selection.items[0];
+    if (mediaTextElement.children.length > 1) {
+      mediaTextElement.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+          orientation: SceneNode.STACK_VERTICAL,
+          spacings: 30,
+        },
+      };
+    }
   }
-  mediaTextElement.name = "FernMediaText";
+  else {
+    mediaTextElement = headingAndSubHeading;
+  }
 
+  mediaTextElement.name = "FernMediaText";
   return mediaTextElement;
 }
 

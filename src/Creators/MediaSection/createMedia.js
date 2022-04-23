@@ -1,11 +1,13 @@
-const { Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode, selection } = require("scenegraph");
+const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, GraphicNode, selection } = require("scenegraph");
 const commands = require("commands");
 const { insertNode, createIcon } = require("../../utils");
 
-function getPlayButton({ color, invertColors, smoothCorners }) {
+function getPlayButton({ color, invertColors, smoothCorners, large }) {
+  const buttonRadius = large ? 43 : 35;
+
   const playButtonBg = new Ellipse();
-  playButtonBg.radiusX = 35;
-  playButtonBg.radiusY = 35;
+  playButtonBg.radiusX = buttonRadius;
+  playButtonBg.radiusY = buttonRadius;
   playButtonBg.fill = new Color(invertColors ? color : "white");
 
   insertNode(playButtonBg);
@@ -17,7 +19,7 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
     strokeJoins: smoothCorners
       ? GraphicNode.STROKE_JOIN_ROUND
       : GraphicNode.STROKE_JOIN_MITER,
-    size: 18,
+    size: large ? 22 : 18,
   });
 
   insertNode(playIconNode);
@@ -35,9 +37,9 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
 
 function getShadow({ size, placement, color } = {}) {
   const shadowPropsMap = {
-    sm: [5, 15, 30],
-    md: [10, 22, 60],
-    lg: [15, 30, 90],
+    sm: [5, 15, 30, 0.25],
+    md: [10, 22, 45, 0.3],
+    lg: [15, 30, 60, 0.35],
   };
 
   if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
@@ -45,10 +47,11 @@ function getShadow({ size, placement, color } = {}) {
   const shadowProps = shadowPropsMap[size];
   let shadowOffsets = shadowProps.slice(0, 2);
   const shadowBlur = shadowProps[2];
+  const shadowOpacity = shadowProps[3];
 
   if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
 
-  return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
+  return new Shadow(...shadowOffsets, shadowBlur, new Color(color, shadowOpacity), true);
 }
 
 function createMedia({
@@ -59,6 +62,7 @@ function createMedia({
     image: {},
     playButton: {},
   },
+  large
 }) {
   const { width, height, roundness, shadow, } = theme.image;
   const roundnessMap = {
@@ -81,7 +85,9 @@ function createMedia({
 
   insertNode(imageNode);
 
-  if (playButton) {
+  console.log("Media shadow: ", shadow);
+
+  if (playButton || theme.layout == "overlay") {
     selection.items = [imageNode];
     commands.duplicate();
 
@@ -89,10 +95,18 @@ function createMedia({
 
     const scrim = selection.items[0];
     scrim.name = "Scrim";
-    scrim.fill = new Color("black", theme.playButton.overlayOpacity);
+    scrim.fill = new Color(theme.overlay.color, theme.overlay.opacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
+    if(theme.overlay.blur){
+      const blurMap = {
+        "sm": [8, -9, 10],
+        "md": [15, -20, 0.4],
+      };
+      const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
+      scrim.blur = new Blur(...blurValues, true);
+    }
 
-    selection.items = [imageNode, scrim, getPlayButton(theme.playButton)];
+    selection.items = !playButton ? [imageNode, scrim] : [imageNode, scrim, getPlayButton({...theme.playButton, large })];
 
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();

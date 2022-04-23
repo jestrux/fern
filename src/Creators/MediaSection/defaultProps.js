@@ -1,16 +1,17 @@
 const defaultMediaSectionProps = {
     heading: "Experts you can trust",
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    // subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
     buttons: "Get to know us",
     image: "4",
     playButton: false,
-    layout: "normal", // "flip-x", "center", "overlay"
     theme: {
-        width: 1600,
         backgroundColor: "#F8F7F7",
         color: "black",
+        width: 1600,
+        layout: "normal", // "flip-x", "center", "overlay"
         verticalPadding: 65,
-        textNegativeMargin: 16,
+        textNegativeMargin: 16, // 30
         heading: {
             font: "sans", // "serif", "quirky", "fancy",
             brazen: false,
@@ -51,10 +52,12 @@ const defaultMediaSectionProps = {
             // },
             // overLayout: "T-R",
         },
+        overlay: {
+            opacity: 0.3,
+            color: "black",
+        },
         playButton: {
-            // color: "#EA4949",
-            overlayOpacity: 0.3,
-            color: "#000",
+            color: "black", // "#EA4949"
             invertColors: false,
             smoothCorners: true,
         },

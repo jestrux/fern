@@ -1,6 +1,6 @@
 const { selection, Color, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
-const { createBorder, insertNode, placeInParent } = require("../../utils");
+const { createBorder, insertNode, placeInParent, getGroupChildByName } = require("../../utils");
 const createMedia = require("./createMedia");
 const createMediaText = require("./createMediaText");
 
@@ -58,38 +58,103 @@ function assembleMediaSection(props = {}, images) {
     ...props,
     images,
     width: props.theme.width,
-    // width: 1920,
     height: 620,
   };
 
   const [bg, container] = createSectionBackground({ ...props, ...props.theme });
   props.container = container;
 
-  const media = createMedia(props);
-  const mediaText = createMediaText(props);
+  let mediaText; 
+  const flipX = props.theme.layout == "flip-x";
+  const center = props.theme.layout == "center";
+  const overlay = props.theme.layout == "overlay";
 
-  const { x, y } = container.topLeftInParent;
+  const noText = !props.heading && !props.subHeading;
+  const minTextWidth = center || overlay ? 900 : 300;
+  const maxTextWidth = center || overlay ? 1300 : 600;
+  const fullWidthImage = center && props.theme.image.fullWidth;
 
-  placeInParent(mediaText, {x, y});
-  placeInParent(media, {
-    x: container.localBounds.width - media.localBounds.width + x,
-    y
+  const media = createMedia({
+    ...props, 
+    ...(noText || center || overlay ? {
+      large: noText || center,
+      theme: {
+        ...props.theme,
+        image: {
+          ...props.theme.image,
+          width: overlay || fullWidthImage ? props.theme.width : 1200, 
+          height: overlay ? props.height : fullWidthImage ? props.theme.image.height : 600,
+          roundness: overlay || fullWidthImage ? "none" : props.theme.image.roundness
+        },
+      }
+    } : {})
   });
 
-  container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
+  if(!noText){
+    // clamp
+    props.theme.heading.width = Math.max(minTextWidth, Math.min(props.theme.heading.width, maxTextWidth));
+    props.theme.subHeading.width = Math.max(minTextWidth, Math.min(props.theme.subHeading.width, maxTextWidth));
+    mediaText = createMediaText({
+      ...props,
+      center: center || overlay,
+    });
+    selection.items = [media, mediaText, container];
 
-  selection.items = [media, mediaText, container];
-  commands.alignVerticalCenter();
-  mediaText.moveInParentCoordinates(0, -props.theme.textNegativeMargin);
-  commands.group();
+    if(center || overlay){
+      commands.alignTop();
+      commands.alignHorizontalCenter();
+
+      if(center){
+        media.moveInParentCoordinates(0, mediaText.localBounds.height + 60);
+        container.resize(container.localBounds.width, media.localBounds.height + mediaText.localBounds.height + 60);
+      }
+      else{
+        const textNegativeMargin = props.playButton ? -20 : 30;
+        mediaText.moveInParentCoordinates(0, (media.localBounds.height / 2) - (mediaText.localBounds.height / 2) - textNegativeMargin);
+        container.resize(container.localBounds.width, media.localBounds.height);
+
+        if(props.playButton){
+          getGroupChildByName(media, "playButton", (playButton) => {
+            if(playButton) playButton.moveInParentCoordinates(0, mediaText.localBounds.y - playButton.localBounds.height - 30);
+          });
+        }
+      }
+    }
+    else{
+      container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
+
+      // const textNegativeMargin = props.theme.textNegativeMargin;
+      const textNegativeMargin = props.theme.image.height == 448 ? 30 : 16;
+      const { x, y } = container.topLeftInParent;
+      const leftSlot = {x, y};
+      const rightSlot = {
+        x: container.localBounds.width - media.localBounds.width + x + (flipX ? 60 : 0),
+        y
+      };
+      
+      placeInParent(mediaText, flipX ? rightSlot : leftSlot);
+      placeInParent(media, flipX ? leftSlot : rightSlot);
+
+      commands.alignVerticalCenter();
+      mediaText.moveInParentCoordinates(0, -textNegativeMargin);
+    }
+    commands.group();
+  }
+  else{
+    container.resize(container.localBounds.width, media.localBounds.height);
+    selection.items = [media, container];
+    commands.alignHorizontalCenter();
+    commands.group();
+  }
+
   const content = selection.items[0];
-
   selection.items = [bg, content];
+  commands.alignHorizontalCenter();
   commands.group();
 
   const mediaSection = selection.items[0];
-  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
-  const verticalPadding = props.theme.verticalPadding;
+  const horizontalPadding = overlay || fullWidthImage ? 0 : (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = overlay ? 0 : props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,
@@ -97,7 +162,8 @@ function assembleMediaSection(props = {}, images) {
       background: bg,
       values: {
         left: horizontalPadding, right: horizontalPadding, 
-        top: verticalPadding, bottom: verticalPadding, 
+        top: verticalPadding, 
+        bottom: fullWidthImage ? 0 : verticalPadding, 
       },
     },
   }

@@ -572,6 +572,7 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     fontSize: 20,
     fontFamily: "Helvetica Neue",
     fontStyle: "Light",
+    align: "left",
     layoutBox: {
       type: Text.AUTO_HEIGHT,
       ...props,
@@ -581,6 +582,12 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     ...defaultTextProps,
     ...props,
   };
+
+  props.textAlign = {
+    "left": Text.ALIGN_LEFT, 
+    "center": Text.ALIGN_CENTER, 
+    "right": Text.ALIGN_RIGHT
+  }[props.align || "left"];
 
   const textNode = new Text();
   const splitText = text.split("\\n");

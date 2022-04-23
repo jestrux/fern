@@ -133,6 +133,7 @@ const schema = {
       buttons: {
         type: "section",
         children: {
+          reversed: "boolean",
           // themeColor: {
           //   type: "color",
           //   defaultValue: "black",

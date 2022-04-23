@@ -31602,7 +31602,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createBorder, insertNode, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { createBorder, insertNode, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
 const createMediaText = __webpack_require__(/*! ./createMediaText */ "./src/Creators/MediaSection/createMediaText.js");
 
@@ -31656,38 +31656,94 @@ function assembleMediaSection(props = {}, images) {
   props = _extends({}, props, {
     images,
     width: props.theme.width,
-    // width: 1920,
     height: 620
   });
 
   const [bg, container] = createSectionBackground(_extends({}, props, props.theme));
   props.container = container;
 
-  const media = createMedia(props);
-  const mediaText = createMediaText(props);
+  let mediaText;
+  const flipX = props.theme.layout == "flip-x";
+  const center = props.theme.layout == "center";
+  const overlay = props.theme.layout == "overlay";
 
-  const { x, y } = container.topLeftInParent;
+  const noText = !props.heading && !props.subHeading;
+  const minTextWidth = center || overlay ? 900 : 300;
+  const maxTextWidth = center || overlay ? 1300 : 600;
+  const fullWidthImage = center && props.theme.image.fullWidth;
 
-  placeInParent(mediaText, { x, y });
-  placeInParent(media, {
-    x: container.localBounds.width - media.localBounds.width + x,
-    y
-  });
+  const media = createMedia(_extends({}, props, noText || center || overlay ? {
+    large: noText || center,
+    theme: _extends({}, props.theme, {
+      image: _extends({}, props.theme.image, {
+        width: overlay || fullWidthImage ? props.theme.width : 1200,
+        height: overlay ? props.height : fullWidthImage ? props.theme.image.height : 600,
+        roundness: overlay || fullWidthImage ? "none" : props.theme.image.roundness
+      })
+    })
+  } : {}));
 
-  container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
+  if (!noText) {
+    // clamp
+    props.theme.heading.width = Math.max(minTextWidth, Math.min(props.theme.heading.width, maxTextWidth));
+    props.theme.subHeading.width = Math.max(minTextWidth, Math.min(props.theme.subHeading.width, maxTextWidth));
+    mediaText = createMediaText(_extends({}, props, {
+      center: center || overlay
+    }));
+    selection.items = [media, mediaText, container];
 
-  selection.items = [media, mediaText, container];
-  commands.alignVerticalCenter();
-  mediaText.moveInParentCoordinates(0, -props.theme.textNegativeMargin);
-  commands.group();
+    if (center || overlay) {
+      commands.alignTop();
+      commands.alignHorizontalCenter();
+
+      if (center) {
+        media.moveInParentCoordinates(0, mediaText.localBounds.height + 60);
+        container.resize(container.localBounds.width, media.localBounds.height + mediaText.localBounds.height + 60);
+      } else {
+        const textNegativeMargin = props.playButton ? -20 : 30;
+        mediaText.moveInParentCoordinates(0, media.localBounds.height / 2 - mediaText.localBounds.height / 2 - textNegativeMargin);
+        container.resize(container.localBounds.width, media.localBounds.height);
+
+        if (props.playButton) {
+          getGroupChildByName(media, "playButton", playButton => {
+            if (playButton) playButton.moveInParentCoordinates(0, mediaText.localBounds.y - playButton.localBounds.height - 30);
+          });
+        }
+      }
+    } else {
+      container.resize(container.localBounds.width, Math.max(media.localBounds.height, mediaText.localBounds.height));
+
+      // const textNegativeMargin = props.theme.textNegativeMargin;
+      const textNegativeMargin = props.theme.image.height == 448 ? 30 : 16;
+      const { x, y } = container.topLeftInParent;
+      const leftSlot = { x, y };
+      const rightSlot = {
+        x: container.localBounds.width - media.localBounds.width + x + (flipX ? 60 : 0),
+        y
+      };
+
+      placeInParent(mediaText, flipX ? rightSlot : leftSlot);
+      placeInParent(media, flipX ? leftSlot : rightSlot);
+
+      commands.alignVerticalCenter();
+      mediaText.moveInParentCoordinates(0, -textNegativeMargin);
+    }
+    commands.group();
+  } else {
+    container.resize(container.localBounds.width, media.localBounds.height);
+    selection.items = [media, container];
+    commands.alignHorizontalCenter();
+    commands.group();
+  }
+
   const content = selection.items[0];
-
   selection.items = [bg, content];
+  commands.alignHorizontalCenter();
   commands.group();
 
   const mediaSection = selection.items[0];
-  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
-  const verticalPadding = props.theme.verticalPadding;
+  const horizontalPadding = overlay || fullWidthImage ? 0 : (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = overlay ? 0 : props.theme.verticalPadding;
 
   mediaSection.layout = {
     type: SceneNode.LAYOUT_PADDING,
@@ -31695,7 +31751,8 @@ function assembleMediaSection(props = {}, images) {
       background: bg,
       values: {
         left: horizontalPadding, right: horizontalPadding,
-        top: verticalPadding, bottom: verticalPadding
+        top: verticalPadding,
+        bottom: fullWidthImage ? 0 : verticalPadding
       }
     }
   };
@@ -31716,14 +31773,18 @@ module.exports = assembleMediaSection;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { Color, Rectangle, Ellipse, ImageFill, Shadow, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function getPlayButton({ color, invertColors, smoothCorners }) {
+function getPlayButton({ color, invertColors, smoothCorners, large }) {
+  const buttonRadius = large ? 43 : 35;
+
   const playButtonBg = new Ellipse();
-  playButtonBg.radiusX = 35;
-  playButtonBg.radiusY = 35;
+  playButtonBg.radiusX = buttonRadius;
+  playButtonBg.radiusY = buttonRadius;
   playButtonBg.fill = new Color(invertColors ? color : "white");
 
   insertNode(playButtonBg);
@@ -31733,7 +31794,7 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
     stroke: invertColors ? "white" : color,
     strokeWidth: 5,
     strokeJoins: smoothCorners ? GraphicNode.STROKE_JOIN_ROUND : GraphicNode.STROKE_JOIN_MITER,
-    size: 18
+    size: large ? 22 : 18
   });
 
   insertNode(playIconNode);
@@ -31751,9 +31812,9 @@ function getPlayButton({ color, invertColors, smoothCorners }) {
 
 function getShadow({ size, placement, color } = {}) {
   const shadowPropsMap = {
-    sm: [5, 15, 30],
-    md: [10, 22, 60],
-    lg: [15, 30, 90]
+    sm: [5, 15, 30, 0.25],
+    md: [10, 22, 45, 0.3],
+    lg: [15, 30, 60, 0.35]
   };
 
   if (!size || !Object.keys(shadowPropsMap).includes(size)) size = "sm";
@@ -31761,10 +31822,11 @@ function getShadow({ size, placement, color } = {}) {
   const shadowProps = shadowPropsMap[size];
   let shadowOffsets = shadowProps.slice(0, 2);
   const shadowBlur = shadowProps[2];
+  const shadowOpacity = shadowProps[3];
 
   if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
 
-  return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
+  return new Shadow(...shadowOffsets, shadowBlur, new Color(color, shadowOpacity), true);
 }
 
 function createMedia({
@@ -31774,7 +31836,8 @@ function createMedia({
   theme = {
     image: {},
     playButton: {}
-  }
+  },
+  large
 }) {
   const { width, height, roundness, shadow } = theme.image;
   const roundnessMap = {
@@ -31797,7 +31860,9 @@ function createMedia({
 
   insertNode(imageNode);
 
-  if (playButton) {
+  console.log("Media shadow: ", shadow);
+
+  if (playButton || theme.layout == "overlay") {
     selection.items = [imageNode];
     commands.duplicate();
 
@@ -31805,10 +31870,18 @@ function createMedia({
 
     const scrim = selection.items[0];
     scrim.name = "Scrim";
-    scrim.fill = new Color("black", theme.playButton.overlayOpacity);
+    scrim.fill = new Color(theme.overlay.color, theme.overlay.opacity);
     scrim.setAllCornerRadii(roundnessMap[roundness || "sm"]);
+    if (theme.overlay.blur) {
+      const blurMap = {
+        "sm": [8, -9, 10],
+        "md": [15, -20, 0.4]
+      };
+      const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
+      scrim.blur = new Blur(...blurValues, true);
+    }
 
-    selection.items = [imageNode, scrim, getPlayButton(theme.playButton)];
+    selection.items = !playButton ? [imageNode, scrim] : [imageNode, scrim, getPlayButton(_extends({}, theme.playButton, { large }))];
 
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
@@ -31846,7 +31919,8 @@ function createMediaText({
   subHeading = "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
   buttons = "More about us, See beneficiaries",
   themeColor,
-  theme
+  theme,
+  center
 }) {
   let buttonsNode;
 
@@ -31862,6 +31936,7 @@ function createMediaText({
   }
 
   const subHeadingNode = createText(subHeading, {
+    align: center ? "center" : "left",
     width: theme.subHeading.width,
     fill: new Color(theme.color),
     fontSize: theme.subHeading.size == "sm" ? 16 : 22,
@@ -31879,6 +31954,7 @@ function createMediaText({
   }[theme.heading.font || "sans"];
 
   const headingNode = createText(heading, {
+    align: center ? "center" : "left",
     width: theme.heading.width,
     fill: new Color(theme.color),
     fontSize: theme.heading.size == "md" ? 36 : 48,
@@ -31890,10 +31966,14 @@ function createMediaText({
   insertNode(headingNode);
 
   selection.items = [headingNode, subHeadingNode];
-  commands.alignLeft();
+
+  if (center) commands.alignHorizontalCenter();else commands.alignLeft();
+
   commands.group();
 
   const headingAndSubHeading = selection.items[0];
+  headingAndSubHeading.name = "FernSectionText";
+
   if (headingAndSubHeading.children.length > 1) {
     headingAndSubHeading.layout = {
       type: SceneNode.LAYOUT_STACK,
@@ -31904,22 +31984,30 @@ function createMediaText({
     };
   }
 
-  selection.items = [headingAndSubHeading, buttonsNode];
-  commands.alignLeft();
-  commands.group();
+  let mediaTextElement;
 
-  const mediaTextElement = selection.items[0];
-  if (mediaTextElement.children.length > 1) {
-    mediaTextElement.layout = {
-      type: SceneNode.LAYOUT_STACK,
-      stack: {
-        orientation: SceneNode.STACK_VERTICAL,
-        spacings: 30
-      }
-    };
+  if (buttonsNode) {
+    selection.items = [headingAndSubHeading, buttonsNode];
+
+    if (center) commands.alignHorizontalCenter();else commands.alignLeft();
+
+    commands.group();
+
+    mediaTextElement = selection.items[0];
+    if (mediaTextElement.children.length > 1) {
+      mediaTextElement.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+          orientation: SceneNode.STACK_VERTICAL,
+          spacings: 30
+        }
+      };
+    }
+  } else {
+    mediaTextElement = headingAndSubHeading;
   }
-  mediaTextElement.name = "FernMediaText";
 
+  mediaTextElement.name = "FernMediaText";
   return mediaTextElement;
 }
 
@@ -31937,16 +32025,17 @@ module.exports = createMediaText;
 const defaultMediaSectionProps = {
     heading: "Experts you can trust",
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    // subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
     buttons: "Get to know us",
     image: "4",
     playButton: false,
-    layout: "normal", // "flip-x", "center", "overlay"
     theme: {
-        width: 1600,
         backgroundColor: "#F8F7F7",
         color: "black",
+        width: 1600,
+        layout: "normal", // "flip-x", "center", "overlay"
         verticalPadding: 65,
-        textNegativeMargin: 16,
+        textNegativeMargin: 16, // 30
         heading: {
             font: "sans", // "serif", "quirky", "fancy",
             brazen: false,
@@ -31987,10 +32076,12 @@ const defaultMediaSectionProps = {
             // },
             // overLayout: "T-R",
         },
+        overlay: {
+            opacity: 0.3,
+            color: "black"
+        },
         playButton: {
-            // color: "#EA4949",
-            overlayOpacity: 0.3,
-            color: "#000",
+            color: "black", // "#EA4949"
             invertColors: false,
             smoothCorners: true
         }
@@ -33602,10 +33693,10 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     { className: "ComponentFieldEditor" },
     label && label.length && React.createElement(
       "div",
-      { className: "flex items-center justify-between" },
+      { className: "mt-2 flex items-center justify-between", style: { marginBottom: isCustomFieldType ? "0.1rem" : 0 } },
       React.createElement(
         "label",
-        { className: "mt-2 text-md", style: { marginBottom: isCustomFieldType ? "0.1rem" : 0 } },
+        { className: "text-md" },
         camelCaseToSentenceCase(label)
       ),
       type == "boolean" && React.createElement(Toggle, { checked: value, onChange: handleChange }),
@@ -33796,10 +33887,10 @@ function ComponentFieldGroup({ field, data, onChange }) {
     { className: `${field.section ? 'mb-3 border-t-2 border-b-2 -mx-12px px-12px pb-1' : 'mb-2'}` },
     React.createElement(
       "div",
-      { className: "flex items-center justify-between" },
+      { className: "mt-2 flex items-center justify-between" },
       React.createElement(
         "label",
-        { className: `mt-2 ${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}` },
+        { className: `${field.section ? 'text-sm tracking-widest text-blue' : 'text-md'}` },
         label
       ),
       field.optional && React.createElement(Toggle, { checked: checked, onChange: handleToggle })
@@ -35525,17 +35616,31 @@ module.exports = MediaSection;
 /***/ (function(module, exports) {
 
 const mediaSectionSchema = {
-  heading: { type: "text", sectionedGroup: "content" },
-  subHeading: { type: "text", sectionedGroup: "content" },
-  buttons: { type: "text", sectionedGroup: "content" },
+  heading: {
+    type: "text",
+    defaultValue: "Experts you can trust",
+    sectionedGroup: "text",
+    optional: "group"
+  },
+  subHeading: {
+    type: "text",
+    defaultValue: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    sectionedGroup: "text"
+  },
+  buttons: {
+    type: "text",
+    defaultValue: "Get to know us",
+    optional: true,
+    sectionedGroup: "text"
+  },
   image: {
     type: "radio",
     choices: ["1", "2", "3", "4", "5", "6", "7", "8"],
-    sectionedGroup: "content"
+    sectionedGroup: "media"
   },
   playButton: {
     type: "boolean",
-    sectionedGroup: "content"
+    sectionedGroup: "media"
   },
   theme: {
     type: "section",
@@ -35543,6 +35648,23 @@ const mediaSectionSchema = {
       width: {
         type: "radio",
         choices: [1600, 1920]
+      },
+      layout: {
+        type: "radio",
+        choices: [{
+          label: "NML",
+          value: "normal"
+        }, {
+          label: "FLPX",
+          value: "flip-x"
+        }, {
+          label: "CNTR",
+          value: "center"
+        }, {
+          label: "OVLY",
+          value: "overlay"
+        }]
+        // choices: ["normal", "flip-x", "center", "overlay"],
       },
       backgroundColor: {
         label: "Background",
@@ -35557,6 +35679,11 @@ const mediaSectionSchema = {
       heading: {
         type: "section",
         children: {
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
           size: {
             type: "radio",
             choices: ["md", "lg"]
@@ -35566,6 +35693,20 @@ const mediaSectionSchema = {
             choices: ["sans", "serif", "quirky", "fancy"]
           },
           brazen: "boolean"
+        }
+      },
+      subHeading: {
+        type: "section",
+        children: {
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          }
         }
       },
       buttons: {
@@ -35580,10 +35721,13 @@ const mediaSectionSchema = {
             optional: true,
             meta: { small: true }
           },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          },
           roundness: {
             label: "Corner Radius",
             type: "radio",
-            defaultValue: "sm",
             choices: ["none", "sm", "full"]
           }
         }
@@ -35594,22 +35738,62 @@ const mediaSectionSchema = {
           roundness: {
             label: "Corner Radius",
             type: "radio",
-            defaultValue: "sm",
             choices: ["none", "sm"]
+          },
+          height: {
+            type: "radio",
+            choices: [400, 448]
+          },
+          fullWidth: "boolean",
+          shadow: {
+            type: "section",
+            optional: true,
+            children: {
+              size: {
+                type: "radio",
+                choices: ["sm", "md", "lg"],
+                defaultValue: "md"
+              },
+              placement: {
+                type: "radio",
+                choices: ["T-R", "T-L", "B-R", "B-L"],
+                defaultValue: "B-R"
+              },
+              color: {
+                type: "color",
+                choices: ["black", "white"],
+                defaultValue: "black"
+              }
+            }
+          }
+        }
+      },
+      overlay: {
+        type: "section",
+        children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            meta: { small: true }
+          },
+          opacity: {
+            type: "number",
+            min: 0.1,
+            max: 0.8
+          },
+          blur: {
+            type: "radio",
+            choices: ["sm", "md"],
+            defaultValue: "sm",
+            optional: true
           }
         }
       },
       playButton: {
         type: "section",
         children: {
-          overlayOpacity: {
-            type: "number",
-            min: 0.1,
-            max: 0.8
-          },
           color: {
             type: "color",
-            defaultValue: "black",
             choices: ["#EA4949", "black"],
             meta: { small: true }
           },
@@ -35764,6 +35948,7 @@ const schema = {
       buttons: {
         type: "section",
         children: {
+          reversed: "boolean",
           // themeColor: {
           //   type: "color",
           //   defaultValue: "black",
@@ -37252,11 +37437,18 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     fontSize: 20,
     fontFamily: "Helvetica Neue",
     fontStyle: "Light",
+    align: "left",
     layoutBox: _extends({
       type: Text.AUTO_HEIGHT
     }, props)
   };
   props = _extends({}, defaultTextProps, props);
+
+  props.textAlign = {
+    "left": Text.ALIGN_LEFT,
+    "center": Text.ALIGN_CENTER,
+    "right": Text.ALIGN_RIGHT
+  }[props.align || "left"];
 
   const textNode = new Text();
   const splitText = text.split("\\n");
