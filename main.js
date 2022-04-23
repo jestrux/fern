@@ -29321,9 +29321,8 @@ const SelectionContext = __webpack_require__(/*! ./SelectionContext */ "./src/Se
 
 __webpack_require__(/*! ./App.css */ "./src/App.css");
 
-const { PLUGIN_ID } = __webpack_require__(/*! ./constants */ "./src/constants.js");
 const Elements = __webpack_require__(/*! ./screens/Elements */ "./src/screens/Elements/index.jsx");
-const { getNodeTag, getGroupChildByName } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
+const { getNodeTag } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
 
 class App extends React.Component {
     constructor(props) {
@@ -29345,10 +29344,6 @@ class App extends React.Component {
 
         if (selection.items && selection.items.length > 0) {
             const node = selection.items[0];
-            getGroupChildByName(node, "Groupy/FernMediaText/Groupy/Text", childNode => {
-                console.log("Description node: ", childNode);
-            });
-            console.log("Element: ", node.children);
             const nodeProps = getNodeTag(node);
 
             if (nodeProps) {
@@ -29889,7 +29884,6 @@ function assembleFooter(props = {}, images) {
             const slot = slotDefinitions[index];
             return slot.length > 0 && slot[0] != "menu";
         }).reduce((agg, slot) => agg + slot.localBounds.width, 0);
-        console.log("Fixed slot space: ", fixedSlotSpace);
 
         const resizableSlots = [...slots].filter((_, index) => {
             const slot = slotDefinitions[index];
@@ -29915,8 +29909,6 @@ function assembleFooter(props = {}, images) {
             availableWidth = containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - slotsWrapperPadding * 2;
             slotWidth = availableWidth / resizableSlots.length;
         }
-
-        console.log("Slot width: ", slotWidth);
 
         resizableSlots.forEach(slot => {
             getGroupChildByName(slot, "FernFooterSlotBg", slotBg => {
@@ -29949,7 +29941,6 @@ function assembleFooter(props = {}, images) {
     // container.fill = new Color("red");
     // bg.resize(bg.localBounds.width - footerBgWhiteSpace, footerHeight);
     bg.resize(bg.localBounds.width, footerHeight + 120);
-    // console.log("Footer bg padding: ", Math.floor(footerBgHorizontalPadding));
 
     selection.items = [bg, container];
     commands.alignVerticalCenter();
@@ -31199,7 +31190,6 @@ async function Grid(userProps) {
     } else {
         const currentImages = getGridImages(selection.items[0], props);
         gridImages.splice(0, currentImages.length, ...currentImages);
-        // return console.log("Grid images:", currentImages);
 
         if (props.data.length > props.numberOfRecords) props.data = props.data.slice(0, props.numberOfRecords);else if (props.data.length < props.numberOfRecords) {
             props.data = [...props.data, ...generateData(props.numberOfRecords - props.data.length)];
@@ -31676,8 +31666,6 @@ function assembleMediaSection(props = {}, images) {
   const media = createMedia(props);
   const mediaText = createMediaText(props);
 
-  console.log("Container bounds: ", container);
-
   const { x, y } = container.topLeftInParent;
 
   placeInParent(mediaText, { x, y });
@@ -31776,7 +31764,6 @@ function getShadow({ size, placement, color } = {}) {
 
   if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
 
-  console.log("Shadow offsets: ", shadowOffsets);
   return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
 }
 
@@ -31816,7 +31803,6 @@ function createMedia({
 
     if (shadow) imageNode.shadow = getShadow(shadow);
 
-    console.log("Overlay opacity: ", theme.playButton.overlayOpacity);
     const scrim = selection.items[0];
     scrim.name = "Scrim";
     scrim.fill = new Color("black", theme.playButton.overlayOpacity);
@@ -32694,7 +32680,6 @@ function createNavSlot(props, components = {}) {
 
     const { x, y } = container.topLeftInParent;
     const slotPlacement = { x, y };
-    console.log("Container bounds: ", container);
 
     if (alignment == "right") slotPlacement.x = container.localBounds.width - slot.localBounds.width + x;else if (alignment == "center") slotPlacement.x = container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
 
@@ -33360,7 +33345,6 @@ const ColorList = ({
 
   function handleCustomColorChanged(color) {
     if (!color) return;
-    console.log("Custom color selected: ", color);
 
     setTimeout(() => {
       editDom(() => onChange(color), false);
@@ -33481,7 +33465,6 @@ function ListEditor({ links, activeLink, onChange, onChangeActiveLink }) {
 
     // clamp
     newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
-    console.log("New index: ", newIndex);
 
     const newLinks = [...links];
     const link = newLinks.splice(linkIndex, 1)[0];
@@ -33723,7 +33706,6 @@ function schemaToFields(schema, data) {
 function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
   function handleChange(key, newValue) {
     const updatedProps = typeof key == "string" ? { [key]: newValue } : key;
-    console.log("Section field updated: ", updatedProps);
 
     onChange(field.__id, _extends({}, data, updatedProps));
   }
@@ -34627,7 +34609,6 @@ function FooterLinks({ links, onChange }) {
 
         // clamp
         newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
-        console.log("New index: ", newIndex);
 
         const newLinks = [...links];
         const link = newLinks.splice(linkIndex, 1)[0];
@@ -35365,8 +35346,6 @@ function Image({ value, onSelect, onClose }) {
     }
 
     async function setImage(url) {
-        console.log("Image clicked: ", url);
-
         try {
             setLoading(true);
             // try {
@@ -35872,7 +35851,7 @@ function Elements({ value, subscription, onUpgrade }) {
 
         if (!selection || !selection.length) goToList = "No selection items or nothing selected";else {
             const props = getNodeTag(selection[0]);
-            console.log("Fancy maps JSON: ", props);
+            console.log("Fern JSON: ", props);
             if (!props) goToList = "No plugin data";else {
                 const { type } = props;
                 if (!type || !ELEMENT_TYPES.includes(type)) goToList = "Not a map element";
@@ -36020,8 +35999,6 @@ async function colorDialog(callback) {
 
         document.body.appendChild(dialog);
         const res = await dialog.showModal();
-
-        console.log("Color value: ", colorInput.value);
 
         if (res && res != "reasonCanceled" || colorInput.value.length) callback(res ? res : colorInput.value);
 
@@ -37054,7 +37031,6 @@ function getGroupChildByName(group, name = "BG", cb = () => {}, multiple = false
       const namePath = name.split("/");
       name = namePath.shift();
 
-      // console.log("Get child: ", group, name);
       let results = group.children.filter(child => child.name == name);
       if (results.length && namePath.length > 1) {
         while (results.length && namePath.length > 1) {
@@ -37269,7 +37245,6 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 
 function createText(text = "Acacia Grove | The Right Inn..", props) {
   const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
-  console.log("Create Text: ", text);
 
   const defaultTextProps = {
     name: "Text",

@@ -75,8 +75,6 @@ async function colorDialog(callback) {
         document.body.appendChild(dialog);
         const res = await dialog.showModal();
 
-        console.log("Color value: ", colorInput.value);
-
         if((res && res != "reasonCanceled") || colorInput.value.length)
             callback(res ? res : colorInput.value);
         

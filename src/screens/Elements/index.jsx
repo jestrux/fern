@@ -30,7 +30,7 @@ function Elements({value, subscription, onUpgrade}){
             goToList = "No selection items or nothing selected";
         else{
             const props = getNodeTag(selection[0]);
-            console.log("Fancy maps JSON: ", props);
+            console.log("Fern JSON: ", props);
             if(!props) 
                 goToList = "No plugin data";
             else{

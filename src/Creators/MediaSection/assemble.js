@@ -68,8 +68,6 @@ function assembleMediaSection(props = {}, images) {
   const media = createMedia(props);
   const mediaText = createMediaText(props);
 
-  console.log("Container bounds: ", container);
-
   const { x, y } = container.topLeftInParent;
 
   placeInParent(mediaText, {x, y});

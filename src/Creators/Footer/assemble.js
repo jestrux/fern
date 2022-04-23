@@ -65,7 +65,6 @@ function assembleFooter(props = {}, images){
             return slot.length > 0 && slot[0] != "menu";
         })
         .reduce((agg, slot) => agg + slot.localBounds.width, 0);
-        console.log("Fixed slot space: ", fixedSlotSpace);
 
         const resizableSlots = [...slots].filter((_, index) => {
             const slot = slotDefinitions[index];
@@ -91,8 +90,6 @@ function assembleFooter(props = {}, images){
             availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
             slotWidth = availableWidth / resizableSlots.length;
         }
-
-        console.log("Slot width: ", slotWidth);
 
         resizableSlots.forEach(slot => {
             getGroupChildByName(slot, "FernFooterSlotBg", slotBg => {
@@ -125,7 +122,6 @@ function assembleFooter(props = {}, images){
     // container.fill = new Color("red");
     // bg.resize(bg.localBounds.width - footerBgWhiteSpace, footerHeight);
     bg.resize(bg.localBounds.width, footerHeight + 120);
-    // console.log("Footer bg padding: ", Math.floor(footerBgHorizontalPadding));
 
     selection.items = [bg, container];
     commands.alignVerticalCenter();

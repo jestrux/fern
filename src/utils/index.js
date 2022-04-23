@@ -331,7 +331,6 @@ function getGroupChildByName(
       const namePath = name.split("/");
       name = namePath.shift();
 
-      // console.log("Get child: ", group, name);
       let results = group.children.filter(child => child.name == name);
       if (results.length && namePath.length > 1) {
         while (results.length && namePath.length > 1) {
@@ -566,7 +565,6 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 
 function createText(text = "Acacia Grove | The Right Inn..", props) {
   const { Text, Color } = require("scenegraph");
-  console.log("Create Text: ", text);
 
   const defaultTextProps = {
     name: "Text",

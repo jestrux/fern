@@ -112,7 +112,6 @@ function createNavSlot(props, components = {}) {
 
     const { x, y } = container.topLeftInParent;
     const slotPlacement = { x, y };
-    console.log("Container bounds: ", container);
 
     if (alignment == "right")
       slotPlacement.x =

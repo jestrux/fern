@@ -29,7 +29,6 @@ function FooterLinks({ links, onChange }) {
 
         // clamp
         newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
-        console.log("New index: ", newIndex);
 
         const newLinks = [...links];
         const link = newLinks.splice(linkIndex, 1)[0];

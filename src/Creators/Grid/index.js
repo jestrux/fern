@@ -22,7 +22,6 @@ async function Grid(userProps){
     else{
         const currentImages = getGridImages(selection.items[0], props);
         gridImages.splice(0, currentImages.length, ...currentImages);
-        // return console.log("Grid images:", currentImages);
         
         if(props.data.length > props.numberOfRecords)
             props.data = props.data.slice(0, props.numberOfRecords);

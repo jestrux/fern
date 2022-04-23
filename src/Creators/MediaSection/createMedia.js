@@ -48,7 +48,6 @@ function getShadow({ size, placement, color } = {}) {
 
   if (placement.indexOf("-L") != -1) shadowOffsets[0] *= -1;
 
-  console.log("Shadow offsets: ", shadowOffsets);
   return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
 }
 
@@ -88,7 +87,6 @@ function createMedia({
 
     if (shadow) imageNode.shadow = getShadow(shadow);
 
-    console.log("Overlay opacity: ", theme.playButton.overlayOpacity);
     const scrim = selection.items[0];
     scrim.name = "Scrim";
     scrim.fill = new Color("black", theme.playButton.overlayOpacity);

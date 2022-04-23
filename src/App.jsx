@@ -3,9 +3,8 @@ const SelectionContext = require("./SelectionContext");
 
 require('./App.css');
 
-const { PLUGIN_ID } = require('./constants');
 const Elements = require('./screens/Elements');
-const { getNodeTag, getGroupChildByName } = require('./utils');
+const { getNodeTag } = require('./utils');
 
 class App extends React.Component {
     constructor(props) {
@@ -27,10 +26,6 @@ class App extends React.Component {
 
         if(selection.items && selection.items.length > 0){
             const node = selection.items[0];
-            getGroupChildByName(node, "Groupy/FernMediaText/Groupy/Text", childNode => {
-                console.log("Description node: ", childNode);
-            });
-            console.log("Element: ", node.children);
             const nodeProps = getNodeTag(node);
 
             if (nodeProps) {

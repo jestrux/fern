@@ -37,8 +37,6 @@ function Image({value, onSelect, onClose}){
     }
 
     async function setImage(url){
-        console.log("Image clicked: ", url);
-
         try {
             setLoading(true);
             // try {

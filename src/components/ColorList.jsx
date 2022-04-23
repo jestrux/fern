@@ -24,7 +24,6 @@ const ColorList = ({
 
   function handleCustomColorChanged(color) {
     if (!color) return;
-    console.log("Custom color selected: ", color);
 
     setTimeout(() => {
       editDom(() => onChange(color), false);

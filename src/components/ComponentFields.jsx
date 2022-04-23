@@ -42,7 +42,6 @@ function schemaToFields(schema, data) {
 function ComponentFieldSection({ field, data, rootLevel = false, onChange }) {
   function handleChange(key, newValue) {
     const updatedProps = typeof key == "string" ? { [key]: newValue } : key;
-    console.log("Section field updated: ", updatedProps);
     
     onChange(field.__id, {
       ...data,

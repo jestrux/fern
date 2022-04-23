@@ -69,12 +69,9 @@ function createMedia(props, [
         let shadowOffsets = shadowProps.slice(0,2);
         const shadowBlur = shadowProps[2];
 
-        console.log("Shadow blur: ", shadowBlur);
-
         if(placement.indexOf("-L") != -1)
             shadowOffsets[0]*=-1;
 
-        console.log("Shadow offsets: ", shadowOffsets);
         return new Shadow(...shadowOffsets, shadowBlur, new Color(color, 0.25), true);
     }
 
