@@ -29446,14 +29446,27 @@ function assembleButton(buttonComponents, buttonProps) {
     commands.group();
   }
 
-  const button = selection.items[0];
+  let button = selection.items[0];
+  const padding = buttonProps.padding;
   button.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bgRectangle,
-      values: _extends({}, buttonProps.padding, ["flat", "link"].includes(buttonProps.style) ? { left: 0, right: 0 } : {})
+      values: _extends({}, padding, ["flat", "link"].includes(buttonProps.style) ? { left: 0, right: 0 } : {})
     }
   };
+
+  if (iconNode && !buttonText && buttonProps.roundness == "full") {
+    bgRectangle.resize(button.localBounds.height, button.localBounds.height);
+    button.layout = {
+      type: SceneNode.LAYOUT_NONE
+    };
+    selection.items = [bgRectangle, iconNode];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    button = selection.items[0];
+  }
 
   return button;
 }
@@ -29548,6 +29561,8 @@ const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./sr
 function createButton(props = {}) {
   let { icon, text, theme } = _extends({}, defaultButtonProps, props);
 
+  if (!icon && !text) props.text = text = "Submit";
+
   const { iconPlacement, size, color, shadow, style, roundness } = theme;
 
   const buttonProps = buttonSizeMap[size];
@@ -29599,6 +29614,7 @@ function createButton(props = {}) {
   } else if (shadow) bgRectangle.shadow = new Shadow(0, 3, 6, new Color("#000000", 0.16), true);
 
   return assembleButton([bgRectangle, buttonText, iconNode], _extends({}, buttonProps, {
+    roundness,
     style,
     iconPlacement,
     iconSize
@@ -34403,7 +34419,8 @@ const schema = {
     optional: true
   },
   text: {
-    defaultValue: "Submit"
+    defaultValue: "Submit",
+    optional: true
   },
   theme: {
     children: {

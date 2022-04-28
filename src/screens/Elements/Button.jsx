@@ -9,6 +9,7 @@ const schema = {
   },
   text: {
     defaultValue: "Submit",
+    optional: true,
   },
   theme: {
     children: {

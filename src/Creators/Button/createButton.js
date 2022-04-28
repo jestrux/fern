@@ -18,6 +18,8 @@ function createButton(props = {}) {
     ...props,
   };
 
+  if(!icon && !text) props.text = text = "Submit";
+
   const { iconPlacement, size, color, shadow, style, roundness } = theme;
 
   const buttonProps = buttonSizeMap[size];
@@ -74,6 +76,7 @@ function createButton(props = {}) {
 
   return assembleButton([bgRectangle, buttonText, iconNode], {
     ...buttonProps,
+    roundness,
     style,
     iconPlacement,
     iconSize,

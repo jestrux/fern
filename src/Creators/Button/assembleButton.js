@@ -36,19 +36,32 @@ function assembleButton(buttonComponents, buttonProps) {
     commands.group();
   }
 
-  const button = selection.items[0];
+  let button = selection.items[0];
+  const padding = buttonProps.padding;
   button.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bgRectangle,
       values: {
-        ...buttonProps.padding,
+        ...padding,
         ...(["flat", "link"].includes(buttonProps.style)
           ? { left: 0, right: 0 }
           : {}),
       },
     },
   };
+
+  if(iconNode && !buttonText && buttonProps.roundness == "full"){
+    bgRectangle.resize(button.localBounds.height, button.localBounds.height);
+    button.layout = {
+      type: SceneNode.LAYOUT_NONE
+    };
+    selection.items = [bgRectangle, iconNode];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    button = selection.items[0];
+  }
 
   return button;
 }
