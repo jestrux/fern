@@ -13,10 +13,12 @@ const buttonSizeMap = require("./buttonSizeMap");
 const defaultButtonProps = require("./defaultButtonProps");
 
 function createButton(props = {}) {
-  let { iconPlacement, icon, text, size, color, shadow, style, roundness } = {
+  let { icon, text, theme } = {
     ...defaultButtonProps,
     ...props,
   };
+
+  const { iconPlacement, size, color, shadow, style, roundness } = theme;
 
   const buttonProps = buttonSizeMap[size];
   const iconSize = icon

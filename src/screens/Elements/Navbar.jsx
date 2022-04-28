@@ -31,6 +31,20 @@ const menu = {
   },
 };
 
+const search = {
+  type: "section",
+  children: {
+    placeholder: {
+      defaultValue: "Type here to search"
+    },
+    value: {
+      defaultValue: "",
+      optional: true,
+    }
+  },
+  optional: true,
+};
+
 const schema = {
   leftSlot: {
     type: "section",
@@ -48,8 +62,8 @@ const schema = {
   rightSlot: {
     type: "section",
     children: {
-      menu,
       search: "boolean",
+      menu,
       buttons: {
         defaultValue: "Sign In, Get Started",
         optional: true,
@@ -148,6 +162,18 @@ const schema = {
           },
         },
       },
+      // searchbar: {
+      //   type: "section",
+      //   children: {
+      //     roundness: {
+      //       label: "Corner Radius",
+      //       type: "radio",
+      //       defaultValue: "sm",
+      //       choices: ["none", "sm", "full"],
+      //     },
+      //   },
+      //   optional: true,
+      // },
       // text: {
       //   type: "section",
       //   optional: true,

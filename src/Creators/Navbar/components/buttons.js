@@ -28,10 +28,13 @@ function navButtonsComponent(
   if (buttons.length == 2) {
     button2 = createButton({
       text: buttons[1],
-      color,
-      size,
-      roundness,
-      iconPlacement,
+      theme: {
+        color: !reversed ? themeColor || color : color,
+        size,
+        roundness,
+        iconPlacement,
+        ...(mainButton ? mainButton : {}),
+      },
       ...(mainButton ? mainButton : {}),
     });
   }
@@ -41,10 +44,13 @@ function navButtonsComponent(
 
   button1 = createButton({
     text: buttons[0],
-    color: themeColor || color,
-    size,
-    roundness,
-    iconPlacement,
+    theme: {
+      color: buttons.length == 1 && !reversed || buttons.length == 2 && reversed ? themeColor || color : color,
+      size,
+      roundness,
+      iconPlacement,
+      ...button1Styling,
+    },
     ...button1Styling,
   });
 

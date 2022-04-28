@@ -29546,7 +29546,9 @@ const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators
 const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 
 function createButton(props = {}) {
-  let { iconPlacement, icon, text, size, color, shadow, style, roundness } = _extends({}, defaultButtonProps, props);
+  let { icon, text, theme } = _extends({}, defaultButtonProps, props);
+
+  const { iconPlacement, size, color, shadow, style, roundness } = theme;
 
   const buttonProps = buttonSizeMap[size];
   const iconSize = icon ? getIconSizeFromTextSize(icon, buttonProps.fontSize) : 0;
@@ -29616,13 +29618,15 @@ module.exports = createButton;
 
 module.exports = {
     icon: null,
-    // iconPlacement: "right",
     text: "Get Started",
-    size: "md",
-    color: "black",
-    shadow: false,
-    style: "fill", // "outlined", "flat", "link"
-    roundness: "sm"
+    theme: {
+        iconPlacement: "left",
+        size: "md",
+        color: "black",
+        shadow: false,
+        style: "fill", // "outlined", "flat", "link"
+        roundness: "sm"
+    }
 };
 
 /***/ }),
@@ -31414,23 +31418,27 @@ const inputSizeMap = __webpack_require__(/*! ./inputSizeMap */ "./src/Creators/I
 function createInput(props = {}) {
   let {
     icon,
+    label,
+    placeholder,
+    value,
+    theme
+  } = _extends({}, defaultInputProps, props);
+
+  const {
+    backgroundColor,
     iconColor,
     iconOpacity,
-    backgroundColor,
     borderColor,
     color,
     labelOpacity,
-    label,
-    placeholder,
     placeholderOpacity,
-    value,
     size,
     outlined,
     roundness,
     width
-  } = _extends({}, defaultInputProps, props);
+  } = theme;
 
-  const inputProps = inputSizeMap[size];
+  const inputProps = inputSizeMap[size || "md"];
   const padding = inputProps.padding;
 
   const validIconWaSet = icon && iconData[icon];
@@ -31496,21 +31504,23 @@ module.exports = createInput;
 /***/ (function(module, exports) {
 
 const defaultInputProps = {
-    icon: null,
-    // iconColor: "#ACACAC",
-    iconOpacity: 0.5,
-    backgroundColor: "white",
-    color: "black",
-    value: "",
     // label: "Email Address",
-    labelOpacity: 0.5,
+    icon: null,
     placeholder: "E.g. apwbd@hogwarts.com",
-    placeholderOpacity: 0.3,
-    outlined: false,
-    shadow: false,
-    roundness: "normal",
-    size: "md",
-    width: 388
+    value: "",
+    theme: {
+        labelOpacity: 0.5,
+        // iconColor: "#ACACAC",
+        iconOpacity: 0.5,
+        backgroundColor: "white",
+        color: "black",
+        placeholderOpacity: 0.3,
+        outlined: false,
+        shadow: false,
+        roundness: "normal",
+        size: "md",
+        width: 388
+    }
 };
 
 module.exports = defaultInputProps;
@@ -32403,10 +32413,12 @@ function navButtonsComponent({
   if (buttons.length == 2) {
     button2 = createButton(_extends({
       text: buttons[1],
-      color,
-      size,
-      roundness,
-      iconPlacement
+      theme: _extends({
+        color: !reversed ? themeColor || color : color,
+        size,
+        roundness,
+        iconPlacement
+      }, mainButton ? mainButton : {})
     }, mainButton ? mainButton : {}));
   }
 
@@ -32415,10 +32427,12 @@ function navButtonsComponent({
 
   button1 = createButton(_extends({
     text: buttons[0],
-    color: themeColor || color,
-    size,
-    roundness,
-    iconPlacement
+    theme: _extends({
+      color: buttons.length == 1 && !reversed || buttons.length == 2 && reversed ? themeColor || color : color,
+      size,
+      roundness,
+      iconPlacement
+    }, button1Styling)
   }, button1Styling));
 
   selection.items = buttons.length == 2 ? [button1, button2] : [button1];
@@ -32681,24 +32695,23 @@ module.exports = navMenuComponent;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { SceneNode, Rectangle, Text, Color, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const commands = __webpack_require__(/*! commands */ "commands");
-const icons = __webpack_require__(/*! ../../../data/icons */ "./src/data/icons.js");
-const { insertNode, createIcon, getPadding } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const createInput = __webpack_require__(/*! ../../Input/createInput */ "./src/Creators/Input/createInput.js");
 
-function navSearchInputComponent({ color }) {
+function navSearchInputComponent({ color, theme }, { placeholder = "Type here to search", value }) {
     const searchInput = createInput({
         icon: "search",
-        placeholder: "Type here to search",
-        roundness: "full",
-        width: 350,
-        backgroundColor: "transparent",
-        placeholderOpacity: 0.4,
-        iconColor: color,
-        iconOpacity: 0.6,
-        borderColor: color,
-        color
+        placeholder,
+        value,
+        theme: {
+            roundness: theme.searchbar ? theme.searchbar.roundness || "full" : "full",
+            width: 350,
+            backgroundColor: "transparent",
+            placeholderOpacity: 0.4,
+            iconColor: color,
+            iconOpacity: 0.6,
+            borderColor: color,
+            color
+        }
     });
 
     searchInput.name = "FernSearchInput";
@@ -34386,42 +34399,38 @@ const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ 
 const schema = {
   icon: {
     type: "icon",
-    label: "",
     defaultValue: "add",
-    group: "icon",
-    optional: "group"
-  },
-  iconPlacement: {
-    label: "Placement",
-    type: "radio",
-    choices: ["left", "right"],
-    defaultValue: "left",
-    group: "icon",
-    optional: "group"
+    optional: true
   },
   text: {
-    label: "",
-    defaultValue: "Submit",
-    group: "text",
-    optional: "group"
+    defaultValue: "Submit"
   },
-  size: {
-    type: "radio",
-    choices: ["xs", "sm", "md", "lg"]
-  },
-  color: {
-    type: "color",
-    choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"]
-  },
-  shadow: "boolean",
-  style: {
-    type: "radio",
-    choices: ["fill", "outline", "flat", "link"]
-  },
-  roundness: {
-    label: "Rounded Corners",
-    type: "radio",
-    choices: ["none", "sm", "md", "full"]
+  theme: {
+    children: {
+      size: {
+        type: "radio",
+        choices: ["xs", "sm", "md", "lg"]
+      },
+      color: {
+        type: "color",
+        choices: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"]
+      },
+      shadow: "boolean",
+      style: {
+        type: "radio",
+        choices: ["fill", "outline", "flat", "link"]
+      },
+      roundness: {
+        label: "Rounded Corners",
+        type: "radio",
+        choices: ["none", "sm", "md", "full"]
+      },
+      iconPlacement: {
+        type: "radio",
+        choices: ["left", "right"],
+        defaultValue: "left"
+      }
+    }
   }
 };
 
@@ -35678,34 +35687,39 @@ const schema = {
     defaultValue: "watson@sherlocks.com",
     optional: true
   },
-  width: {
-    type: "number",
-    min: ({ icon, value, placeholder, label, size }) => {
-      let minWidth = 120;
+  theme: {
+    type: "section",
+    children: {
+      width: {
+        type: "number",
+        min: ({ icon, value, placeholder, label }) => {
+          let minWidth = 120;
 
-      if (value && value.length) minWidth = value.length * 13;else if (placeholder && placeholder.length) minWidth = placeholder.length * 13;
+          if (value && value.length) minWidth = value.length * 13;else if (placeholder && placeholder.length) minWidth = placeholder.length * 13;
 
-      if (label && label.length) minWidth = Math.max(label.length * 8, minWidth);
+          if (label && label.length) minWidth = Math.max(label.length * 8, minWidth);
 
-      if (icon && icon.length) minWidth += 32;
+          if (icon && icon.length) minWidth += 32;
 
-      return Math.ceil(minWidth);
+          return Math.ceil(minWidth);
+        }
+      },
+      size: {
+        type: "radio",
+        choices: ["md", "lg"]
+      },
+      color: {
+        type: "color",
+        choices: ["black", "white"]
+      },
+      shadow: "boolean",
+      outlined: "boolean",
+      roundness: {
+        label: "Rounded Corners",
+        type: "radio",
+        choices: ["none", "normal", "full"]
+      }
     }
-  },
-  size: {
-    type: "radio",
-    choices: ["md", "lg"]
-  },
-  color: {
-    type: "color",
-    choices: ["black", "white"]
-  },
-  shadow: "boolean",
-  outlined: "boolean",
-  roundness: {
-    label: "Rounded Corners",
-    type: "radio",
-    choices: ["none", "normal", "full"]
   }
 };
 
@@ -35837,11 +35851,11 @@ const mediaSectionSchema = {
       heading: {
         type: "section",
         children: {
-          width: {
-            type: "number",
-            min: 400,
-            max: 1500
-          },
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
           size: {
             type: "radio",
             choices: ["md", "lg"]
@@ -35849,18 +35863,18 @@ const mediaSectionSchema = {
           font: {
             type: "radio",
             choices: ["sans", "serif", "quirky", "fancy"]
-          },
-          brazen: "boolean"
+          }
+          // brazen: "boolean"
         }
       },
       subHeading: {
         type: "section",
         children: {
-          width: {
-            type: "number",
-            min: 400,
-            max: 1500
-          },
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
           size: {
             type: "radio",
             choices: ["sm", "md"]
@@ -35910,10 +35924,10 @@ const mediaSectionSchema = {
             type: "radio",
             choices: [400, 464]
           },
-          width: {
-            type: "radio",
-            choices: [680, 760]
-          },
+          // width: {
+          //   type: "radio",
+          //   choices: [680, 760],
+          // },
           fullWidth: "boolean",
           shadow: {
             type: "section",
@@ -36018,6 +36032,20 @@ const menu = {
   }
 };
 
+const search = {
+  type: "section",
+  children: {
+    placeholder: {
+      defaultValue: "Type here to search"
+    },
+    value: {
+      defaultValue: "",
+      optional: true
+    }
+  },
+  optional: true
+};
+
 const schema = {
   leftSlot: {
     type: "section",
@@ -36035,8 +36063,8 @@ const schema = {
   rightSlot: {
     type: "section",
     children: {
-      menu,
       search: "boolean",
+      menu,
       buttons: {
         defaultValue: "Sign In, Get Started",
         optional: true
@@ -36133,6 +36161,18 @@ const schema = {
           }
         }
       }
+      // searchbar: {
+      //   type: "section",
+      //   children: {
+      //     roundness: {
+      //       label: "Corner Radius",
+      //       type: "radio",
+      //       defaultValue: "sm",
+      //       choices: ["none", "sm", "full"],
+      //     },
+      //   },
+      //   optional: true,
+      // },
       // text: {
       //   type: "section",
       //   optional: true,

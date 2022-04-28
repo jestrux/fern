@@ -15,23 +15,27 @@ const inputSizeMap = require("./inputSizeMap");
 function createInput(props = {}) {
   let {
     icon,
+    label,
+    placeholder,
+    value,
+    theme,
+  } = { ...defaultInputProps, ...props };
+  
+  const {
+    backgroundColor,
     iconColor,
     iconOpacity,
-    backgroundColor,
     borderColor,
     color,
     labelOpacity,
-    label,
-    placeholder,
     placeholderOpacity,
-    value,
     size,
     outlined,
     roundness,
     width,
-  } = { ...defaultInputProps, ...props };
+  } = theme;
 
-  const inputProps = inputSizeMap[size];
+  const inputProps = inputSizeMap[size || "md"];
   const padding = inputProps.padding;
 
   const validIconWaSet = icon && iconData[icon];

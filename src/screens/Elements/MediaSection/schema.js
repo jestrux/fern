@@ -87,11 +87,11 @@ const mediaSectionSchema = {
         heading: {
           type: "section",
           children: {
-            width: {
-              type: "number",
-              min: 400,
-              max: 1500,
-            },
+            // width: {
+            //   type: "number",
+            //   min: 400,
+            //   max: 1500,
+            // },
             size: {
               type: "radio",
               choices: ["md", "lg"],
@@ -100,17 +100,17 @@ const mediaSectionSchema = {
               type: "radio",
               choices: ["sans", "serif", "quirky", "fancy"],
             },
-            brazen: "boolean"
+            // brazen: "boolean"
           },
         },
         subHeading: {
           type: "section",
           children: {
-            width: {
-              type: "number",
-              min: 400,
-              max: 1500,
-            },
+            // width: {
+            //   type: "number",
+            //   min: 400,
+            //   max: 1500,
+            // },
             size: {
               type: "radio",
               choices: ["sm", "md"],
@@ -164,10 +164,10 @@ const mediaSectionSchema = {
               type: "radio",
               choices: [400, 464],
             },
-            width: {
-              type: "radio",
-              choices: [680, 760],
-            },
+            // width: {
+            //   type: "radio",
+            //   choices: [680, 760],
+            // },
             fullWidth: "boolean",
             shadow: {
               type: "section",
