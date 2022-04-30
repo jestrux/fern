@@ -4,6 +4,7 @@ const defaultInputProps = {
     placeholder: "E.g. apwbd@hogwarts.com",
     value: "",
     theme: {
+        // floatingLabel: true,
         labelOpacity: 0.5,
         // iconColor: "#ACACAC",
         iconOpacity: 0.5,

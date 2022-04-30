@@ -35,9 +35,21 @@ const schema = {
     defaultValue: "watson@sherlocks.com",
     optional: true,
   },
+  rightIcon: {
+    type: "icon",
+    defaultValue: "close",
+    optional: true,
+    choices: [
+      "view",
+      "hide",
+      "my-location",
+      "close",
+    ],
+  },
   theme: {
     type: "section",
     children: {
+      floatingLabel: "boolean",
       width: {
         type: "number",
         min: ({ icon, value, placeholder, label }) => {

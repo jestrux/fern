@@ -6,6 +6,7 @@ const {
   createIcon,
   createText,
   getIconSizeFromTextSize,
+  createBorder,
 } = require("../../utils");
 
 const assembleInput = require("./assembleInput");
@@ -19,6 +20,7 @@ function createInput(props = {}) {
     placeholder,
     value,
     theme,
+    rightIcon,
   } = { ...defaultInputProps, ...props };
   
   const {
@@ -26,6 +28,7 @@ function createInput(props = {}) {
     iconColor,
     iconOpacity,
     borderColor,
+    floatingLabel,
     color,
     labelOpacity,
     placeholderOpacity,
@@ -39,9 +42,13 @@ function createInput(props = {}) {
   const padding = inputProps.padding;
 
   const validIconWaSet = icon && iconData[icon];
+  const validRightIconWaSet = rightIcon && iconData[rightIcon];
 
   const iconSize = validIconWaSet
     ? getIconSizeFromTextSize(icon, inputProps.fontSize)
+    : 0;
+  const rightIconSize = validRightIconWaSet
+    ? getIconSizeFromTextSize(rightIcon, inputProps.fontSize)
     : 0;
 
   const bgRectangle = new Rectangle();
@@ -50,7 +57,7 @@ function createInput(props = {}) {
     backgroundColor == "transparent" || outlined
       ? new Color("white", 0)
       : new Color(backgroundColor);
-  bgRectangle.stroke = new Color(color);
+  bgRectangle.stroke = new Color(color, floatingLabel ? 0 : 1);
   bgRectangle.strokeEnabled = true;
   bgRectangle.strokeWidth = 1;
 
@@ -68,13 +75,13 @@ function createInput(props = {}) {
     fill: new Color(color, value && value.length ? 1 : placeholderOpacity),
     width:
       width -
-      ((iconSize > 0 ? iconSize + 10 : 0) + padding.left + padding.right),
+      ((iconSize > 0 ? iconSize + 10 : 0) + rightIconSize + padding.left + padding.right),
     fontSize: inputProps.fontSize,
     fontStyle: inputProps.fontStyle,
   });
   insertNode(inputText);
 
-  let iconNode;
+  let iconNode, rightIconNode;
   if (validIconWaSet) {
     iconNode = createIcon(iconData[icon], {
       fill: iconColor || color,
@@ -83,6 +90,15 @@ function createInput(props = {}) {
     });
     insertNode(iconNode);
   }
+  
+  if (validRightIconWaSet) {
+    rightIconNode = createIcon(iconData[rightIcon], {
+      fill: iconColor || color,
+      size: rightIconSize,
+      opacity: iconOpacity,
+    });
+    insertNode(rightIconNode);
+  }
 
   let labelNode;
   if (label && label.length) {
@@ -90,11 +106,29 @@ function createInput(props = {}) {
       fill: new Color(color, labelOpacity),
       fontSize: 17,
       type: Text.POINT,
+      fontStyle: "Regular",
     });
     insertNode(labelNode);
   }
 
-  return assembleInput([bgRectangle, inputText, labelNode, iconNode], {
+  let borderNode;
+  const border = {
+    color: "black",
+    thickness: 1.5,
+    opacity: 0.1,
+  };
+
+  if (floatingLabel) {
+    borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5,
+    });
+    borderNode.opacity = labelOpacity;
+    insertNode(borderNode);
+  }
+
+  return assembleInput({bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode}, {
     ...props,
     iconSize: 20,
     padding,

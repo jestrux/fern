@@ -31348,19 +31348,39 @@ module.exports = Hero;
 
 const { selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
+const { placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function assembleInput(inputComponents, inputProps) {
-  const [bgRectangle, inputText, label, iconNode] = inputComponents;
+  const {
+    bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode
+  } = inputComponents;
 
-  if (iconNode) {
-    selection.items = [iconNode, inputText];
-    commands.alignLeft();
-    commands.alignVerticalCenter();
-    commands.group();
+  if (iconNode || rightIconNode) {
+    if (iconNode && rightIconNode) {
+      selection.items = [iconNode, rightIconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+      commands.group();
+    } else if (rightIconNode) {
+      selection.items = [rightIconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+      commands.group();
+    } else {
+      selection.items = [bgRectangle, iconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+
+      selection.items = [iconNode, inputText];
+      commands.group();
+    }
+
+    if (iconNode) {
+      const iconSize = inputProps.iconSize;
+      inputText.moveInParentCoordinates(iconSize + (inputProps.size == "lg" ? 16 : 12), 0);
+    }
 
     const inputContent = selection.items[0];
-    const iconSize = inputProps.iconSize;
-    inputText.moveInParentCoordinates(iconSize + (inputProps.size == "lg" ? 16 : 12), 0);
 
     selection.items = [bgRectangle, inputContent];
     commands.alignHorizontalCenter();
@@ -31374,7 +31394,7 @@ function assembleInput(inputComponents, inputProps) {
     commands.group();
   }
 
-  const input = selection.items[0];
+  let input = selection.items[0];
   const padding = inputProps.padding;
 
   input.layout = {
@@ -31385,22 +31405,47 @@ function assembleInput(inputComponents, inputProps) {
     }
   };
 
-  if (!label) return input;
+  if (rightIconNode) {
+    const { x, width } = input.localBounds;
+    rightIconNode.moveInParentCoordinates(x + width - padding.right, 0);
+  }
 
-  selection.items = [input, label];
-  commands.alignLeft();
-  commands.group();
-  label.moveInParentCoordinates(inputProps.roundness == "full" ? 6 : 0, 0);
+  if (borderNode) {
+    const { x, width } = input.localBounds;
+    input.layout = {
+      type: SceneNode.LAYOUT_NONE
+    };
+    bgRectangle.resize(width, bgRectangle.localBounds.height);
 
-  const inputGroup = selection.items[0];
-  inputGroup.layout = {
-    type: SceneNode.LAYOUT_STACK,
-    stack: {
-      orientation: SceneNode.STACK_VERTICAL,
-      spacings: 3
+    inputText.moveInParentCoordinates(-padding.left, 0);
+
+    if (iconNode) {
+      iconNode.moveInParentCoordinates(-padding.left, 0);
     }
-  };
 
+    if (rightIconNode) {
+      rightIconNode.moveInParentCoordinates(padding.right / 2, 0);
+    }
+
+    selection.items = [input, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    commands.group();
+    // borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+
+    input = selection.items[0];
+  }
+
+  if (!labelNode) return input;
+
+  selection.items = [labelNode];
+  commands.bringToFront();
+  selection.items = [input, labelNode];
+  commands.alignLeft();
+  commands.alignTop();
+  commands.group();
+  labelNode.moveInParentCoordinates(inputProps.roundness == "full" ? 6 : 0, -labelNode.localBounds.height - (!borderNode ? 3 : -5));
+  const inputGroup = selection.items[0];
   return inputGroup;
 }
 
@@ -31424,7 +31469,8 @@ const {
   insertNode,
   createIcon,
   createText,
-  getIconSizeFromTextSize
+  getIconSizeFromTextSize,
+  createBorder
 } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const assembleInput = __webpack_require__(/*! ./assembleInput */ "./src/Creators/Input/assembleInput.js");
@@ -31437,7 +31483,8 @@ function createInput(props = {}) {
     label,
     placeholder,
     value,
-    theme
+    theme,
+    rightIcon
   } = _extends({}, defaultInputProps, props);
 
   const {
@@ -31445,6 +31492,7 @@ function createInput(props = {}) {
     iconColor,
     iconOpacity,
     borderColor,
+    floatingLabel,
     color,
     labelOpacity,
     placeholderOpacity,
@@ -31458,13 +31506,15 @@ function createInput(props = {}) {
   const padding = inputProps.padding;
 
   const validIconWaSet = icon && iconData[icon];
+  const validRightIconWaSet = rightIcon && iconData[rightIcon];
 
   const iconSize = validIconWaSet ? getIconSizeFromTextSize(icon, inputProps.fontSize) : 0;
+  const rightIconSize = validRightIconWaSet ? getIconSizeFromTextSize(rightIcon, inputProps.fontSize) : 0;
 
   const bgRectangle = new Rectangle();
   bgRectangle.resize(82, 150);
   bgRectangle.fill = backgroundColor == "transparent" || outlined ? new Color("white", 0) : new Color(backgroundColor);
-  bgRectangle.stroke = new Color(color);
+  bgRectangle.stroke = new Color(color, floatingLabel ? 0 : 1);
   bgRectangle.strokeEnabled = true;
   bgRectangle.strokeWidth = 1;
 
@@ -31476,13 +31526,13 @@ function createInput(props = {}) {
   const text = value && value.length ? value : placeholder;
   const inputText = createText(text + " ", {
     fill: new Color(color, value && value.length ? 1 : placeholderOpacity),
-    width: width - ((iconSize > 0 ? iconSize + 10 : 0) + padding.left + padding.right),
+    width: width - ((iconSize > 0 ? iconSize + 10 : 0) + rightIconSize + padding.left + padding.right),
     fontSize: inputProps.fontSize,
     fontStyle: inputProps.fontStyle
   });
   insertNode(inputText);
 
-  let iconNode;
+  let iconNode, rightIconNode;
   if (validIconWaSet) {
     iconNode = createIcon(iconData[icon], {
       fill: iconColor || color,
@@ -31492,17 +31542,44 @@ function createInput(props = {}) {
     insertNode(iconNode);
   }
 
+  if (validRightIconWaSet) {
+    rightIconNode = createIcon(iconData[rightIcon], {
+      fill: iconColor || color,
+      size: rightIconSize,
+      opacity: iconOpacity
+    });
+    insertNode(rightIconNode);
+  }
+
   let labelNode;
   if (label && label.length) {
     labelNode = createText(label, {
       fill: new Color(color, labelOpacity),
       fontSize: 17,
-      type: Text.POINT
+      type: Text.POINT,
+      fontStyle: "Regular"
     });
     insertNode(labelNode);
   }
 
-  return assembleInput([bgRectangle, inputText, labelNode, iconNode], _extends({}, props, {
+  let borderNode;
+  const border = {
+    color: "black",
+    thickness: 1.5,
+    opacity: 0.1
+  };
+
+  if (floatingLabel) {
+    borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = labelOpacity;
+    insertNode(borderNode);
+  }
+
+  return assembleInput({ bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode }, _extends({}, props, {
     iconSize: 20,
     padding
   }));
@@ -31525,6 +31602,7 @@ const defaultInputProps = {
     placeholder: "E.g. apwbd@hogwarts.com",
     value: "",
     theme: {
+        // floatingLabel: true,
         labelOpacity: 0.5,
         // iconColor: "#ACACAC",
         iconOpacity: 0.5,
@@ -32148,6 +32226,7 @@ const defaultMediaSectionProps = {
         image: {
             width: 680, // 760
             height: 400, // 464,
+            // 560 / 680 (landscape)
             roundness: 'sm'
             // orientation: 'landscape',
             // style: "basic",
@@ -33806,7 +33885,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
           className: "-mx-12px p-2 mt-1 bg-white overflow-y-auto",
           style: { maxHeight: "140px" }
         },
-        React.createElement(IconList, _extends({ onChange: handleChange }, meta))
+        React.createElement(IconList, _extends({ onChange: handleChange, iconNames: choices }, meta))
       ),
       !isCustomFieldType && React.createElement(
         "form",
@@ -35709,9 +35788,16 @@ const schema = {
     defaultValue: "watson@sherlocks.com",
     optional: true
   },
+  rightIcon: {
+    type: "icon",
+    defaultValue: "close",
+    optional: true,
+    choices: ["view", "hide", "my-location", "close"]
+  },
   theme: {
     type: "section",
     children: {
+      floatingLabel: "boolean",
       width: {
         type: "number",
         min: ({ icon, value, placeholder, label }) => {

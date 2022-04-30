@@ -1,21 +1,43 @@
 const { selection, SceneNode } = require("scenegraph");
 const commands = require("commands");
+const { placeInParent } = require("../../utils");
 
 function assembleInput(inputComponents, inputProps) {
-  const [bgRectangle, inputText, label, iconNode] = inputComponents;
+  const {
+    bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode
+  } = inputComponents;
 
-  if (iconNode) {
-    selection.items = [iconNode, inputText];
-    commands.alignLeft();
-    commands.alignVerticalCenter();
-    commands.group();
+  if (iconNode || rightIconNode) {
+    if(iconNode && rightIconNode) {
+      selection.items = [iconNode, rightIconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+      commands.group();
+    }
+    else if(rightIconNode){
+      selection.items = [rightIconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+      commands.group();
+    }
+    else{
+      selection.items = [bgRectangle, iconNode, inputText];
+      commands.alignLeft();
+      commands.alignVerticalCenter();
+
+      selection.items = [iconNode, inputText];
+      commands.group();
+    }
+
+    if(iconNode){
+      const iconSize = inputProps.iconSize;
+      inputText.moveInParentCoordinates(
+        iconSize + (inputProps.size == "lg" ? 16 : 12),
+        0
+      );
+    }
 
     const inputContent = selection.items[0];
-    const iconSize = inputProps.iconSize;
-    inputText.moveInParentCoordinates(
-      iconSize + (inputProps.size == "lg" ? 16 : 12),
-      0
-    );
 
     selection.items = [bgRectangle, inputContent];
     commands.alignHorizontalCenter();
@@ -36,7 +58,7 @@ function assembleInput(inputComponents, inputProps) {
     commands.group();
   }
 
-  const input = selection.items[0];
+  let input = selection.items[0];
   const padding = inputProps.padding;
 
   input.layout = {
@@ -47,22 +69,62 @@ function assembleInput(inputComponents, inputProps) {
     },
   };
 
-  if (!label) return input;
+  if(rightIconNode){
+    const {x, width} = input.localBounds;
+    rightIconNode.moveInParentCoordinates(
+      x + width - padding.right,
+      0
+    );
+  }
 
-  selection.items = [input, label];
+  if(borderNode) {
+    const {x, width} = input.localBounds;
+    input.layout = {
+      type: SceneNode.LAYOUT_NONE,
+    };
+    bgRectangle.resize(width, bgRectangle.localBounds.height);
+
+    inputText.moveInParentCoordinates(
+      -padding.left,
+      0
+    );
+
+    if(iconNode){
+      iconNode.moveInParentCoordinates(
+        -padding.left,
+        0
+      );
+    }
+
+    if(rightIconNode){
+      rightIconNode.moveInParentCoordinates(
+        padding.right / 2,
+        0
+      );
+    }
+
+    selection.items = [input, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    commands.group();
+    // borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+
+    input = selection.items[0];
+  }
+
+  if (!labelNode) return input;
+
+  selection.items = [labelNode];
+  commands.bringToFront();
+  selection.items = [input, labelNode];
   commands.alignLeft();
+  commands.alignTop();
   commands.group();
-  label.moveInParentCoordinates(inputProps.roundness == "full" ? 6 : 0, 0);
-
+  labelNode.moveInParentCoordinates(
+    inputProps.roundness == "full" ? 6 : 0, 
+    -labelNode.localBounds.height - (!borderNode ? 3 : -5)
+  );
   const inputGroup = selection.items[0];
-  inputGroup.layout = {
-    type: SceneNode.LAYOUT_STACK,
-    stack: {
-      orientation: SceneNode.STACK_VERTICAL,
-      spacings: 3,
-    },
-  };
-
   return inputGroup;
 }
 

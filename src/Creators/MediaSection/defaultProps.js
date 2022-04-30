@@ -43,6 +43,7 @@ const defaultMediaSectionProps = {
         image: {
             width: 680, // 760
             height: 400, // 464,
+            // 560 / 680 (landscape)
             roundness: 'sm',
             // orientation: 'landscape',
             // style: "basic",

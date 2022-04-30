@@ -209,7 +209,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
               className="-mx-12px p-2 mt-1 bg-white overflow-y-auto"
               style={{ maxHeight: "140px" }}
             >
-              <IconList onChange={handleChange} {...meta} />
+              <IconList onChange={handleChange} iconNames={choices} {...meta} />
             </div>
           )}
 
