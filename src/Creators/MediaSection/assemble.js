@@ -52,23 +52,6 @@ function createSectionBackground({
 
   insertNode(bg);
 
-  if (border) {
-    const borderNode = createBorder({
-      width,
-      color: border.color || color,
-      thickness: border.thickness || 1.5,
-    });
-    borderNode.opacity = border.opacity || 0.1;
-    insertNode(borderNode);
-
-    selection.items = [bg, borderNode];
-    commands.alignLeft();
-    commands.alignBottom();
-    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
-    commands.group();
-    bg = selection.items[0];
-  }
-
   const container = new Rectangle();
   const containerWidth = 1400; // 1600;
   container.resize(Math.min(width, containerWidth), height);
@@ -171,25 +154,25 @@ function assembleMediaSection(props = {}, images) {
       commands.alignVerticalCenter();
       mediaText.moveInParentCoordinates(0, -textNegativeMargin);
     }
-    commands.group();
   }
   else{
     container.resize(container.localBounds.width, media.localBounds.height);
     selection.items = [media, container];
     commands.alignHorizontalCenter();
-    commands.group();
   }
+
+  commands.group();
 
   const content = selection.items[0];
   selection.items = [bg, content];
   commands.alignHorizontalCenter();
   commands.group();
 
-  const mediaSection = selection.items[0];
+  let mediaSectionContent = selection.items[0];
   const horizontalPadding = overlay || fullWidthImage ? 0 : (props.theme.width - container.localBounds.width) / 2;
   const verticalPadding = overlay || noText ? 0 : props.theme.verticalPadding;
 
-  mediaSection.layout = {
+  mediaSectionContent.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bg,
@@ -201,9 +184,32 @@ function assembleMediaSection(props = {}, images) {
     },
   }
 
-  mediaSection.resize(props.width, mediaSection.localBounds.height);
+  mediaSectionContent.resize(props.width, mediaSectionContent.localBounds.height);
 
-  return mediaSection;
+  if (props.theme.border) {
+    const border = {
+      color: "black",
+      thickness: 1.5,
+      opacity: 0.1,
+    };
+    const borderNode = createBorder({
+      width: props.theme.width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5,
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [mediaSectionContent, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    
+    return selection.items[0];
+  }
+  else
+    return mediaSectionContent;
 }
 
 module.exports = assembleMediaSection;

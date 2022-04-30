@@ -64,6 +64,7 @@ const mediaSectionSchema = {
           type: "color",
           choices: ["black", "white"],
         },
+        border: "boolean",
         fadeBackground: {
           type: "section",
           optional: true,
