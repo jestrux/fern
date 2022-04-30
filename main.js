@@ -31712,6 +31712,7 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
 const createMediaText = __webpack_require__(/*! ./createMediaText */ "./src/Creators/MediaSection/createMediaText.js");
+const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
 
 function createSectionBackground({
   width,
@@ -31803,8 +31804,10 @@ function assembleMediaSection(props = {}, images) {
     // clamp
     props.theme.heading.width = Math.max(minTextWidth, Math.min(props.theme.heading.width, maxTextWidth));
     props.theme.subHeading.width = Math.max(minTextWidth, Math.min(props.theme.subHeading.width, maxTextWidth));
-    mediaText = createMediaText(_extends({}, props, {
-      center: center || overlay
+    mediaText = createSectionText(_extends({}, props, {
+      theme: _extends({}, props.theme, {
+        center: center || overlay
+      })
     }));
     selection.items = [media, mediaText, container];
 
@@ -33121,6 +33124,170 @@ async function Navbar(userProps) {
 }
 
 module.exports = Navbar;
+
+/***/ }),
+
+/***/ "./src/Creators/SectionText/createSectionText.js":
+/*!*******************************************************!*\
+  !*** ./src/Creators/SectionText/createSectionText.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const navButtonsComponent = __webpack_require__(/*! ../Navbar/components/buttons */ "./src/Creators/Navbar/components/buttons.js");
+const defaultSectionTextProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/SectionText/defaultProps.js");
+
+function createSectionText(userProps) {
+  const {
+    heading,
+    subHeading,
+    buttons,
+    theme
+  } = _extends({}, defaultSectionTextProps, userProps);
+  let buttonsNode;
+
+  if (buttons && buttons.split(",").length) {
+    const icon = theme.buttons.icons ? "chevron-right" : "";
+    theme.buttons.mainButton.icon = icon;
+    theme.buttons.secondaryButton.icon = icon;
+
+    buttonsNode = navButtonsComponent(_extends({
+      color: theme.color,
+      themeColor: theme.themeColor
+    }, theme.buttons), buttons);
+  }
+
+  const subHeadingNode = createText(subHeading, {
+    align: theme.center ? "center" : "left",
+    width: theme.subHeading.width,
+    fill: new Color(theme.color),
+    fontSize: theme.subHeading.size == "sm" ? 16 : 22,
+    lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
+    fontStyle: "Regular"
+  });
+
+  insertNode(subHeadingNode);
+
+  const fontFamily = {
+    "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
+    "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
+    "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
+    "fancy": "Didot"
+  }[theme.heading.font || "sans"];
+
+  const headingNode = createText(heading, {
+    align: theme.center ? "center" : "left",
+    width: theme.heading.width,
+    fill: new Color(theme.color),
+    fontSize: theme.heading.size == "md" ? 36 : 48,
+    lineSpacing: theme.heading.size == "md" ? 50 : 62,
+    fontFamily,
+    fontStyle: "Bold"
+  });
+
+  insertNode(headingNode);
+
+  selection.items = [headingNode, subHeadingNode];
+
+  if (theme.center) commands.alignHorizontalCenter();else commands.alignLeft();
+
+  commands.group();
+
+  const headingAndSubHeading = selection.items[0];
+  headingAndSubHeading.name = "FernSectionText";
+
+  if (headingAndSubHeading.children.length > 1) {
+    headingAndSubHeading.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_VERTICAL,
+        spacings: 20
+      }
+    };
+  }
+
+  let mediaTextElement;
+
+  if (buttonsNode) {
+    selection.items = [headingAndSubHeading, buttonsNode];
+
+    if (theme.center) commands.alignHorizontalCenter();else commands.alignLeft();
+
+    commands.group();
+
+    mediaTextElement = selection.items[0];
+    if (mediaTextElement.children.length > 1) {
+      mediaTextElement.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+          orientation: SceneNode.STACK_VERTICAL,
+          spacings: 30
+        }
+      };
+    }
+  } else {
+    mediaTextElement = headingAndSubHeading;
+  }
+
+  mediaTextElement.name = "FernMediaText";
+  return mediaTextElement;
+}
+
+module.exports = createSectionText;
+
+/***/ }),
+
+/***/ "./src/Creators/SectionText/defaultProps.js":
+/*!**************************************************!*\
+  !*** ./src/Creators/SectionText/defaultProps.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultSectionTextProps = {
+    heading: "Create brand content that builds trust",
+    // subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
+    buttons: "Get to know us",
+    theme: {
+        center: true,
+        color: "black",
+        heading: {
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
+            width: 530,
+            size: "md" // "lg"
+        },
+        subHeading: {
+            width: 530,
+            size: "sm" // "md"
+        },
+        buttons: {
+            icons: false,
+            iconPlacement: "right",
+            size: "sm",
+            roundness: "sm",
+            reversed: true,
+            mainButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "fill"
+            },
+            secondaryButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "outline"
+            }
+        }
+    }
+};
+
+module.exports = defaultSectionTextProps;
 
 /***/ }),
 

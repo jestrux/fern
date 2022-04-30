@@ -3,6 +3,7 @@ const commands = require("commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = require("../../utils");
 const createMedia = require("./createMedia");
 const createMediaText = require("./createMediaText");
+const createSectionText = require("../SectionText/createSectionText");
 
 function createSectionBackground({
   width,
@@ -108,9 +109,12 @@ function assembleMediaSection(props = {}, images) {
     // clamp
     props.theme.heading.width = Math.max(minTextWidth, Math.min(props.theme.heading.width, maxTextWidth));
     props.theme.subHeading.width = Math.max(minTextWidth, Math.min(props.theme.subHeading.width, maxTextWidth));
-    mediaText = createMediaText({
+    mediaText = createSectionText({
       ...props,
-      center: center || overlay,
+      theme: {
+        ...props.theme,
+        center: center || overlay,
+      }
     });
     selection.items = [media, mediaText, container];
 
