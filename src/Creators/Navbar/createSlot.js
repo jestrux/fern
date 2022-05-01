@@ -84,7 +84,7 @@ function createNavSlot(props, components = {}) {
         type: SceneNode.LAYOUT_PADDING,
         padding: {
           background: slot,
-          values: { ...getPadding(30, 0), right: 0 },
+          values: getPadding(0, 0, 0, 30),
         },
       };
     } else {
@@ -105,7 +105,7 @@ function createNavSlot(props, components = {}) {
         type: SceneNode.LAYOUT_PADDING,
         padding: {
           background: placeholder,
-          values: { ...getPadding(30, 0), right: 0 },
+          values: getPadding(0, 0, 0, 30),
         },
       };
     }

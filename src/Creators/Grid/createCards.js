@@ -186,7 +186,7 @@ function createCard(props){
                 cardText.layout = {
                     ...cardText.layout,
                     padding: {
-                        values: {...getPadding(padding, padding), top: padding - 16}
+                        values: getPadding(padding - 16, padding, padding, padding)
                     }
                 }
             }
@@ -195,7 +195,7 @@ function createCard(props){
             cardText.layout = {
                 type: SceneNode.LAYOUT_PADDING,
                 padding: {
-                    values: {...getPadding(padding, padding), top: padding - 16}
+                    values: getPadding(padding - 16, padding, padding, padding)
                 }
             };
         }
@@ -278,7 +278,7 @@ function createCard(props){
             type: SceneNode.LAYOUT_PADDING,
             padding: {
                 background: bg,
-                values: getPadding(padding, padding)
+                values: getPadding(padding)
             }
         };
     }

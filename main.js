@@ -30895,8 +30895,6 @@ module.exports = assembleGrid;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const { SceneNode, selection, Color, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createIcon, placeInParent, createText, getPadding } = __webpack_require__(/*! ../../../../utils */ "./src/utils/index.js");
@@ -30966,7 +30964,7 @@ function gridRatingComponent(props = {}) {
             spacings: 6
         },
         padding: {
-            values: _extends({}, getPadding(0, 0), { bottom: 2 })
+            values: getPadding(0, 0, 2, 0)
         }
     };
 
@@ -31203,7 +31201,7 @@ function createCard(props) {
             if (!spaceAroundImage && !overlay) {
                 cardText.layout = _extends({}, cardText.layout, {
                     padding: {
-                        values: _extends({}, getPadding(padding, padding), { top: padding - 16 })
+                        values: getPadding(padding - 16, padding, padding, padding)
                     }
                 });
             }
@@ -31211,7 +31209,7 @@ function createCard(props) {
             cardText.layout = {
                 type: SceneNode.LAYOUT_PADDING,
                 padding: {
-                    values: _extends({}, getPadding(padding, padding), { top: padding - 16 })
+                    values: getPadding(padding - 16, padding, padding, padding)
                 }
             };
         }
@@ -31291,7 +31289,7 @@ function createCard(props) {
             type: SceneNode.LAYOUT_PADDING,
             padding: {
                 background: bg,
-                values: getPadding(padding, padding)
+                values: getPadding(padding)
             }
         };
     }
@@ -33185,7 +33183,7 @@ function createNavSlot(props, components = {}) {
         type: SceneNode.LAYOUT_PADDING,
         padding: {
           background: slot,
-          values: _extends({}, getPadding(30, 0), { right: 0 })
+          values: getPadding(0, 0, 0, 30)
         }
       };
     } else {
@@ -33206,7 +33204,7 @@ function createNavSlot(props, components = {}) {
         type: SceneNode.LAYOUT_PADDING,
         padding: {
           background: placeholder,
-          values: _extends({}, getPadding(30, 0), { right: 0 })
+          values: getPadding(0, 0, 0, 30)
         }
       };
     }

@@ -76,7 +76,7 @@ function gridRatingComponent(props = {}){
             spacings: 6
         },
         padding: {
-            values: {...getPadding(0, 0), bottom: 2}
+            values: getPadding(0, 0, 2, 0)
         }
     };
 
