@@ -29880,7 +29880,7 @@ const createFeature = (props = {}) => {
 
     const bg = createRectangle(width + padding * 2);
     const circle = createCircle(30);
-    const icon = createIcon(icons.seat, { fill: "#333", size: 24 });
+    const icon = createIcon(icons.seat, { fill: "#333", size: 22 });
     const number = createText("01", {
         fontSize: 20,
         lineSpacing: 0,
@@ -29898,10 +29898,11 @@ const createFeature = (props = {}) => {
     insertNode(description);
     insertNode(title);
     insertNode(circle);
-    insertNode(number);
+    insertNode(icon);
+    // insertNode(number);
 
-    // selection.items = [icon, circle];
-    selection.items = [number, circle];
+    selection.items = [icon, circle];
+    // selection.items = [number, circle];
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
     commands.group();
@@ -32735,6 +32736,9 @@ function assembleNavbar(props = {}, images) {
   const rightSlot = createNavSlot(_extends({}, props, props.theme, { alignment: "right" }), props.rightSlot);
   rightSlot.name = "FernNavRightSlot";
 
+  const bounds = leftSlot.localBounds;
+  middleSlot.moveInParentCoordinates(bounds.x + bounds.width + 60, 0);
+
   selection.items = [leftSlot, middleSlot, rightSlot];
   commands.distributeHorizontal();
 
@@ -33212,7 +33216,10 @@ function createNavSlot(props, components = {}) {
     const { x, y } = container.topLeftInParent;
     const slotPlacement = { x, y };
 
-    if (alignment == "right") slotPlacement.x = container.localBounds.width - slot.localBounds.width + x;else if (alignment == "center") slotPlacement.x = container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
+    if (alignment == "right") slotPlacement.x = container.localBounds.width - slot.localBounds.width + x;
+    // else if (alignment == "center")
+    //   slotPlacement.x =
+    //     container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
 
     placeInParent(slot, slotPlacement);
 
