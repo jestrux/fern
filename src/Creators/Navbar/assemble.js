@@ -100,6 +100,9 @@ function assembleNavbar(props = {}, images) {
   );
   rightSlot.name = "FernNavRightSlot";
 
+  const bounds = leftSlot.localBounds;
+  middleSlot.moveInParentCoordinates(bounds.x + bounds.width + 60, 0);
+  
   selection.items = [leftSlot, middleSlot, rightSlot];
   commands.distributeHorizontal();
 

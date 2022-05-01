@@ -116,9 +116,9 @@ function createNavSlot(props, components = {}) {
     if (alignment == "right")
       slotPlacement.x =
         container.localBounds.width - slot.localBounds.width + x;
-    else if (alignment == "center")
-      slotPlacement.x =
-        container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
+    // else if (alignment == "center")
+    //   slotPlacement.x =
+    //     container.localBounds.width / 2 - slot.localBounds.width / 2 + x;
 
     placeInParent(slot, slotPlacement);
 
