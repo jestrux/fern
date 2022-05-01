@@ -1,20 +1,21 @@
-const defaultSectionTextProps = {
+const defaultFeatureSectionProps = {
     heading: "Create brand content that builds trust",
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
     buttons: "",
     theme: {
-        center: true,
+        backgroundColor: "white",
         width: 1600, // 1920
         color: "black",
+        border: false,
         verticalPadding: 65,
         heading: {
             font: "sans", // "serif", "quirky", "fancy",
             brazen: false,
-            width: 900,
+            width: 750, // 530,
             size: "md", // "lg"
         },
         subHeading: {
-            width: 900,
+            width: 750, //530,
             size: "sm", // "md"
         },
         buttons: {
@@ -37,4 +38,4 @@ const defaultSectionTextProps = {
     },
 }
 
-module.exports = defaultSectionTextProps;
+module.exports = defaultFeatureSectionProps;

@@ -10,7 +10,7 @@ const defaultSectionTextProps = require("./defaultProps");
       subHeading,
       buttons,
       theme
-    } = {...defaultSectionTextProps, ...userProps}
+    } = {...defaultSectionTextProps, ...(userProps || {})}
     let buttonsNode;
   
     if(buttons && buttons.split(",").length){
@@ -78,7 +78,7 @@ const defaultSectionTextProps = require("./defaultProps");
       };
     }
   
-    let mediaTextElement;
+    let sectionTextElement;
   
     if(buttonsNode){
       selection.items = [headingAndSubHeading, buttonsNode];
@@ -88,9 +88,9 @@ const defaultSectionTextProps = require("./defaultProps");
       
       commands.group();
     
-      mediaTextElement = selection.items[0];
-      if (mediaTextElement.children.length > 1) {
-        mediaTextElement.layout = {
+      sectionTextElement = selection.items[0];
+      if (sectionTextElement.children.length > 1) {
+        sectionTextElement.layout = {
           type: SceneNode.LAYOUT_STACK,
           stack: {
             orientation: SceneNode.STACK_VERTICAL,
@@ -100,11 +100,11 @@ const defaultSectionTextProps = require("./defaultProps");
       }
     }
     else {
-      mediaTextElement = headingAndSubHeading;
+      sectionTextElement = headingAndSubHeading;
     }
   
-    mediaTextElement.name = "FernMediaText";
-    return mediaTextElement;
+    sectionTextElement.name = "FernMediaText";
+    return sectionTextElement;
   }
   
   module.exports = createSectionText;

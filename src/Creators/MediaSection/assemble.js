@@ -2,7 +2,6 @@ const { selection, Color, LinearGradient, Rectangle, SceneNode } = require("scen
 const commands = require("commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = require("../../utils");
 const createMedia = require("./createMedia");
-const createMediaText = require("./createMediaText");
 const createSectionText = require("../SectionText/createSectionText");
 
 function createSectionBackground({

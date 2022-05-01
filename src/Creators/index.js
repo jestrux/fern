@@ -3,6 +3,8 @@ const Button = require("./Button");
 const Input = require("./Input");
 const Navbar = require("./Navbar");
 const Hero = require("./Hero");
+const FeatureSection = require("./FeatureSection");
+const SectionText = require("./SectionText");
 const MediaSection = require("./MediaSection");
 const Grid = require("./Grid");
 const Footer = require("./Footer");
@@ -14,6 +16,8 @@ class Creators {
     static Navbar = Navbar
     static Hero = Hero
     static MediaSection = MediaSection
+    static SectionText = SectionText
+    static FeatureSection = FeatureSection
     static Grid = Grid
     static Footer = Footer
     static FernComponent = FernComponent

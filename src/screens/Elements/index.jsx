@@ -9,6 +9,8 @@ const Button = require('./Button');
 const Navbar = require('./Navbar');
 const Hero = require('./Hero');
 const Footer = require('./Footer');
+const SectionText = require('./SectionText');
+const FeatureSection = require('./FeatureSection');
 const MediaSection = require('./MediaSection');
 const Grid = require('./Grid');
 const FernComponent = require('./FernComponent');
@@ -65,8 +67,10 @@ function Elements({value, subscription, onUpgrade}){
     function RenderElement(){
         const uiElements = {
             Button, Input, Card, Image,
+            SectionText,
             Navbar, 
             Hero,
+            FeatureSection,
             MediaSection,
             Grid,
             Footer, 

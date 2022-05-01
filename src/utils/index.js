@@ -488,12 +488,17 @@ async function getAssetsByType(type = "logo") {
   }
 }
 
-function getPadding(px = 4, py = 4) {
+function getPadding(top, right, bottom, left) {
+  if(top == undefined) top = 4;
+  if(right == undefined) right = top;
+  if(bottom == undefined) bottom = top;
+  if(left == undefined) left = right;
+
   return {
-    bottom: py,
-    top: py,
-    left: px,
-    right: px,
+    bottom,
+    top,
+    left,
+    right,
   };
 }
 
@@ -563,24 +568,151 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
   return { width: srcWidth * ratio, height: srcHeight * ratio };
 }
 
-function createText(text = "Acacia Grove | The Right Inn..", props) {
+function createRectangle(width = 200, height, userProps = {}) {
+  if(height == undefined) height = width;
+  const { Color, Rectangle, Shadow } = require("scenegraph");
+
+  const defaultProps = {
+    name: "BG",
+    fill: "#FFFFFF",
+    width, height,
+    border: false,
+    shadow: "none",
+    cornerRadius: "none",
+  };
+
+  let props = {
+    ...defaultProps,
+    ...(userProps || {}),
+  };
+
+  if(typeof props.fill == "string"){
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
+  
+  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+  const radius = radiusMap[props.cornerRadius || 'none'] || radiusMap["none"];
+
+  if(props.shadow && props.shadow != "none"){
+    const shadowMap = {
+      "none": [0, 0, 0],
+      "sm": [0, 1, 3],
+      "md": [1, 2, 5],
+      "lg": [1.5, 3.5, 7],
+    };
+    
+    const shadowProps = shadowMap[props.shadow || "none"] || shadowMap["none"];
+    const shadowOffsets = shadowProps.slice(0,2);
+    const shadowBlur = shadowProps[2];
+    props.shadow = new Shadow(...shadowOffsets, shadowBlur, new Color("#000", 0.26), true);
+  }
+  else {
+    const { shadow, ...nonShadowProps } = props;
+    props = {
+      ...nonShadowProps
+    };
+  }
+
+  const strokeProps = {
+    strokeEnabled: true,
+    strokeWidth: 1.5,
+    stroke: new Color("#e0e0e0"),
+  }
+
+  if(props.border){
+    props = {
+      ...props,
+      ...strokeProps
+    }
+  }
+
+  const rectangleNode = new Rectangle();
+  Object.assign(rectangleNode, props);
+  rectangleNode.setAllCornerRadii(radius);
+
+  return rectangleNode;
+}
+
+function createCircle(radius = 50, userProps = {}) {
+  const { Color, Ellipse, Shadow } = require("scenegraph");
+
+  const defaultProps = {
+    name: "BG",
+    fill: "#F2F2F2",
+    radiusX: radius,
+    radiusY: radius,
+    border: false,
+    shadow: "none",
+  };
+
+  let props = {
+    ...defaultProps,
+    ...(userProps || {}),
+  };
+
+  if(typeof props.fill == "string"){
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
+
+  if(props.shadow && props.shadow != "none"){
+    const shadowMap = {
+      "none": [0, 0, 0],
+      "sm": [0, 1, 3],
+      "md": [1, 2, 5],
+      "lg": [1.5, 3.5, 7],
+    };
+    
+    const shadowProps = shadowMap[props.shadow || "none"] || shadowMap["none"];
+    const shadowOffsets = shadowProps.slice(0,2);
+    const shadowBlur = shadowProps[2];
+    props.shadow = new Shadow(...shadowOffsets, shadowBlur, new Color("#000", 0.26), true);
+  }
+  else {
+    const { shadow, ...nonShadowProps } = props;
+    props = {
+      ...nonShadowProps
+    };
+  }
+
+  const strokeProps = {
+    strokeEnabled: true,
+    strokeWidth: 1.5,
+    stroke: new Color("#e0e0e0"),
+  }
+
+  if(props.border){
+    props = {
+      ...props,
+      ...strokeProps
+    }
+  }
+
+  const circleNode = new Ellipse();
+  Object.assign(circleNode, props);
+  return circleNode;
+}
+
+function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
   const { Text, Color } = require("scenegraph");
 
   const defaultTextProps = {
     name: "Text",
-    fill: new Color("#000"),
+    fill: "#000",
     fontSize: 20,
     fontFamily: "Helvetica Neue",
-    fontStyle: "Light",
+    fontStyle: "Regular",
     align: "left",
     layoutBox: {
-      type: Text.AUTO_HEIGHT,
-      ...props,
+      type: userProps && userProps.width ? Text.AUTO_HEIGHT : Text.POINT,
+      ...(userProps || {}),
     },
   };
-  props = {
+  
+  let props = {
     ...defaultTextProps,
-    ...props,
+    ...(userProps || {}),
   };
 
   props.textAlign = {
@@ -588,6 +720,11 @@ function createText(text = "Acacia Grove | The Right Inn..", props) {
     "center": Text.ALIGN_CENTER, 
     "right": Text.ALIGN_RIGHT
   }[props.align || "left"];
+
+  if(typeof props.fill == "string"){
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
 
   const textNode = new Text();
   const splitText = text.split("\\n");
@@ -664,6 +801,8 @@ module.exports = {
   getFernComponentChildByName,
   calculateAspectRatioFit,
   createText,
+  createRectangle,
+  createCircle,
   chunkArray,
   randomBetween,
   getIconSizeFromTextSize,

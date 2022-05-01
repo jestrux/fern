@@ -29690,6 +29690,401 @@ module.exports = Button;
 
 /***/ }),
 
+/***/ "./src/Creators/FeatureSection/assemble.js":
+/*!*************************************************!*\
+  !*** ./src/Creators/FeatureSection/assemble.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
+const { insertNode, createBorder } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createFeatures = __webpack_require__(/*! ./createFeatures */ "./src/Creators/FeatureSection/createFeatures.js");
+
+function createSectionBackground({
+  width,
+  height,
+  backgroundColor,
+  color,
+  border
+}) {
+  let bg = new Rectangle();
+  bg.resize(width, height);
+  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
+  bg.strokeEnabled = false;
+  bg.name = "BG";
+  insertNode(bg);
+
+  if (border) {
+    const border = {
+      color: "black",
+      thickness: 1.5,
+      opacity: 0.1
+    };
+
+    const borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [bg, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    bg = selection.items[0];
+  }
+
+  const container = new Rectangle();
+  const containerWidth = 1400; // 1600;
+  container.resize(Math.min(width, containerWidth), height);
+  container.fill = new Color("white", 0);
+  container.strokeEnabled = false;
+  container.name = "Container";
+  insertNode(container);
+
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+
+  return [bg, container];
+}
+
+function assembleFeatureSection(props = {}, images) {
+  props = _extends({}, props, {
+    images,
+    width: props.theme.width,
+    height: 620
+  });
+
+  const [bg, container] = createSectionBackground(_extends({}, props, props.theme));
+  props.container = container;
+
+  const features = createFeatures(props);
+  let sectionText;
+  const center = props.theme.center;
+  const noText = !props.heading && !props.subHeading;
+
+  if (!noText) {
+    sectionText = createSectionText(_extends({}, props, {
+      theme: _extends({}, props.theme, {
+        backgroundColor: "transparent",
+        verticalPadding: 0,
+        center
+      })
+    }));
+
+    selection.items = [sectionText, features];
+
+    if (center) commands.alignHorizontalCenter();else commands.alignLeft();
+
+    commands.group();
+
+    const featuresAndText = selection.items[0];
+    featuresAndText.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_VERTICAL,
+        spacings: 50
+      }
+    };
+    container.resize(container.localBounds.width, featuresAndText.localBounds.height);
+    selection.items = [container, featuresAndText];
+    commands.alignLeft();
+    commands.group();
+  } else {
+    selection.items = [container, features];
+    commands.alignLeft();
+    container.resize(container.localBounds.width, features.localBounds.height);
+  }
+
+  const content = selection.items[0];
+  selection.items = [bg, content];
+  commands.alignHorizontalCenter();
+  commands.group();
+
+  let featureSectionContent = selection.items[0];
+  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = noText ? 0 : props.theme.verticalPadding;
+
+  featureSectionContent.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bg,
+      values: {
+        left: horizontalPadding, right: horizontalPadding,
+        top: verticalPadding,
+        bottom: verticalPadding
+      }
+    }
+  };
+
+  featureSectionContent.resize(props.width, featureSectionContent.localBounds.height);
+
+  if (props.theme.border) {
+    const border = {
+      color: "black",
+      thickness: 1.5,
+      opacity: 0.1
+    };
+    const borderNode = createBorder({
+      width: props.theme.width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [featureSectionContent, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+
+    return selection.items[0];
+  } else return featureSectionContent;
+}
+
+module.exports = assembleFeatureSection;
+
+/***/ }),
+
+/***/ "./src/Creators/FeatureSection/createFeatures.js":
+/*!*******************************************************!*\
+  !*** ./src/Creators/FeatureSection/createFeatures.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { SceneNode, selection, Color, Rectangle, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { createRectangle, createText, insertNode, getPadding, createCircle, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const defaultFeatureSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/FeatureSection/defaultProps.js");
+const icons = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
+
+const createFeature = (props = {}) => {
+    const {
+        width = 200,
+        verticalSpace = 12,
+        padding = 0
+    } = props;
+
+    const bg = createRectangle(width + padding * 2);
+    const circle = createCircle(30);
+    const icon = createIcon(icons.seat, { fill: "#333", size: 24 });
+    const number = createText("01", {
+        fontSize: 20,
+        lineSpacing: 0,
+        // letterSpacing: 40, 
+        fill: "#333", //"#eee",
+        fontFamily: "Poppins",
+        fontStyle: "SemiBold"
+    });
+    const title = createText("Real data access", { width, fontStyle: "Bold", fontSize: 24 });
+    const description = createText("Create custom landing pages with Fastland that converts more visitors than any website.", {
+        width, lineSpacing: 32
+    });
+
+    insertNode(bg);
+    insertNode(description);
+    insertNode(title);
+    insertNode(circle);
+    insertNode(number);
+
+    // selection.items = [icon, circle];
+    selection.items = [number, circle];
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    const iconNode = selection.items[0];
+
+    selection.items = [title, description];
+    commands.group();
+    const featureText = selection.items[0];
+    featureText.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: verticalSpace
+        }
+    };
+
+    selection.items = [featureText, iconNode];
+    commands.group();
+    const featureTextWithIcon = selection.items[0];
+    featureTextWithIcon.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: verticalSpace //* 0.75
+        }
+    };
+
+    selection.items = [bg, featureTextWithIcon];
+    commands.group();
+
+    const feature = selection.items[0];
+
+    feature.layout = {
+        type: SceneNode.LAYOUT_PADDING,
+        padding: {
+            background: bg,
+            values: getPadding(padding)
+        }
+    };
+
+    return feature;
+};
+
+const createFeatures = userProps => {
+    const props = _extends({}, defaultFeatureSectionProps, userProps || {});
+
+    const itemPadding = 0;
+    const itemSpacing = 20; //20;
+    let itemWidth = (props.container.localBounds.width - itemSpacing * 2) / 3;
+    itemWidth -= itemPadding * 2;
+
+    const feature1 = createFeature({
+        width: itemWidth,
+        padding: itemPadding
+    });
+    commands.duplicate();
+    const feature2 = selection.items[0];
+    commands.duplicate();
+    const feature3 = selection.items[0];
+
+    selection.items = [feature1, feature2, feature3];
+    commands.group();
+
+    const features = selection.items[0];
+    features.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: itemSpacing
+        }
+    };
+
+    return features;
+};
+
+module.exports = createFeatures;
+
+/***/ }),
+
+/***/ "./src/Creators/FeatureSection/defaultProps.js":
+/*!*****************************************************!*\
+  !*** ./src/Creators/FeatureSection/defaultProps.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultFeatureSectionProps = {
+    heading: "Create brand content that builds trust",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
+    buttons: "",
+    theme: {
+        backgroundColor: "white",
+        width: 1600, // 1920
+        color: "black",
+        border: false,
+        verticalPadding: 65,
+        heading: {
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
+            width: 750, // 530,
+            size: "md" // "lg"
+        },
+        subHeading: {
+            width: 750, //530,
+            size: "sm" // "md"
+        },
+        buttons: {
+            icons: false,
+            iconPlacement: "right",
+            size: "sm",
+            roundness: "sm",
+            reversed: true,
+            mainButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "fill"
+            },
+            secondaryButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "outline"
+            }
+        }
+    }
+};
+
+module.exports = defaultFeatureSectionProps;
+
+/***/ }),
+
+/***/ "./src/Creators/FeatureSection/index.js":
+/*!**********************************************!*\
+  !*** ./src/Creators/FeatureSection/index.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleFeatureSection = __webpack_require__(/*! ./assemble */ "./src/Creators/FeatureSection/assemble.js");
+const defaultFeatureSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/FeatureSection/defaultProps.js");
+
+async function FeatureSection(userProps) {
+    const props = _extends({}, defaultFeatureSectionProps, userProps || {});
+
+    const bannerImages = await getAssetsByType("banner");
+
+    try {
+        const oldFeatureSection = userProps ? selection.items[0] : null;
+
+        editDom(async selection => {
+            try {
+                const featureSection = assembleFeatureSection(props, bannerImages);
+
+                selection.items = [featureSection];
+                featureSection.name = "FernFeatureSection";
+
+                const data = _extends({
+                    type: "FeatureSection"
+                }, props ? props : defaultFeatureSectionProps);
+
+                featureSection.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+
+                if (oldFeatureSection) {
+                    placeInParent(featureSection, oldFeatureSection.topLeftInParent);
+                    oldFeatureSection.removeFromParent();
+                } else placeInParent(featureSection, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating FeatureSection: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating feature section: ", error);
+    }
+}
+
+module.exports = FeatureSection;
+
+/***/ }),
+
 /***/ "./src/Creators/FernComponent/assemble.js":
 /*!************************************************!*\
   !*** ./src/Creators/FernComponent/assemble.js ***!
@@ -31711,7 +32106,6 @@ const { selection, Color, LinearGradient, Rectangle, SceneNode } = __webpack_req
 const commands = __webpack_require__(/*! commands */ "commands");
 const { createBorder, insertNode, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
-const createMediaText = __webpack_require__(/*! ./createMediaText */ "./src/Creators/MediaSection/createMediaText.js");
 const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
 
 function createSectionBackground({
@@ -32055,125 +32449,6 @@ function createMedia({
 }
 
 module.exports = createMedia;
-
-/***/ }),
-
-/***/ "./src/Creators/MediaSection/createMediaText.js":
-/*!******************************************************!*\
-  !*** ./src/Creators/MediaSection/createMediaText.js ***!
-  \******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-const {
-  selection,
-  Color,
-  SceneNode
-} = __webpack_require__(/*! scenegraph */ "scenegraph");
-const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
-const navButtonsComponent = __webpack_require__(/*! ../Navbar/components/buttons */ "./src/Creators/Navbar/components/buttons.js");
-
-function createMediaText({
-  heading = "Supporting mothers in their time of need",
-  subHeading = "Our mission is to make sure we keep track of all mothers in the neighborhood who are unable to fend for themselves and give the support they need.",
-  buttons = "More about us, See beneficiaries",
-  themeColor,
-  theme,
-  center
-}) {
-  let buttonsNode;
-
-  if (buttons && buttons.split(",").length) {
-    const icon = theme.buttons.icons ? "chevron-right" : "";
-    theme.buttons.mainButton.icon = icon;
-    theme.buttons.secondaryButton.icon = icon;
-
-    buttonsNode = navButtonsComponent(_extends({
-      color: theme.color,
-      themeColor
-    }, theme.buttons), buttons);
-  }
-
-  const subHeadingNode = createText(subHeading, {
-    align: center ? "center" : "left",
-    width: theme.subHeading.width,
-    fill: new Color(theme.color),
-    fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-    lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
-    fontStyle: "Regular"
-  });
-
-  insertNode(subHeadingNode);
-
-  const fontFamily = {
-    "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
-    "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
-    "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
-    "fancy": "Didot"
-  }[theme.heading.font || "sans"];
-
-  const headingNode = createText(heading, {
-    align: center ? "center" : "left",
-    width: theme.heading.width,
-    fill: new Color(theme.color),
-    fontSize: theme.heading.size == "md" ? 36 : 48,
-    lineSpacing: theme.heading.size == "md" ? 50 : 62,
-    fontFamily,
-    fontStyle: "Bold"
-  });
-
-  insertNode(headingNode);
-
-  selection.items = [headingNode, subHeadingNode];
-
-  if (center) commands.alignHorizontalCenter();else commands.alignLeft();
-
-  commands.group();
-
-  const headingAndSubHeading = selection.items[0];
-  headingAndSubHeading.name = "FernSectionText";
-
-  if (headingAndSubHeading.children.length > 1) {
-    headingAndSubHeading.layout = {
-      type: SceneNode.LAYOUT_STACK,
-      stack: {
-        orientation: SceneNode.STACK_VERTICAL,
-        spacings: 20
-      }
-    };
-  }
-
-  let mediaTextElement;
-
-  if (buttonsNode) {
-    selection.items = [headingAndSubHeading, buttonsNode];
-
-    if (center) commands.alignHorizontalCenter();else commands.alignLeft();
-
-    commands.group();
-
-    mediaTextElement = selection.items[0];
-    if (mediaTextElement.children.length > 1) {
-      mediaTextElement.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-          orientation: SceneNode.STACK_VERTICAL,
-          spacings: 30
-        }
-      };
-    }
-  } else {
-    mediaTextElement = headingAndSubHeading;
-  }
-
-  mediaTextElement.name = "FernMediaText";
-  return mediaTextElement;
-}
-
-module.exports = createMediaText;
 
 /***/ }),
 
@@ -33127,6 +33402,142 @@ module.exports = Navbar;
 
 /***/ }),
 
+/***/ "./src/Creators/SectionText/assemble.js":
+/*!**********************************************!*\
+  !*** ./src/Creators/SectionText/assemble.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
+const { insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function createSectionTextBackground({
+  width,
+  height,
+  backgroundColor = "white",
+  color,
+  border
+}) {
+  let bg = new Rectangle();
+  bg.resize(width, height);
+  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
+  bg.strokeEnabled = false;
+  bg.name = "BG";
+  insertNode(bg);
+
+  if (border) {
+    const borderNode = createBorder({
+      width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [bg, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+    bg = selection.items[0];
+  }
+
+  const container = new Rectangle();
+  const containerWidth = 1400; // 1600;
+  container.resize(Math.min(width, containerWidth), height);
+  container.fill = new Color("white", 0);
+  container.strokeEnabled = false;
+  container.name = "Container";
+  insertNode(container);
+
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+
+  return [bg, container];
+}
+
+function assembleFeatureSection(props = {}, images) {
+  props = _extends({}, props, {
+    images,
+    width: props.theme.width,
+    height: 620
+  });
+
+  const [bg, container] = createSectionTextBackground(_extends({}, props, props.theme));
+  props.container = container;
+
+  let sectionText;
+  const center = props.theme.center;
+  const noText = !props.heading && !props.subHeading;
+  sectionText = createSectionText(_extends({}, props, {
+    theme: _extends({}, props.theme, {
+      center
+    })
+  }));
+  selection.items = [sectionText, container];
+
+  if (center) commands.alignHorizontalCenter();
+
+  container.resize(container.localBounds.width, sectionText.localBounds.height);
+
+  commands.group();
+  const content = selection.items[0];
+  selection.items = [bg, content];
+  commands.alignHorizontalCenter();
+  commands.group();
+
+  let featureSectionContent = selection.items[0];
+  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = noText ? 0 : props.theme.verticalPadding;
+
+  featureSectionContent.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bg,
+      values: {
+        left: horizontalPadding, right: horizontalPadding,
+        top: verticalPadding,
+        bottom: verticalPadding
+      }
+    }
+  };
+
+  featureSectionContent.resize(props.width, featureSectionContent.localBounds.height);
+
+  if (props.theme.border) {
+    const border = {
+      color: "black",
+      thickness: 1.5,
+      opacity: 0.1
+    };
+    const borderNode = createBorder({
+      width: props.theme.width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [featureSectionContent, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+
+    return selection.items[0];
+  } else return featureSectionContent;
+}
+
+module.exports = assembleFeatureSection;
+
+/***/ }),
+
 /***/ "./src/Creators/SectionText/createSectionText.js":
 /*!*******************************************************!*\
   !*** ./src/Creators/SectionText/createSectionText.js ***!
@@ -33148,7 +33559,7 @@ function createSectionText(userProps) {
     subHeading,
     buttons,
     theme
-  } = _extends({}, defaultSectionTextProps, userProps);
+  } = _extends({}, defaultSectionTextProps, userProps || {});
   let buttonsNode;
 
   if (buttons && buttons.split(",").length) {
@@ -33211,7 +33622,7 @@ function createSectionText(userProps) {
     };
   }
 
-  let mediaTextElement;
+  let sectionTextElement;
 
   if (buttonsNode) {
     selection.items = [headingAndSubHeading, buttonsNode];
@@ -33220,9 +33631,9 @@ function createSectionText(userProps) {
 
     commands.group();
 
-    mediaTextElement = selection.items[0];
-    if (mediaTextElement.children.length > 1) {
-      mediaTextElement.layout = {
+    sectionTextElement = selection.items[0];
+    if (sectionTextElement.children.length > 1) {
+      sectionTextElement.layout = {
         type: SceneNode.LAYOUT_STACK,
         stack: {
           orientation: SceneNode.STACK_VERTICAL,
@@ -33231,11 +33642,11 @@ function createSectionText(userProps) {
       };
     }
   } else {
-    mediaTextElement = headingAndSubHeading;
+    sectionTextElement = headingAndSubHeading;
   }
 
-  mediaTextElement.name = "FernMediaText";
-  return mediaTextElement;
+  sectionTextElement.name = "FernMediaText";
+  return sectionTextElement;
 }
 
 module.exports = createSectionText;
@@ -33251,20 +33662,21 @@ module.exports = createSectionText;
 
 const defaultSectionTextProps = {
     heading: "Create brand content that builds trust",
-    // subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
-    buttons: "Get to know us",
+    buttons: "",
     theme: {
         center: true,
+        width: 1600, // 1920
         color: "black",
+        verticalPadding: 65,
         heading: {
             font: "sans", // "serif", "quirky", "fancy",
             brazen: false,
-            width: 530,
+            width: 900,
             size: "md" // "lg"
         },
         subHeading: {
-            width: 530,
+            width: 900,
             size: "sm" // "md"
         },
         buttons: {
@@ -33288,6 +33700,57 @@ const defaultSectionTextProps = {
 };
 
 module.exports = defaultSectionTextProps;
+
+/***/ }),
+
+/***/ "./src/Creators/SectionText/index.js":
+/*!*******************************************!*\
+  !*** ./src/Creators/SectionText/index.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleSectionText = __webpack_require__(/*! ./assemble */ "./src/Creators/SectionText/assemble.js");
+const defaultSectionTextProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/SectionText/defaultProps.js");
+
+async function SectionText(userProps) {
+    const props = _extends({}, defaultSectionTextProps, userProps || {});
+
+    try {
+        const oldSectionText = userProps ? selection.items[0] : null;
+
+        editDom(async selection => {
+            try {
+                const sectionText = assembleSectionText(props);
+
+                selection.items = [sectionText];
+                sectionText.name = "FernSectionText";
+
+                const data = _extends({
+                    type: "SectionText"
+                }, props ? props : defaultSectionTextProps);
+
+                sectionText.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+
+                if (oldSectionText) {
+                    placeInParent(sectionText, oldSectionText.topLeftInParent);
+                    oldSectionText.removeFromParent();
+                } else placeInParent(sectionText, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating SectionText: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating feature section: ", error);
+    }
+}
+
+module.exports = SectionText;
 
 /***/ }),
 
@@ -33358,6 +33821,8 @@ const Button = __webpack_require__(/*! ./Button */ "./src/Creators/Button/index.
 const Input = __webpack_require__(/*! ./Input */ "./src/Creators/Input/index.js");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/Creators/Navbar/index.js");
 const Hero = __webpack_require__(/*! ./Hero */ "./src/Creators/Hero/index.js");
+const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/Creators/FeatureSection/index.js");
+const SectionText = __webpack_require__(/*! ./SectionText */ "./src/Creators/SectionText/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
@@ -33457,6 +33922,8 @@ Creators.Input = Input;
 Creators.Navbar = Navbar;
 Creators.Hero = Hero;
 Creators.MediaSection = MediaSection;
+Creators.SectionText = SectionText;
+Creators.FeatureSection = FeatureSection;
 Creators.Grid = Grid;
 Creators.Footer = Footer;
 Creators.FernComponent = FernComponent;
@@ -34563,7 +35030,7 @@ module.exports = Toggle;
 module.exports = {
   PLUGIN_ID: "f6e24b19",
   DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"],
-  ELEMENT_TYPES: ["Button", "Input", "card", "Image", "Navbar", "Hero", "Footer", "Grid", "FernComponent", "MediaSection"]
+  ELEMENT_TYPES: ["Button", "Input", "SectionText", "card", "Image", "Navbar", "Hero", "MediaSection", "FeatureSection", "Grid", "Footer", "FernComponent"]
 };
 
 /***/ }),
@@ -34983,7 +35450,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Input', 'Navbar', 'Hero', 'MediaSection', 'Grid', 'Footer'].map((element, index) => React.createElement(
+            ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'Footer'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -35010,6 +35477,126 @@ function ElementList({ onGoToScreen }) {
 }
 
 module.exports = ElementList;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/FeatureSection.jsx":
+/*!*************************************************!*\
+  !*** ./src/screens/Elements/FeatureSection.jsx ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+
+const schema = {
+  heading: {
+    type: "text",
+    defaultValue: "Supporting all county mothers in need",
+    sectionedGroup: "text",
+    optional: "group"
+  },
+  subHeading: {
+    type: "text",
+    defaultValue: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
+    sectionedGroup: "text"
+  },
+  buttons: {
+    type: "text",
+    defaultValue: "Get to know us",
+    optional: true,
+    sectionedGroup: "text"
+  },
+  theme: {
+    type: "section",
+    children: {
+      center: "boolean",
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        choices: ["transparent", "black", "white"]
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["black", "white"]
+      },
+      border: "boolean",
+      heading: {
+        type: "section",
+        children: {
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["md", "lg"]
+          },
+          font: {
+            type: "radio",
+            choices: ["sans", "serif", "quirky", "fancy"]
+          }
+          // brazen: "boolean"
+        }
+      },
+      subHeading: {
+        type: "section",
+        children: {
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          }
+        }
+      },
+      buttons: {
+        type: "section",
+        children: {
+          icons: "boolean",
+          reversed: "boolean",
+          themeColor: {
+            type: "color",
+            defaultValue: "#E2406C",
+            choices: ["#E2406C", "#007BFF", "black", "white"],
+            optional: true,
+            meta: { small: true }
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            choices: ["none", "sm", "full"]
+          }
+        }
+      }
+    }
+  }
+};
+
+function FeatureSection({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "FeatureSection",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
+}
+
+module.exports = FeatureSection;
 
 /***/ }),
 
@@ -36485,6 +37072,122 @@ module.exports = Navbar;
 
 /***/ }),
 
+/***/ "./src/screens/Elements/SectionText.jsx":
+/*!**********************************************!*\
+  !*** ./src/screens/Elements/SectionText.jsx ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+
+const schema = {
+  heading: {
+    type: "text",
+    defaultValue: "Create brand content that builds trust"
+  },
+  subHeading: {
+    type: "text",
+    defaultValue: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze."
+  },
+  buttons: {
+    type: "text",
+    defaultValue: "Get to know us",
+    optional: true
+  },
+  theme: {
+    type: "section",
+    children: {
+      center: "boolean",
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        choices: ["transparent", "black", "white"]
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["black", "white"]
+      },
+      border: "boolean",
+      heading: {
+        type: "section",
+        children: {
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
+          size: {
+            type: "radio",
+            choices: ["md", "lg"]
+          },
+          font: {
+            type: "radio",
+            choices: ["sans", "serif", "quirky", "fancy"]
+          }
+          // brazen: "boolean"
+        }
+      },
+      subHeading: {
+        type: "section",
+        children: {
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          }
+        }
+      },
+      buttons: {
+        type: "section",
+        children: {
+          icons: "boolean",
+          reversed: "boolean",
+          themeColor: {
+            type: "color",
+            defaultValue: "#E2406C",
+            choices: ["#E2406C", "#007BFF", "black", "white"],
+            optional: true,
+            meta: { small: true }
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            choices: ["none", "sm", "full"]
+          }
+        }
+      }
+    }
+  }
+};
+
+function SectionText({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "SectionText",
+    onClose: onClose,
+    schema: schema,
+    data: value
+  });
+}
+
+module.exports = SectionText;
+
+/***/ }),
+
 /***/ "./src/screens/Elements/index.jsx":
 /*!****************************************!*\
   !*** ./src/screens/Elements/index.jsx ***!
@@ -36503,6 +37206,8 @@ const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Butto
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar.jsx");
 const Hero = __webpack_require__(/*! ./Hero */ "./src/screens/Elements/Hero.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
+const SectionText = __webpack_require__(/*! ./SectionText */ "./src/screens/Elements/SectionText.jsx");
+const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/screens/Elements/FeatureSection.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection/index.jsx");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/screens/Elements/FernComponent.jsx");
@@ -36553,8 +37258,10 @@ function Elements({ value, subscription, onUpgrade }) {
     function RenderElement() {
         const uiElements = {
             Button, Input, Card, Image,
+            SectionText,
             Navbar,
             Hero,
+            FeatureSection,
             MediaSection,
             Grid,
             Footer,
@@ -37386,6 +38093,8 @@ module.exports = fakeValue;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 const simpleDateFormat = __webpack_require__(/*! ./simple-date-format */ "./src/utils/simple-date-format.js");
 const fakeValue = __webpack_require__(/*! ./fake-value */ "./src/utils/fake-value.js");
 const { PLUGIN_ID } = __webpack_require__(/*! ../constants */ "./src/constants.js");
@@ -37843,12 +38552,17 @@ async function getAssetsByType(type = "logo") {
   }
 }
 
-function getPadding(px = 4, py = 4) {
+function getPadding(top, right, bottom, left) {
+  if (top == undefined) top = 4;
+  if (right == undefined) right = top;
+  if (bottom == undefined) bottom = top;
+  if (left == undefined) left = right;
+
   return {
-    bottom: py,
-    top: py,
-    left: px,
-    right: px
+    bottom,
+    top,
+    left,
+    right
   };
 }
 
@@ -37914,27 +38628,143 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
   return { width: srcWidth * ratio, height: srcHeight * ratio };
 }
 
-function createText(text = "Acacia Grove | The Right Inn..", props) {
+function createRectangle(width = 200, height, userProps = {}) {
+  if (height == undefined) height = width;
+  const { Color, Rectangle, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+  const defaultProps = {
+    name: "BG",
+    fill: "#FFFFFF",
+    width, height,
+    border: false,
+    shadow: "none",
+    cornerRadius: "none"
+  };
+
+  let props = _extends({}, defaultProps, userProps || {});
+
+  if (typeof props.fill == "string") {
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
+
+  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+  const radius = radiusMap[props.cornerRadius || 'none'] || radiusMap["none"];
+
+  if (props.shadow && props.shadow != "none") {
+    const shadowMap = {
+      "none": [0, 0, 0],
+      "sm": [0, 1, 3],
+      "md": [1, 2, 5],
+      "lg": [1.5, 3.5, 7]
+    };
+
+    const shadowProps = shadowMap[props.shadow || "none"] || shadowMap["none"];
+    const shadowOffsets = shadowProps.slice(0, 2);
+    const shadowBlur = shadowProps[2];
+    props.shadow = new Shadow(...shadowOffsets, shadowBlur, new Color("#000", 0.26), true);
+  } else {
+    const { shadow } = props,
+          nonShadowProps = _objectWithoutProperties(props, ["shadow"]);
+    props = _extends({}, nonShadowProps);
+  }
+
+  const strokeProps = {
+    strokeEnabled: true,
+    strokeWidth: 1.5,
+    stroke: new Color("#e0e0e0")
+  };
+
+  if (props.border) {
+    props = _extends({}, props, strokeProps);
+  }
+
+  const rectangleNode = new Rectangle();
+  Object.assign(rectangleNode, props);
+  rectangleNode.setAllCornerRadii(radius);
+
+  return rectangleNode;
+}
+
+function createCircle(radius = 50, userProps = {}) {
+  const { Color, Ellipse, Shadow } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+  const defaultProps = {
+    name: "BG",
+    fill: "#F2F2F2",
+    radiusX: radius,
+    radiusY: radius,
+    border: false,
+    shadow: "none"
+  };
+
+  let props = _extends({}, defaultProps, userProps || {});
+
+  if (typeof props.fill == "string") {
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
+
+  if (props.shadow && props.shadow != "none") {
+    const shadowMap = {
+      "none": [0, 0, 0],
+      "sm": [0, 1, 3],
+      "md": [1, 2, 5],
+      "lg": [1.5, 3.5, 7]
+    };
+
+    const shadowProps = shadowMap[props.shadow || "none"] || shadowMap["none"];
+    const shadowOffsets = shadowProps.slice(0, 2);
+    const shadowBlur = shadowProps[2];
+    props.shadow = new Shadow(...shadowOffsets, shadowBlur, new Color("#000", 0.26), true);
+  } else {
+    const { shadow } = props,
+          nonShadowProps = _objectWithoutProperties(props, ["shadow"]);
+    props = _extends({}, nonShadowProps);
+  }
+
+  const strokeProps = {
+    strokeEnabled: true,
+    strokeWidth: 1.5,
+    stroke: new Color("#e0e0e0")
+  };
+
+  if (props.border) {
+    props = _extends({}, props, strokeProps);
+  }
+
+  const circleNode = new Ellipse();
+  Object.assign(circleNode, props);
+  return circleNode;
+}
+
+function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
   const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
   const defaultTextProps = {
     name: "Text",
-    fill: new Color("#000"),
+    fill: "#000",
     fontSize: 20,
     fontFamily: "Helvetica Neue",
-    fontStyle: "Light",
+    fontStyle: "Regular",
     align: "left",
     layoutBox: _extends({
-      type: Text.AUTO_HEIGHT
-    }, props)
+      type: userProps && userProps.width ? Text.AUTO_HEIGHT : Text.POINT
+    }, userProps || {})
   };
-  props = _extends({}, defaultTextProps, props);
+
+  let props = _extends({}, defaultTextProps, userProps || {});
 
   props.textAlign = {
     "left": Text.ALIGN_LEFT,
     "center": Text.ALIGN_CENTER,
     "right": Text.ALIGN_RIGHT
   }[props.align || "left"];
+
+  if (typeof props.fill == "string") {
+    const transparent = props.fill == "transparent";
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+  }
 
   const textNode = new Text();
   const splitText = text.split("\\n");
@@ -38003,6 +38833,8 @@ module.exports = {
   getFernComponentChildByName,
   calculateAspectRatioFit,
   createText,
+  createRectangle,
+  createCircle,
   chunkArray,
   randomBetween,
   getIconSizeFromTextSize,

@@ -4,13 +4,15 @@ module.exports = {
   ELEMENT_TYPES: [
     "Button",
     "Input",
+    "SectionText",
     "card",
     "Image",
     "Navbar",
     "Hero",
-    "Footer",
-    "Grid",
-    "FernComponent",
     "MediaSection",
+    "FeatureSection",
+    "Grid",
+    "Footer",
+    "FernComponent",
   ],
 };
