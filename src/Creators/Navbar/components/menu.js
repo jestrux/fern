@@ -38,7 +38,7 @@ function createLink(props) {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: linkBg,
-      values: getPadding(10, 26),
+      values: getPadding(26, 10),
     },
   };
 
@@ -56,7 +56,7 @@ function changeLinkText(link, text = "Link", cb = () => {}) {
 
 function createNavActiveIndicator({
   shadow = false,
-  showIndicator,
+  activeIndicator,
   activeLink,
   color,
   themeColor,
@@ -69,7 +69,7 @@ function createNavActiveIndicator({
         linkText.fill = new Color(themeColor || color);
       });
 
-      if (showIndicator) {
+      if (activeIndicator) {
         const navActiveIndicator = createBorder({
           width: width,
           thickness: 2,
@@ -125,7 +125,7 @@ function navMenuComponent(props = {}, {links = "Home, About", activeLink}) {
         type: SceneNode.LAYOUT_STACK,
         stack: {
           orientation: SceneNode.STACK_HORIZONTAL,
-          spacings: 30,
+          spacings: 40,
         },
       };
     }

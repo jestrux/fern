@@ -25,7 +25,7 @@ function footerSubscribeComponent(props = {}) {
   const button = createButton({
     // color: subscribeColor,
     // icon: "send",
-    text: "subscribe",
+    text: "Join",
     size: subscribeInset ? "xs" : "sm",
     roundness: subscribeRoundness,
   });
@@ -38,7 +38,7 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  if(subscribeInset) button.moveInParentCoordinates(-5, 0);
+  // if(subscribeInset) button.moveInParentCoordinates(-5, 0);
 
   const subscribeText = createText(subscribeMessage, {
     name: "FernFooterSubscribeText",

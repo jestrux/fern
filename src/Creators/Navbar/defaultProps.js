@@ -47,7 +47,7 @@ const defaultNavbarProps = {
     //     roundness: "md"
     // },
     // menu: {
-    //     showIndicator: false,
+    //     activeIndicator: false,
     //     inActiveOpacity: 0.5,
     // },
     // socialMediaIcons: {

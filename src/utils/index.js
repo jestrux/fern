@@ -574,7 +574,7 @@ function createRectangle(width = 200, height, userProps = {}) {
 
   const defaultProps = {
     name: "BG",
-    fill: "#FFFFFF",
+    fill: "transparent",
     width, height,
     border: false,
     shadow: "none",

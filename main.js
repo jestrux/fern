@@ -30541,7 +30541,7 @@ function footerSubscribeComponent(props = {}) {
   const button = createButton({
     // color: subscribeColor,
     // icon: "send",
-    text: "subscribe",
+    text: "Join",
     size: subscribeInset ? "xs" : "sm",
     roundness: subscribeRoundness
   });
@@ -30554,7 +30554,7 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  if (subscribeInset) button.moveInParentCoordinates(-5, 0);
+  // if(subscribeInset) button.moveInParentCoordinates(-5, 0);
 
   const subscribeText = createText(subscribeMessage, {
     name: "FernFooterSubscribeText",
@@ -30763,43 +30763,50 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
-const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const {
+  editDom,
+  placeInParent,
+  tagNode,
+  getAssetsByType
+} = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const defaultFooterProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Footer/defaultProps.js");
 const assembleFooter = __webpack_require__(/*! ./assemble */ "./src/Creators/Footer/assemble.js");
 const getFooterComponent = __webpack_require__(/*! ./getFooterComponent */ "./src/Creators/Footer/getFooterComponent.js");
 
 async function Footer(userProps) {
-    let props = _extends({}, defaultFooterProps, userProps || {});
+  let props = _extends({}, defaultFooterProps, userProps || {});
 
-    let logoImage = await getAssetFileFromPath("images/android.png");
+  const logos = await getAssetsByType("logo");
+  let logoImage = logos.logo4;
 
-    try {
-        const oldFooter = userProps ? selection.items[0] : null;
-        if (oldFooter) {
-            const logoNode = getFooterComponent(oldFooter, "logo");
-
-            logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
-        }
-
-        editDom(() => {
-            try {
-                const footer = assembleFooter(props, { logoImage });
-                footer.name = "FernFooter";
-
-                tagNode(footer, _extends({ type: "Footer" }, props));
-
-                if (oldFooter) {
-                    placeInParent(footer, oldFooter.topLeftInParent);
-                    oldFooter.removeFromParent();
-                } else placeInParent(footer, { x: 0, y: 0 });
-            } catch (error) {
-                console.log("Error creating footer: ", error);
-            }
-        });
-    } catch (error) {
-        console.log("Error creating card: ", error);
+  try {
+    const oldNavbar = userProps ? selection.items[0] : null;
+    if (oldNavbar) {
+      if (props.logo == "custom") {
+        const logoNode = getFooterComponent(oldNavbar, "logo");
+        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      }
     }
+
+    editDom(() => {
+      try {
+        const footer = assembleFooter(props, { logoImage, logos });
+        footer.name = "FernFooter";
+
+        tagNode(footer, _extends({ type: "Footer" }, props));
+
+        if (oldFooter) {
+          placeInParent(footer, oldFooter.topLeftInParent);
+          oldFooter.removeFromParent();
+        } else placeInParent(footer, { x: 0, y: 0 });
+      } catch (error) {
+        console.log("Error creating footer: ", error);
+      }
+    });
+  } catch (error) {
+    console.log("Error creating card: ", error);
+  }
 }
 
 module.exports = Footer;
@@ -32957,7 +32964,7 @@ function createLink(props) {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: linkBg,
-      values: getPadding(10, 26)
+      values: getPadding(26, 10)
     }
   };
 
@@ -32975,7 +32982,7 @@ function changeLinkText(link, text = "Link", cb = () => {}) {
 
 function createNavActiveIndicator({
   shadow = false,
-  showIndicator,
+  activeIndicator,
   activeLink,
   color,
   themeColor,
@@ -32988,7 +32995,7 @@ function createNavActiveIndicator({
         linkText.fill = new Color(themeColor || color);
       });
 
-      if (showIndicator) {
+      if (activeIndicator) {
         const navActiveIndicator = createBorder({
           width: width,
           thickness: 2,
@@ -33044,7 +33051,7 @@ function navMenuComponent(props = {}, { links = "Home, About", activeLink }) {
         type: SceneNode.LAYOUT_STACK,
         stack: {
           orientation: SceneNode.STACK_HORIZONTAL,
-          spacings: 30
+          spacings: 40
         }
       };
     }
@@ -33289,7 +33296,7 @@ const defaultNavbarProps = {
     //     roundness: "md"
     // },
     // menu: {
-    //     showIndicator: false,
+    //     activeIndicator: false,
     //     inActiveOpacity: 0.5,
     // },
     // socialMediaIcons: {
@@ -33667,7 +33674,7 @@ module.exports = createSectionText;
 
 const defaultSectionTextProps = {
     heading: "Create brand content that builds trust",
-    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow.\nTalk to us about branding, artistry and the main squeeze.",
     buttons: "",
     theme: {
         center: true,
@@ -36719,11 +36726,11 @@ const mediaSectionSchema = {
       heading: {
         type: "section",
         children: {
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
           size: {
             type: "radio",
             choices: ["md", "lg"]
@@ -36738,11 +36745,11 @@ const mediaSectionSchema = {
       subHeading: {
         type: "section",
         children: {
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
           size: {
             type: "radio",
             choices: ["sm", "md"]
@@ -36980,6 +36987,7 @@ const schema = {
         defaultValue: "#0083F6",
         choices: ["black", "white", "#0083F6", "#28A745", "#DC3535"]
       },
+      activeIndicator: "boolean",
       // inActiveOpacity: {
       //   optional: true,
       //   type: "number",
@@ -38639,7 +38647,7 @@ function createRectangle(width = 200, height, userProps = {}) {
 
   const defaultProps = {
     name: "BG",
-    fill: "#FFFFFF",
+    fill: "transparent",
     width, height,
     border: false,
     shadow: "none",

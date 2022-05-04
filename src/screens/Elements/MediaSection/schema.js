@@ -88,11 +88,11 @@ const mediaSectionSchema = {
         heading: {
           type: "section",
           children: {
-            // width: {
-            //   type: "number",
-            //   min: 400,
-            //   max: 1500,
-            // },
+            width: {
+              type: "number",
+              min: 400,
+              max: 1500,
+            },
             size: {
               type: "radio",
               choices: ["md", "lg"],
@@ -107,11 +107,11 @@ const mediaSectionSchema = {
         subHeading: {
           type: "section",
           children: {
-            // width: {
-            //   type: "number",
-            //   min: 400,
-            //   max: 1500,
-            // },
+            width: {
+              type: "number",
+              min: 400,
+              max: 1500,
+            },
             size: {
               type: "radio",
               choices: ["sm", "md"],

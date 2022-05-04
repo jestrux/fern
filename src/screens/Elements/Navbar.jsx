@@ -113,6 +113,7 @@ const schema = {
         defaultValue: "#0083F6",
         choices: ["black", "white", "#0083F6", "#28A745", "#DC3535"],
       },
+      activeIndicator: "boolean",
       // inActiveOpacity: {
       //   optional: true,
       //   type: "number",

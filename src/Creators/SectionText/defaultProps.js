@@ -1,6 +1,6 @@
 const defaultSectionTextProps = {
     heading: "Create brand content that builds trust",
-    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow.\nTalk to us about branding, artistry and the main squeeze.",
     buttons: "",
     theme: {
         center: true,
