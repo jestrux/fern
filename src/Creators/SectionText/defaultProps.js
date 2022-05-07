@@ -5,6 +5,7 @@ const defaultSectionTextProps = {
     theme: {
         center: true,
         width: 1600, // 1920
+        backgroundColor: "transparent",
         color: "black",
         verticalPadding: 65,
         heading: {

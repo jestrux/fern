@@ -33588,7 +33588,7 @@ function createSectionText(userProps) {
   const subHeadingNode = createText(subHeading, {
     align: theme.center ? "center" : "left",
     width: theme.subHeading.width,
-    fill: new Color(theme.color),
+    fill: new Color(theme.subHeading.color || theme.color),
     fontSize: theme.subHeading.size == "sm" ? 16 : 22,
     lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
     fontStyle: "Regular"
@@ -33606,7 +33606,7 @@ function createSectionText(userProps) {
   const headingNode = createText(heading, {
     align: theme.center ? "center" : "left",
     width: theme.heading.width,
-    fill: new Color(theme.color),
+    fill: new Color(theme.heading.color || theme.color),
     fontSize: theme.heading.size == "md" ? 36 : 48,
     lineSpacing: theme.heading.size == "md" ? 50 : 62,
     fontFamily,
@@ -33679,6 +33679,7 @@ const defaultSectionTextProps = {
     theme: {
         center: true,
         width: 1600, // 1920
+        backgroundColor: "transparent",
         color: "black",
         verticalPadding: 65,
         heading: {
@@ -36726,6 +36727,12 @@ const mediaSectionSchema = {
       heading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           width: {
             type: "number",
             min: 400,
@@ -36745,6 +36752,12 @@ const mediaSectionSchema = {
       subHeading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           width: {
             type: "number",
             min: 400,
@@ -37131,6 +37144,12 @@ const schema = {
       heading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           // width: {
           //   type: "number",
           //   min: 400,
@@ -37150,6 +37169,12 @@ const schema = {
       subHeading: {
         type: "section",
         children: {
+          // color: {
+          //   type: "color",
+          //   choices: ["black", "white"],
+          //   optional: true,
+          //   defaultValue: "black"
+          // },
           // width: {
           //   type: "number",
           //   min: 400,

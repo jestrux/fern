@@ -37,6 +37,12 @@ const schema = {
       heading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           // width: {
           //   type: "number",
           //   min: 400,
@@ -56,6 +62,12 @@ const schema = {
       subHeading: {
         type: "section",
         children: {
+          // color: {
+          //   type: "color",
+          //   choices: ["black", "white"],
+          //   optional: true,
+          //   defaultValue: "black"
+          // },
           // width: {
           //   type: "number",
           //   min: 400,

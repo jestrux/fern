@@ -31,7 +31,7 @@ const defaultSectionTextProps = require("./defaultProps");
     const subHeadingNode = createText(subHeading, {
       align: theme.center ? "center" : "left",
       width: theme.subHeading.width,
-      fill: new Color(theme.color),
+      fill: new Color(theme.subHeading.color || theme.color),
       fontSize: theme.subHeading.size == "sm" ? 16 : 22,
       lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
       fontStyle: "Regular",
@@ -49,7 +49,7 @@ const defaultSectionTextProps = require("./defaultProps");
     const headingNode = createText(heading, {
       align: theme.center ? "center" : "left",
       width: theme.heading.width,
-      fill: new Color(theme.color),
+      fill: new Color(theme.heading.color || theme.color),
       fontSize: theme.heading.size == "md" ? 36 : 48,
       lineSpacing: theme.heading.size == "md" ? 50 : 62,
       fontFamily,
