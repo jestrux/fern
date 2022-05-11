@@ -121,11 +121,11 @@ module.exports = function (props) {
           _id: "sectionTextClassId",
           fake: false,
           type: "class",
-          name: "Section",
+          name: "FernSectionText",
           namespace: "",
           comb: "",
           styleLess:
-            `background-color: ${backgroundColor}; padding-top: 55px; padding-bottom: 55px; display: flex; flex-direction: column; align-items: center;`,
+            `background-color: ${backgroundColor}; padding-top: 70px; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center;`,
           variants: {},
           children: [],
           createdBy: "zzzzz19b79c288zzzzzzb301",
@@ -135,7 +135,7 @@ module.exports = function (props) {
           _id: "sectionTextHeadingClassId",
           fake: false,
           type: "class",
-          name: "Heading 2",
+          name: "FernSectionTextHeading",
           namespace: "",
           comb: "",
           styleLess:
@@ -149,7 +149,7 @@ module.exports = function (props) {
           _id: "sectionTextSubheadingClassId",
           fake: false,
           type: "class",
-          name: "Paragraph",
+          name: "FernSectionTextSubheading",
           namespace: "",
           comb: "",
           styleLess: `
@@ -166,7 +166,7 @@ module.exports = function (props) {
           _id: "sectionTextButtonsClassId",
           fake: false,
           type: "class",
-          name: "Div Block 2",
+          name: "FernSectionButtons",
           namespace: "",
           comb: "",
           styleLess:
@@ -180,7 +180,7 @@ module.exports = function (props) {
           _id: "sectionTextMainButtonClassId",
           fake: false,
           type: "class",
-          name: "Button 7",
+          name: "FernSectionTextMainButton",
           namespace: "",
           comb: "",
           styleLess: `
@@ -199,7 +199,7 @@ module.exports = function (props) {
               _id: "sectionTextSecondaryButtonClassId",
               fake: false,
               type: "class",
-              name: "Button 8",
+              name: "FernSectionTextSecondaryButton",
               namespace: "",
               comb: "",
               styleLess: `

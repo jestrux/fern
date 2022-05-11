@@ -242,7 +242,7 @@ module.exports = function (props) {
           namespace: "",
           comb: "",
           styleLess:
-            "display: flex; justify-content: flex-start; grid-column-gap: 10px; grid-row-gap: 10px;",
+            "display: flex; justify-content: flex-start; grid-column-gap: 10px; grid-row-gap: 10px; margin-top: 24px",
           variants: {},
           children: [],
           createdBy: "zzzzz19b79c288zzzzzzb301",
