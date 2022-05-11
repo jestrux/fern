@@ -2,11 +2,11 @@ const { selection } = require("scenegraph");
 
 const React = require("react");
 const Creators = require("../Creators");
-const { editDom, tagNode } = require("../utils");
+const { editDom, tagNode, openUrl } = require("../utils");
 const ComponentFields = require("./ComponentFields");
 const SectionTitles = require("./SectionTitles");
 
-const ComponentPage = function ({ title, onClose, schema, data, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, children }) {
   const section = data.editorSection || "Content";
   const { theme, ...content } = schema || {theme: {}, content: {}};
 
@@ -33,6 +33,13 @@ const ComponentPage = function ({ title, onClose, schema, data, children }) {
       Creators[title]({ ...data, ...updatedProps });
   }
 
+  function handleExportToWebflow(){
+    const webflowData = webflow(data);
+    const clipboard = require("clipboard");
+    clipboard.copyText(JSON.stringify(webflowData));
+    openUrl("https://jestrux.github.io/webflow-copy");
+  }
+
   console.log("Theme: ", theme, content);
 
   return (
@@ -49,6 +56,14 @@ const ComponentPage = function ({ title, onClose, schema, data, children }) {
           </span>
 
           <h2 className="px-0 text-md ml-1">{title}</h2>
+
+          { webflow && 
+            <button className="ml-auto" uxp-quiet="true"
+              onClick={handleExportToWebflow}
+            >
+              Export
+            </button>
+          }
         </div>
 
         <SectionTitles currentSection={section} onChange={setSection} />

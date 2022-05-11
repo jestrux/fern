@@ -9,6 +9,7 @@ module.exports = {
     externals: {
         application: 'application',
         commands: 'commands',
+        clipboard: 'clipboard',
         assets: 'assets',
         uxp: 'uxp',
         scenegraph: 'scenegraph',

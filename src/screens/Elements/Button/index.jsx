@@ -1,5 +1,6 @@
 const React = require("react");
-const ComponentPage = require("../../components/ComponentPage");
+const ComponentPage = require("../../../components/ComponentPage");
+const webflowButton = require("./webflowButton");
 
 const schema = {
   icon: {
@@ -47,6 +48,7 @@ function Button({ value, onClose }) {
       onClose={onClose}
       schema={schema}
       data={value}
+      webflow={webflowButton}
     />
   );
 }

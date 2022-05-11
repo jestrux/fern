@@ -34768,11 +34768,11 @@ const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const Creators = __webpack_require__(/*! ../Creators */ "./src/Creators/index.js");
-const { editDom, tagNode } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+const { editDom, tagNode, openUrl } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ComponentFields = __webpack_require__(/*! ./ComponentFields */ "./src/components/ComponentFields.jsx");
 const SectionTitles = __webpack_require__(/*! ./SectionTitles */ "./src/components/SectionTitles.jsx");
 
-const ComponentPage = function ({ title, onClose, schema, data, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, children }) {
   const section = data.editorSection || "Content";
   const _ref = schema || { theme: {}, content: {} },
         { theme } = _ref,
@@ -34792,6 +34792,13 @@ const ComponentPage = function ({ title, onClose, schema, data, children }) {
     const updatedProps = typeof field == "string" ? { [field]: newValue } : field;
     if (section == "Styles") Creators[title](_extends({}, data, {
       theme: _extends({}, data.theme, updatedProps) }));else Creators[title](_extends({}, data, updatedProps));
+  }
+
+  function handleExportToWebflow() {
+    const webflowData = webflow(data);
+    const clipboard = __webpack_require__(/*! clipboard */ "clipboard");
+    clipboard.copyText(JSON.stringify(webflowData));
+    openUrl("https://jestrux.github.io/webflow-copy");
   }
 
   console.log("Theme: ", theme, content);
@@ -34821,6 +34828,13 @@ const ComponentPage = function ({ title, onClose, schema, data, children }) {
           "h2",
           { className: "px-0 text-md ml-1" },
           title
+        ),
+        webflow && React.createElement(
+          "button",
+          { className: "ml-auto", "uxp-quiet": "true",
+            onClick: handleExportToWebflow
+          },
+          "Export"
         )
       ),
       React.createElement(SectionTitles, { currentSection: section, onChange: setSection })
@@ -35133,15 +35147,16 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Button.jsx":
-/*!*****************************************!*\
-  !*** ./src/screens/Elements/Button.jsx ***!
-  \*****************************************/
+/***/ "./src/screens/Elements/Button/index.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Button/index.jsx ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const webflowButton = __webpack_require__(/*! ./webflowButton */ "./src/screens/Elements/Button/webflowButton.js");
 
 const schema = {
   icon: {
@@ -35187,11 +35202,85 @@ function Button({ value, onClose }) {
     title: "Button",
     onClose: onClose,
     schema: schema,
-    data: value
+    data: value,
+    webflow: webflowButton
   });
 }
 
 module.exports = Button;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Button/webflowButton.js":
+/*!******************************************************!*\
+  !*** ./src/screens/Elements/Button/webflowButton.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const buttonSizeMap = __webpack_require__(/*! ../../../Creators/Button/buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const tinyColor = __webpack_require__(/*! ../../../utils/tinycolor */ "./src/utils/tinycolor.js");
+
+module.exports = function (props) {
+  const {
+    text,
+    theme
+  } = props;
+  const { iconPlacement, size, color, shadow, style, roundness } = theme;
+
+  const buttonProps = buttonSizeMap[size];
+  const [sm, md] = buttonProps.cornerRadius;
+  const borderRadius = { none: 0, sm, md, full: 999 }[roundness];
+  const textColor = style != "fill" ? color : tinyColor(color).isLight() ? "black" : "white";
+  const styleLess = `
+    ${webflowBorder({ width: 1.2, color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${style != "fill" ? "transparent" : color};
+    color: ${textColor};
+  `.split("\n").map(s => s.trim()).join("");
+
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "fernButton",
+        tag: "a",
+        classes: ["buttonStyles"],
+        children: ["buttonText"],
+        type: "Link",
+        data: { button: true, link: { mode: "external", url: "#" } }
+      }, {
+        _id: "buttonText",
+        text: true,
+        v: text
+      }],
+      styles: [{
+        _id: "buttonStyles",
+        fake: false,
+        type: "class",
+        name: "Button 2",
+        namespace: "",
+        comb: "",
+        styleLess,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }],
+      assets: [],
+      ix1: [],
+      ix2: { interactions: [], events: [], actionLists: [] }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
 
 /***/ }),
 
@@ -36621,13 +36710,15 @@ module.exports = Input;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 const mediaSectionSchema = __webpack_require__(/*! ./schema */ "./src/screens/Elements/MediaSection/schema.js");
+const webflowMediaSection = __webpack_require__(/*! ./webflowMediaSection */ "./src/screens/Elements/MediaSection/webflowMediaSection.js");
 
 function MediaSection({ value, onClose }) {
   return React.createElement(ComponentPage, {
     title: "MediaSection",
     onClose: onClose,
     schema: mediaSectionSchema,
-    data: value
+    data: value,
+    webflow: webflowMediaSection
   });
 }
 
@@ -36752,12 +36843,12 @@ const mediaSectionSchema = {
       subHeading: {
         type: "section",
         children: {
-          color: {
-            type: "color",
-            choices: ["black", "white"],
-            optional: true,
-            defaultValue: "black"
-          },
+          // color: {
+          //   type: "color",
+          //   choices: ["black", "white"],
+          //   optional: true,
+          //   defaultValue: "black",
+          // },
           width: {
             type: "number",
             min: 400,
@@ -36881,15 +36972,73 @@ module.exports = mediaSectionSchema;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Navbar.jsx":
-/*!*****************************************!*\
-  !*** ./src/screens/Elements/Navbar.jsx ***!
-  \*****************************************/
+/***/ "./src/screens/Elements/MediaSection/webflowMediaSection.js":
+/*!******************************************************************!*\
+  !*** ./src/screens/Elements/MediaSection/webflowMediaSection.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (props) {
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "a67cb4c6-5455-6d9b-6222-2b2e6c20b40a",
+        tag: "div",
+        classes: ["d966f934-bbfc-678c-3789-45f0a8782d01"],
+        children: [],
+        type: "Section",
+        data: {
+          tag: "div",
+          grid: {
+            type: "section"
+          }
+        }
+      }],
+      styles: [{
+        _id: "d966f934-bbfc-678c-3789-45f0a8782d01",
+        fake: false,
+        type: "class",
+        name: "bg-section",
+        namespace: "",
+        comb: "",
+        styleLess: "height: 400px; background-color: yellow;",
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }],
+      assets: [],
+      ix1: [],
+      ix2: {
+        interactions: [],
+        events: [],
+        actionLists: []
+      }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Navbar/index.jsx":
+/*!***********************************************!*\
+  !*** ./src/screens/Elements/Navbar/index.jsx ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const webflowNavbar = __webpack_require__(/*! ./webflowNavbar */ "./src/screens/Elements/Navbar/webflowNavbar.js");
 
 const socials = {
   defaultValue: "facebook, twitter, instagram",
@@ -37090,7 +37239,8 @@ function Navbar({ value, onClose }) {
     title: "Navbar",
     onClose: onClose,
     schema: schema,
-    data: value
+    data: value,
+    webflow: webflowNavbar
   });
 }
 
@@ -37098,15 +37248,92 @@ module.exports = Navbar;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/SectionText.jsx":
-/*!**********************************************!*\
-  !*** ./src/screens/Elements/SectionText.jsx ***!
-  \**********************************************/
+/***/ "./src/screens/Elements/Navbar/webflowNavbar.js":
+/*!******************************************************!*\
+  !*** ./src/screens/Elements/Navbar/webflowNavbar.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const { randomUuid, webflowBorder } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const tinyColor = __webpack_require__(/*! ../../../utils/tinycolor */ "./src/utils/tinycolor.js");
+module.exports = function (props) {
+  const { theme } = props;
+  const { backgroundColor, shadow, border } = theme;
+  let styles = `
+        height: 70px; 
+        background-color: ${backgroundColor};
+    `;
+  if (shadow) styles += "box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16);";else if (border) {
+    const borderColor = new tinyColor(border.color);
+    borderColor.setAlpha(border.opacity);
+    styles += webflowBorder({ width: border.thickness, color: borderColor.toRgbString(), bottomOnly: true });
+  }
+
+  styles = styles.split("\n").map(s => s.trim()).join("");
+
+  const elementId = randomUuid();
+  const styleId = randomUuid();
+
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "navbarWrapper" + elementId,
+        tag: "div",
+        classes: [styleId],
+        children: [],
+        type: "Section",
+        data: {
+          tag: "div",
+          grid: {
+            type: "section"
+          }
+        }
+      }],
+      styles: [{
+        _id: styleId,
+        fake: false,
+        type: "class",
+        name: "fern-navbar" + randomUuid(),
+        namespace: "",
+        comb: "",
+        styleLess: styles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }],
+      assets: [],
+      ix1: [],
+      ix2: {
+        interactions: [],
+        events: [],
+        actionLists: []
+      }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
+
+/***/ }),
+
+/***/ "./src/screens/Elements/SectionText/index.jsx":
+/*!****************************************************!*\
+  !*** ./src/screens/Elements/SectionText/index.jsx ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ComponentPage = __webpack_require__(/*! ../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const webflowSectionText = __webpack_require__(/*! ./webflowSectionText */ "./src/screens/Elements/SectionText/webflowSectionText.js");
 
 const schema = {
   heading: {
@@ -37175,11 +37402,11 @@ const schema = {
           //   optional: true,
           //   defaultValue: "black"
           // },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
           size: {
             type: "radio",
             choices: ["sm", "md"]
@@ -37218,11 +37445,222 @@ function SectionText({ value, onClose }) {
     title: "SectionText",
     onClose: onClose,
     schema: schema,
-    data: value
+    data: value,
+    webflow: webflowSectionText
   });
 }
 
 module.exports = SectionText;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/SectionText/webflowSectionText.js":
+/*!****************************************************************!*\
+  !*** ./src/screens/Elements/SectionText/webflowSectionText.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const buttonSizeMap = __webpack_require__(/*! ../../../Creators/Button/buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+module.exports = function (props) {
+  const { heading, subHeading, buttons, theme } = props;
+  const { backgroundColor, shadow, border } = theme;
+  const [mainButton, secondaryButton] = (buttons || []).split(",");
+
+  const buttonProps = buttonSizeMap[theme.buttons.size];
+  const [sm, md] = buttonProps.cornerRadius;
+  const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
+
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "sectionText",
+        tag: "div",
+        classes: ["sectionTextClassId"],
+        children: ["sectionTextHeadingId", "sectionTextSubHeadingId", "sectionTextButtonsId"],
+        type: "Section",
+        data: {
+          grid: {
+            type: "section"
+          },
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextHeadingId",
+        tag: "h1",
+        classes: ["sectionTextHeadingClassId"],
+        children: ["sectionTextHeadingTextId"],
+        type: "Heading",
+        data: {
+          tag: "h1"
+        }
+      }, {
+        _id: "sectionTextHeadingTextId",
+        text: true,
+        v: heading
+      }, {
+        _id: "sectionTextSubHeadingId",
+        tag: "p",
+        classes: ["sectionTextSubheadingClassId"],
+        children: ["sectionTextSubHeadingTextId"],
+        type: "Paragraph"
+      }, {
+        _id: "sectionTextSubHeadingTextId",
+        text: true,
+        v: subHeading
+      }, {
+        _id: "sectionTextButtonsId",
+        tag: "div",
+        classes: ["sectionTextButtonsClassId"],
+        children: ["sectionTextMainButtonId", ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])],
+        type: "Block",
+        data: {
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextMainButtonId",
+        tag: "a",
+        classes: ["sectionTextMainButtonClassId"],
+        children: ["sectionTextMainButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextMainButtonTextId",
+        text: true,
+        v: mainButton
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonId",
+        tag: "a",
+        classes: ["sectionTextSecondaryButtonClassId"],
+        children: ["sectionTextSecondaryButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextSecondaryButtonTextId",
+        text: true,
+        v: secondaryButton
+      }])],
+      styles: [{
+        _id: "sectionTextClassId",
+        fake: false,
+        type: "class",
+        name: "Section",
+        namespace: "",
+        comb: "",
+        styleLess: `background-color: ${backgroundColor}; padding-top: 55px; padding-bottom: 55px; display: flex; flex-direction: column; align-items: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextHeadingClassId",
+        fake: false,
+        type: "class",
+        name: "Heading 2",
+        namespace: "",
+        comb: "",
+        styleLess: `color: ${theme.heading.color || theme.color};margin-top: 0px; margin-bottom: 6px; font-size: 36px; text-align: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextSubheadingClassId",
+        fake: false,
+        type: "class",
+        name: "Paragraph",
+        namespace: "",
+        comb: "",
+        styleLess: `
+            color: ${theme.subHeading.color || theme.color};
+            max-width: ${theme.subHeading.width}px; 
+            font-size: 16px; text-align: center;
+          `,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextButtonsClassId",
+        fake: false,
+        type: "class",
+        name: "Div Block 2",
+        namespace: "",
+        comb: "",
+        styleLess: "display: flex; justify-content: center; grid-column-gap: 10px; grid-row-gap: 10px;",
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextMainButtonClassId",
+        fake: false,
+        type: "class",
+        name: "Button 7",
+        namespace: "",
+        comb: "",
+        styleLess: `
+          ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+          ${webflowBorderRadii(borderRadius)}
+          background-color: ${theme.buttons.themeColor || theme.color};
+          color: white;
+        `,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonClassId",
+        fake: false,
+        type: "class",
+        name: "Button 8",
+        namespace: "",
+        comb: "",
+        styleLess: `
+                ${webflowBorder({ width: 1.2, color: theme.color })}
+                ${webflowBorderRadii(borderRadius)}
+                background-color: transparent; 
+                color: ${theme.color};
+            `,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }])],
+      assets: [],
+      ix1: [],
+      ix2: {
+        interactions: [],
+        events: [],
+        actionLists: []
+      }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
 
 /***/ }),
 
@@ -37240,11 +37678,11 @@ const ElementList = __webpack_require__(/*! ./ElementList */ "./src/screens/Elem
 const Card = __webpack_require__(/*! ./Card */ "./src/screens/Elements/Card.jsx");
 const Image = __webpack_require__(/*! ./Image */ "./src/screens/Elements/Image/index.js");
 const Input = __webpack_require__(/*! ./Input */ "./src/screens/Elements/Input.jsx");
-const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button.jsx");
-const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar.jsx");
+const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button/index.jsx");
+const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 const Hero = __webpack_require__(/*! ./Hero */ "./src/screens/Elements/Hero.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
-const SectionText = __webpack_require__(/*! ./SectionText */ "./src/screens/Elements/SectionText.jsx");
+const SectionText = __webpack_require__(/*! ./SectionText */ "./src/screens/Elements/SectionText/index.jsx");
 const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/screens/Elements/FeatureSection.jsx");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/screens/Elements/MediaSection/index.jsx");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/screens/Elements/Grid.jsx");
@@ -38847,6 +39285,47 @@ function camelCaseToSentenceCase(text) {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+function openUrl(url) {
+  const shell = __webpack_require__(/*! uxp */ "uxp").shell;
+  shell.openExternal(url);
+}
+
+function randomUuid() {
+  const segment1 = Math.random().toString(36).substring(2);
+  const segment2 = Math.random().toString(36).substring(2);
+  const segment3 = Math.random().toString(36).substring(2);
+  const segment4 = Math.random().toString(36).substring(2);
+  return `${segment1}-${segment2}-${segment3}-${segment4}`;
+}
+
+function webflowBorder({ width = 1.25, color = "black", bottomOnly = false }) {
+  const restWidth = bottomOnly ? 0 : width;
+
+  return `
+    border-top-style: solid; 
+    border-top-width: ${restWidth}px; 
+    border-top-color: ${color}; 
+    border-right-style: solid; 
+    border-right-width: ${restWidth}px; 
+    border-right-color: ${color}; 
+    border-bottom-style: solid; 
+    border-bottom-width: ${width}px; 
+    border-bottom-color: ${color}; 
+    border-left-style: solid;
+    border-left-width: ${restWidth}px; 
+    border-left-color: ${color};
+  `;
+}
+
+function webflowBorderRadii(radius) {
+  return `
+    border-top-left-radius: ${radius}px; 
+    border-top-right-radius: ${radius}px; 
+    border-bottom-left-radius: ${radius}px; 
+    border-bottom-right-radius: ${radius}px;
+  `;
+}
+
 module.exports = {
   shuffle,
   downloadImage,
@@ -38877,7 +39356,11 @@ module.exports = {
   randomBetween,
   getIconSizeFromTextSize,
   camelCaseToSentenceCase,
-  getAssetsByType
+  getAssetsByType,
+  openUrl,
+  randomUuid,
+  webflowBorder,
+  webflowBorderRadii
 };
 
 /***/ }),
@@ -39334,6 +39817,17 @@ module.exports = require("application");
 /***/ (function(module, exports) {
 
 module.exports = require("assets");
+
+/***/ }),
+
+/***/ "clipboard":
+/*!****************************!*\
+  !*** external "clipboard" ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("clipboard");
 
 /***/ }),
 

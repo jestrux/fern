@@ -1,5 +1,6 @@
 const React = require("react");
-const ComponentPage = require("../../components/ComponentPage");
+const ComponentPage = require("../../../components/ComponentPage");
+const webflowSectionText = require("./webflowSectionText");
 
 const schema = {
   heading: {
@@ -68,11 +69,11 @@ const schema = {
           //   optional: true,
           //   defaultValue: "black"
           // },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500,
+          },
           size: {
             type: "radio",
             choices: ["sm", "md"],
@@ -113,6 +114,7 @@ function SectionText({ value, onClose }) {
       onClose={onClose}
       schema={schema}
       data={value}
+      webflow={webflowSectionText}
     />
   );
 }

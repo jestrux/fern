@@ -1,5 +1,6 @@
 const React = require("react");
-const ComponentPage = require("../../components/ComponentPage");
+const ComponentPage = require("../../../components/ComponentPage");
+const webflowNavbar = require("./webflowNavbar");
 
 const socials = {
   defaultValue: "facebook, twitter, instagram",
@@ -205,6 +206,7 @@ function Navbar({ value, onClose }) {
       onClose={onClose}
       schema={schema}
       data={value}
+      webflow={webflowNavbar}
     />
   );
 }

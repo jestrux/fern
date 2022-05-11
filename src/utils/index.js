@@ -777,6 +777,47 @@ function camelCaseToSentenceCase(text) {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+function openUrl(url){
+  const shell = require("uxp").shell;
+  shell.openExternal(url);
+}
+
+function randomUuid(){
+  const segment1 = Math.random().toString(36).substring(2);
+  const segment2 = Math.random().toString(36).substring(2);
+  const segment3 = Math.random().toString(36).substring(2);
+  const segment4 = Math.random().toString(36).substring(2);
+  return `${segment1}-${segment2}-${segment3}-${segment4}`;
+}
+
+function webflowBorder({width = 1.25, color = "black", bottomOnly = false}){
+  const restWidth = bottomOnly ? 0 : width;
+
+  return `
+    border-top-style: solid; 
+    border-top-width: ${restWidth}px; 
+    border-top-color: ${color}; 
+    border-right-style: solid; 
+    border-right-width: ${restWidth}px; 
+    border-right-color: ${color}; 
+    border-bottom-style: solid; 
+    border-bottom-width: ${width}px; 
+    border-bottom-color: ${color}; 
+    border-left-style: solid;
+    border-left-width: ${restWidth}px; 
+    border-left-color: ${color};
+  `;
+}
+
+function webflowBorderRadii(radius){
+  return `
+    border-top-left-radius: ${radius}px; 
+    border-top-right-radius: ${radius}px; 
+    border-bottom-left-radius: ${radius}px; 
+    border-bottom-right-radius: ${radius}px;
+  `;
+}
+
 module.exports = {
   shuffle,
   downloadImage,
@@ -807,5 +848,9 @@ module.exports = {
   randomBetween,
   getIconSizeFromTextSize,
   camelCaseToSentenceCase,
-  getAssetsByType
+  getAssetsByType,
+  openUrl,
+  randomUuid,
+  webflowBorder,
+  webflowBorderRadii
 };
