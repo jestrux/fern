@@ -37507,20 +37507,20 @@ module.exports = function (props) {
   const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
 
   let mainButtonStyles = `
-    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
-    ${webflowBorderRadii(borderRadius)}
-    background-color: ${theme.buttons.themeColor || theme.color};
-    color: white;
-  `;
-
-  let secondaryButtonStyles = `
     ${webflowBorder({ width: 1.2, color: theme.color })}
     ${webflowBorderRadii(borderRadius)}
     background-color: transparent; 
     color: ${theme.color};
   `;
 
-  if (props.theme.buttons.reversed) {
+  let secondaryButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+
+  if (secondaryButton && props.theme.buttons.reversed || !secondaryButton && !props.theme.buttons.reversed) {
     let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
     mainButtonStyles = secondaryButtonStyles;
     secondaryButtonStyles = mainButtonStylesClone;
@@ -37593,7 +37593,7 @@ module.exports = function (props) {
         _id: "rightSlotId",
         tag: "div",
         classes: ["97e0c99d-fcb3-13cc-3fa8-a56918e33e1d"],
-        children: ["rightNavLinksId", ...(!props.buttons ? [] : ["rightNavButtonsId"])],
+        children: ["rightNavLinksId", ...(!props.rightSlot.buttons ? [] : ["rightNavButtonsId"])],
         type: "Block",
         data: {
           text: true,
@@ -37608,11 +37608,11 @@ module.exports = function (props) {
         data: {
           tag: "nav"
         }
-      }, ...links.flat(), ...(!props.buttons ? [] : [{
+      }, ...links.flat(), ...(!props.rightSlot.buttons ? [] : [{
         _id: "rightNavButtonsId",
         tag: "div",
         classes: ["e201d317-b6a8-62bb-7c31-aa7fbae08ec8"],
-        children: [...(secondaryButton ? ["sectionTextSecondaryButtonId"] : []), "d96d78c5-b344-4f48-67de-51926d3ba621"],
+        children: ["d96d78c5-b344-4f48-67de-51926d3ba621", ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])],
         type: "Block",
         data: { tag: "div", text: false }
       }, {
@@ -37742,7 +37742,7 @@ module.exports = function (props) {
         children: [],
         createdBy: "5eea119b79c2885ecfd3b301",
         selector: null
-      }, ...(!props.buttons ? [] : [{
+      }, ...(!props.rightSlot.buttons ? [] : [{
         _id: "e201d317-b6a8-62bb-7c31-aa7fbae08ec8",
         fake: false,
         type: "class",
