@@ -9,6 +9,26 @@ module.exports = function (props) {
   const buttonProps = buttonSizeMap[theme.buttons.size];
   const [sm, md] = buttonProps.cornerRadius;
   const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
+
+  let mainButtonStyles = `
+    ${webflowBorder({width: 1.2, color: theme.buttons.themeColor || theme.color})}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+  
+  let secondaryButtonStyles = `
+    ${webflowBorder({width: 1.2, color: theme.color})}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: transparent; 
+    color: ${theme.color};
+  `;
+
+  if(props.theme.buttons.reversed) {
+    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    mainButtonStyles = secondaryButtonStyles;
+    secondaryButtonStyles = mainButtonStylesClone;
+  }
   
   return {
     type: "@webflow/XscpData",
@@ -186,12 +206,7 @@ module.exports = function (props) {
             name: "FernSectionTextMainButton",
             namespace: "",
             comb: "",
-            styleLess: `
-            ${webflowBorder({width: 1.2, color: theme.buttons.themeColor || theme.color})}
-            ${webflowBorderRadii(borderRadius)}
-            background-color: ${theme.buttons.themeColor || theme.color};
-            color: white;
-          `,
+            styleLess: mainButtonStyles,
             variants: {},
             children: [],
             createdBy: "zzzzz19b79c288zzzzzzb301",
@@ -205,12 +220,7 @@ module.exports = function (props) {
                 name: "FernSectionTextSecondaryButton",
                 namespace: "",
                 comb: "",
-                styleLess: `
-                  ${webflowBorder({width: 1.2, color: theme.color})}
-                  ${webflowBorderRadii(borderRadius)}
-                  background-color: transparent; 
-                  color: ${theme.color};
-              `,
+                styleLess: secondaryButtonStyles,
                 variants: {},
                 children: [],
                 createdBy: "zzzzz19b79c288zzzzzzb301",

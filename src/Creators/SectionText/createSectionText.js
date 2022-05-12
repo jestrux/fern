@@ -17,12 +17,14 @@ const defaultSectionTextProps = require("./defaultProps");
       const icon = theme.buttons.icons ? "chevron-right" : "";
       theme.buttons.mainButton.icon = icon;
       theme.buttons.secondaryButton.icon = icon;
+      const [mainButton, secondaryButton] = (buttons || "").split(",");
   
       buttonsNode = navButtonsComponent(
         {
           color: theme.color,
           themeColor: theme.themeColor,
           ...theme.buttons,
+          reversed: secondaryButton ? !theme.buttons.reversed : theme.buttons.reversed
         },
         buttons
       );

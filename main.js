@@ -33580,11 +33580,14 @@ function createSectionText(userProps) {
     const icon = theme.buttons.icons ? "chevron-right" : "";
     theme.buttons.mainButton.icon = icon;
     theme.buttons.secondaryButton.icon = icon;
+    const [mainButton, secondaryButton] = (buttons || "").split(",");
 
     buttonsNode = navButtonsComponent(_extends({
       color: theme.color,
       themeColor: theme.themeColor
-    }, theme.buttons), buttons);
+    }, theme.buttons, {
+      reversed: secondaryButton ? !theme.buttons.reversed : theme.buttons.reversed
+    }), buttons);
   }
 
   const subHeadingNode = createText(subHeading, {
@@ -37008,7 +37011,7 @@ module.exports = function (props) {
   `;
 
   if (props.theme.buttons.reversed) {
-    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    const mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
     mainButtonStyles = secondaryButtonStyles;
     secondaryButtonStyles = mainButtonStylesClone;
   }
@@ -37945,6 +37948,26 @@ module.exports = function (props) {
   const [sm, md] = buttonProps.cornerRadius;
   const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
 
+  let mainButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+
+  let secondaryButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: transparent; 
+    color: ${theme.color};
+  `;
+
+  if (props.theme.buttons.reversed) {
+    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    mainButtonStyles = secondaryButtonStyles;
+    secondaryButtonStyles = mainButtonStylesClone;
+  }
+
   return {
     type: "@webflow/XscpData",
     payload: {
@@ -38088,12 +38111,7 @@ module.exports = function (props) {
         name: "FernSectionTextMainButton",
         namespace: "",
         comb: "",
-        styleLess: `
-            ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
-            ${webflowBorderRadii(borderRadius)}
-            background-color: ${theme.buttons.themeColor || theme.color};
-            color: white;
-          `,
+        styleLess: mainButtonStyles,
         variants: {},
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
@@ -38105,12 +38123,7 @@ module.exports = function (props) {
         name: "FernSectionTextSecondaryButton",
         namespace: "",
         comb: "",
-        styleLess: `
-                  ${webflowBorder({ width: 1.2, color: theme.color })}
-                  ${webflowBorderRadii(borderRadius)}
-                  background-color: transparent; 
-                  color: ${theme.color};
-              `,
+        styleLess: secondaryButtonStyles,
         variants: {},
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",

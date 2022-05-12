@@ -16,7 +16,7 @@ module.exports = function (props) {
     background-color: ${theme.buttons.themeColor || theme.color};
     color: white;
   `;
-
+  
   let secondaryButtonStyles = `
     ${webflowBorder({width: 1.2, color: theme.color})}
     ${webflowBorderRadii(borderRadius)}
@@ -25,7 +25,7 @@ module.exports = function (props) {
   `;
 
   if(props.theme.buttons.reversed) {
-    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    const mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
     mainButtonStyles = secondaryButtonStyles;
     secondaryButtonStyles = mainButtonStylesClone;
   }
