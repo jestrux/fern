@@ -33138,7 +33138,9 @@ function createNavSlot(props, components = {}) {
     dp: navDpComponent,
     socials: (props, icons) => createSocialMediaIcons(_extends({}, props, { icons })),
     search: navSearchInputComponent,
-    buttons: (props, buttons) => navButtonsComponent(_extends({}, props, props.theme.buttons), buttons)
+    buttons: (props, buttons) => navButtonsComponent(_extends({}, props, props.theme.buttons, {
+      themeColor: props.theme.buttons.themeColor
+    }), buttons)
   };
 
   try {
@@ -36985,7 +36987,7 @@ const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../u
 module.exports = function (props) {
   const { heading, subHeading, buttons, theme } = props;
   const { backgroundColor, shadow, border } = theme;
-  const [mainButton, secondaryButton] = (buttons || []).split(",");
+  const [mainButton, secondaryButton] = (buttons || "").split(",");
 
   const buttonProps = buttonSizeMap[theme.buttons.size];
   const [sm, md] = buttonProps.cornerRadius;
@@ -37032,7 +37034,7 @@ module.exports = function (props) {
         _id: "d96d78c5-b344-4f48-67de-51926d3ba5ef",
         tag: "div",
         classes: ["77d69c17-ff9d-7d84-be02-e30f78fe3b25"],
-        children: ["d96d78c5-b344-4f48-67de-51926d3ba5f0", "d96d78c5-b344-4f48-67de-51926d3ba5f2", "d96d78c5-b344-4f48-67de-51926d3ba5f4"],
+        children: ["d96d78c5-b344-4f48-67de-51926d3ba5f0", "d96d78c5-b344-4f48-67de-51926d3ba5f2", ...(!buttons ? [] : ["mediaSectionButtonsId"])],
         type: "Block",
         data: { tag: "div" }
       }, {
@@ -37056,8 +37058,8 @@ module.exports = function (props) {
         _id: "d96d78c5-b344-4f48-67de-51926d3ba5f3",
         text: true,
         v: subHeading
-      }, {
-        _id: "d96d78c5-b344-4f48-67de-51926d3ba5f4",
+      }, ...(!buttons ? [] : [{
+        _id: "mediaSectionButtonsId",
         tag: "div",
         classes: ["e201d317-b6a8-62bb-7c31-eef7bae08ec8"],
         children: ["d96d78c5-b344-4f48-67de-51926d3ba5f5", ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])],
@@ -37093,7 +37095,7 @@ module.exports = function (props) {
         _id: "d96d78c5-b344-4f48-67de-51926d3ba5f8",
         text: true,
         v: secondaryButton
-      }]), {
+      }])]), {
         _id: "64c512dc-79e4-6dc1-d969-3fa0f3b302a4",
         tag: "img",
         classes: ["5c006375-5441-cd29-dc1a-6904da56fe42"],
@@ -37181,7 +37183,7 @@ module.exports = function (props) {
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
         selector: null
-      }, {
+      }, ...(!buttons ? [] : [{
         _id: "e201d317-b6a8-62bb-7c31-eef7bae08ec8",
         fake: false,
         type: "class",
@@ -37217,7 +37219,7 @@ module.exports = function (props) {
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
         selector: null
-      }]), {
+      }])]), {
         _id: "5c006375-5441-cd29-dc1a-6904da56fe42",
         fake: false,
         type: "class",
@@ -37402,12 +37404,13 @@ const schema = {
         type: "section",
         children: {
           reversed: "boolean",
-          // themeColor: {
-          //   type: "color",
-          //   defaultValue: "black",
-          //   choices: ["black", "white"],
-          //   meta: { small: true },
-          // },
+          themeColor: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["black", "white"],
+            meta: { small: true },
+            optional: true
+          },
           roundness: {
             label: "Corner Radius",
             type: "radio",
@@ -37472,10 +37475,11 @@ module.exports = Navbar;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const { randomUuid, webflowBorder } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const buttonSizeMap = __webpack_require__(/*! ../../../Creators/Button/buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const { randomUuid, webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const tinyColor = __webpack_require__(/*! ../../../utils/tinycolor */ "./src/utils/tinycolor.js");
 module.exports = function (props) {
-  const { theme } = props;
+  const { buttons, theme } = props;
   const { backgroundColor, shadow, border } = theme;
   let bgStyles = `
         height: 70px; 
@@ -37493,6 +37497,31 @@ module.exports = function (props) {
   }
 
   bgStyles = bgStyles.split("\n").map(s => s.trim()).join("");
+
+  const [mainButton, secondaryButton] = (props.rightSlot.buttons || "").split(",");;
+  const buttonProps = buttonSizeMap[theme.buttons.size];
+  const [sm, md] = buttonProps.cornerRadius;
+  const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
+
+  let mainButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+
+  let secondaryButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: transparent; 
+    color: ${theme.color};
+  `;
+
+  if (props.theme.buttons.reversed) {
+    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    mainButtonStyles = secondaryButtonStyles;
+    secondaryButtonStyles = mainButtonStylesClone;
+  }
 
   const links = props.rightSlot.menu.links.split(",").map((link, index) => {
     const linkId = randomUuid();
@@ -37537,14 +37566,14 @@ module.exports = function (props) {
       }, {
         _id: "39a6d71e-e959-f349-79d5-f4b2c1a850b8",
         tag: "div",
-        classes: ["bb94d9df-b0d6-879b-e416-d341a2e4bd94"],
-        children: ["1707ba52-ee04-c2ae-1f08-0e59530c100a", "37ed35c9-8dac-fc92-d726-2d53adb16af2"],
+        classes: ["navContainerClassId"],
+        children: ["logoId", "rightSlotId"],
         type: "Block",
         data: {
           tag: "div"
         }
       }, {
-        _id: "1707ba52-ee04-c2ae-1f08-0e59530c100a",
+        _id: "logoId",
         tag: "div",
         classes: ["27166d00-fdc2-b723-b8eb-71c6e264675f"],
         children: ["40d406d4-fc6c-73a3-f6c4-b1b65a53a44d"],
@@ -37558,15 +37587,62 @@ module.exports = function (props) {
         text: true,
         v: "Fern."
       }, {
-        _id: "37ed35c9-8dac-fc92-d726-2d53adb16af2",
-        tag: "nav",
+        _id: "rightSlotId",
+        tag: "div",
         classes: ["97e0c99d-fcb3-13cc-3fa8-a56918e33e1d"],
+        children: ["rightNavLinksId", ...(!props.buttons ? [] : ["rightNavButtonsId"])],
+        type: "Block",
+        data: {
+          text: true,
+          tag: "div"
+        }
+      }, {
+        _id: "rightNavLinksId",
+        tag: "nav",
+        classes: ["97e0c99d-fcb3-13cc-3fa8-a56918e5513a"],
         children: links.map(([link]) => link._id),
         type: "Block",
         data: {
           tag: "nav"
         }
-      }, ...links.flat()],
+      }, ...links.flat(), ...(!props.buttons ? [] : [{
+        _id: "rightNavButtonsId",
+        tag: "div",
+        classes: ["e201d317-b6a8-62bb-7c31-aa7fbae08ec8"],
+        children: [...(secondaryButton ? ["sectionTextSecondaryButtonId"] : []), "d96d78c5-b344-4f48-67de-51926d3ba621"],
+        type: "Block",
+        data: { tag: "div", text: false }
+      }, {
+        _id: "d96d78c5-b344-4f48-67de-51926d3ba621",
+        tag: "a",
+        classes: ["e201d317-b6a8-62bb-7c31-aa7fbae08ec9"],
+        children: ["d96d78c5-b344-4f48-67de-51926d3baa71"],
+        type: "Link",
+        data: {
+          button: true,
+          link: { mode: "external", url: "#" },
+          block: ""
+        }
+      }, {
+        _id: "d96d78c5-b344-4f48-67de-51926d3baa71",
+        text: true,
+        v: mainButton
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonId",
+        tag: "a",
+        classes: ["e201d317-b6a8-62bb-7c31-aa7fbae08eca"],
+        children: ["d96d78c5-b344-4f48-67de-51926d3bad12"],
+        type: "Link",
+        data: {
+          button: true,
+          link: { mode: "external", url: "#" },
+          block: ""
+        }
+      }, {
+        _id: "d96d78c5-b344-4f48-67de-51926d3bad12",
+        text: true,
+        v: secondaryButton
+      }])])],
       styles: [{
         _id: "295b26d0-b91a-7588-d655-ad41ba07cab0",
         fake: false,
@@ -37580,7 +37656,7 @@ module.exports = function (props) {
         createdBy: "zzzzz19b79c288zzzzzzb301",
         selector: null
       }, {
-        _id: "bb94d9df-b0d6-879b-e416-d341a2e4bd94",
+        _id: "navContainerClassId",
         fake: false,
         type: "class",
         name: "NavContainer",
@@ -37613,6 +37689,18 @@ module.exports = function (props) {
         name: "RightNavSlot",
         namespace: "",
         comb: "",
+        styleLess: "display: flex; height: 100%; align-items: center; grid-column-gap: 16px; grid-row-gap: 16px;",
+        variants: {},
+        children: [],
+        createdBy: "5eea119b79c2885ecfd3b301",
+        selector: null
+      }, {
+        _id: "97e0c99d-fcb3-13cc-3fa8-a56918e5513a",
+        fake: false,
+        type: "class",
+        name: "NavbarLinks",
+        namespace: "",
+        comb: "",
         styleLess: "display: flex; height: 100%; align-items: center; grid-column-gap: 12px; grid-row-gap: 12px;",
         variants: {},
         children: [],
@@ -37622,7 +37710,7 @@ module.exports = function (props) {
         _id: "a7946ff7-7e35-bba9-9ba8-32dbe588b6b1",
         fake: false,
         type: "class",
-        name: "NavLink",
+        name: "NavbarLink",
         namespace: "",
         comb: "",
         styleLess: `
@@ -37631,7 +37719,7 @@ module.exports = function (props) {
             display: flex; align-items: center; 
             padding-right: 12px; padding-left: 12px; 
             border-bottom-style: solid; 
-            border-bottom-width: 2px; 
+            border-bottom-width: ${props.theme.activeIndicator ? "2px" : "0"}; 
             height: 100%; 
             border-bottom-color: transparent;
           `,
@@ -37651,7 +37739,43 @@ module.exports = function (props) {
         children: [],
         createdBy: "5eea119b79c2885ecfd3b301",
         selector: null
-      }],
+      }, ...(!props.buttons ? [] : [{
+        _id: "e201d317-b6a8-62bb-7c31-aa7fbae08ec8",
+        fake: false,
+        type: "class",
+        name: "NavbarButtons",
+        namespace: "",
+        comb: "",
+        styleLess: "display: flex; justify-content: flex-start; grid-column-gap: 7px; grid-row-gap: 7px;",
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "e201d317-b6a8-62bb-7c31-aa7fbae08ec9",
+        fake: false,
+        type: "class",
+        name: "NavbarMainButton",
+        namespace: "",
+        comb: "",
+        styleLess: mainButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!secondaryButton ? [] : [{
+        _id: "e201d317-b6a8-62bb-7c31-aa7fbae08eca",
+        fake: false,
+        type: "class",
+        name: "NavbarSecondaryButton",
+        namespace: "",
+        comb: "",
+        styleLess: secondaryButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }])])],
       assets: [],
       ix1: [],
       ix2: {
@@ -37815,7 +37939,7 @@ const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../u
 module.exports = function (props) {
   const { heading, subHeading, buttons, theme } = props;
   const { backgroundColor, shadow, border } = theme;
-  const [mainButton, secondaryButton] = (buttons || []).split(",");
+  const [mainButton, secondaryButton] = (buttons || "").split(",");;
 
   const buttonProps = buttonSizeMap[theme.buttons.size];
   const [sm, md] = buttonProps.cornerRadius;
@@ -37828,7 +37952,7 @@ module.exports = function (props) {
         _id: "sectionText",
         tag: "div",
         classes: ["sectionTextClassId"],
-        children: ["sectionTextHeadingId", "sectionTextSubHeadingId", "sectionTextButtonsId"],
+        children: ["sectionTextHeadingId", "sectionTextSubHeadingId", ...(!buttons ? [] : ["sectionTextButtonsId"])],
         type: "Section",
         data: {
           grid: {
@@ -37859,7 +37983,7 @@ module.exports = function (props) {
         _id: "sectionTextSubHeadingTextId",
         text: true,
         v: subHeading
-      }, {
+      }, ...(!buttons ? [] : [{
         _id: "sectionTextButtonsId",
         tag: "div",
         classes: ["sectionTextButtonsClassId"],
@@ -37904,7 +38028,7 @@ module.exports = function (props) {
         _id: "sectionTextSecondaryButtonTextId",
         text: true,
         v: secondaryButton
-      }])],
+      }])])],
       styles: [{
         _id: "sectionTextClassId",
         fake: false,
@@ -37945,7 +38069,7 @@ module.exports = function (props) {
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
         selector: null
-      }, {
+      }, ...(!buttons ? [] : [{
         _id: "sectionTextButtonsClassId",
         fake: false,
         type: "class",
@@ -37965,11 +38089,11 @@ module.exports = function (props) {
         namespace: "",
         comb: "",
         styleLess: `
-          ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
-          ${webflowBorderRadii(borderRadius)}
-          background-color: ${theme.buttons.themeColor || theme.color};
-          color: white;
-        `,
+            ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+            ${webflowBorderRadii(borderRadius)}
+            background-color: ${theme.buttons.themeColor || theme.color};
+            color: white;
+          `,
         variants: {},
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
@@ -37982,16 +38106,16 @@ module.exports = function (props) {
         namespace: "",
         comb: "",
         styleLess: `
-                ${webflowBorder({ width: 1.2, color: theme.color })}
-                ${webflowBorderRadii(borderRadius)}
-                background-color: transparent; 
-                color: ${theme.color};
-            `,
+                  ${webflowBorder({ width: 1.2, color: theme.color })}
+                  ${webflowBorderRadii(borderRadius)}
+                  background-color: transparent; 
+                  color: ${theme.color};
+              `,
         variants: {},
         children: [],
         createdBy: "zzzzz19b79c288zzzzzzb301",
         selector: null
-      }])],
+      }])])],
       assets: [],
       ix1: [],
       ix2: {

@@ -20,6 +20,7 @@ function createNavSlot(props, components = {}) {
     buttons: (props, buttons) => navButtonsComponent({
       ...props,
       ...props.theme.buttons,
+      themeColor: props.theme.buttons.themeColor,
     }, buttons),
   };
 

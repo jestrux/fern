@@ -4,7 +4,7 @@ const { webflowBorder, webflowBorderRadii } = require("../../../utils");
 module.exports = function (props) {
   const { heading, subHeading, buttons, theme } = props;
   const { backgroundColor, shadow, border } = theme;
-  const [mainButton, secondaryButton] = (buttons || []).split(",");
+  const [mainButton, secondaryButton] = (buttons || "").split(",");;
 
   const buttonProps = buttonSizeMap[theme.buttons.size];
   const [sm, md] = buttonProps.cornerRadius;
@@ -21,7 +21,7 @@ module.exports = function (props) {
           children: [
             "sectionTextHeadingId",
             "sectionTextSubHeadingId",
-            "sectionTextButtonsId",
+            ...(!buttons ? [] : ["sectionTextButtonsId",])
           ],
           type: "Section",
           data: {
@@ -60,61 +60,63 @@ module.exports = function (props) {
           text: true,
           v: subHeading,
         },
-        {
-          _id: "sectionTextButtonsId",
-          tag: "div",
-          classes: ["sectionTextButtonsClassId"],
-          children: [
-            "sectionTextMainButtonId",
-            ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])
-          ],
-          type: "Block",
-          data: {
+        ...(!buttons ? [] : [
+          {
+            _id: "sectionTextButtonsId",
             tag: "div",
-          },
-        },
-        {
-          _id: "sectionTextMainButtonId",
-          tag: "a",
-          classes: ["sectionTextMainButtonClassId"],
-          children: ["sectionTextMainButtonTextId"],
-          type: "Link",
-          data: {
-            button: true,
-            link: {
-              mode: "external",
-              url: "#",
+            classes: ["sectionTextButtonsClassId"],
+            children: [
+              "sectionTextMainButtonId",
+              ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])
+            ],
+            type: "Block",
+            data: {
+              tag: "div",
             },
-            block: "",
           },
-        },
-        {
-          _id: "sectionTextMainButtonTextId",
-          text: true,
-          v: mainButton,
-        },
-        ...(!secondaryButton ? [] : [
-            {
-              _id: "sectionTextSecondaryButtonId",
-              tag: "a",
-              classes: ["sectionTextSecondaryButtonClassId"],
-              children: ["sectionTextSecondaryButtonTextId"],
-              type: "Link",
-              data: {
-                button: true,
-                link: {
-                  mode: "external",
-                  url: "#",
-                },
-                block: "",
+          {
+            _id: "sectionTextMainButtonId",
+            tag: "a",
+            classes: ["sectionTextMainButtonClassId"],
+            children: ["sectionTextMainButtonTextId"],
+            type: "Link",
+            data: {
+              button: true,
+              link: {
+                mode: "external",
+                url: "#",
               },
+              block: "",
             },
-            {
-              _id: "sectionTextSecondaryButtonTextId",
-              text: true,
-              v: secondaryButton,
-            },
-        ])
+          },
+          {
+            _id: "sectionTextMainButtonTextId",
+            text: true,
+            v: mainButton,
+          },
+          ...(!secondaryButton ? [] : [
+              {
+                _id: "sectionTextSecondaryButtonId",
+                tag: "a",
+                classes: ["sectionTextSecondaryButtonClassId"],
+                children: ["sectionTextSecondaryButtonTextId"],
+                type: "Link",
+                data: {
+                  button: true,
+                  link: {
+                    mode: "external",
+                    url: "#",
+                  },
+                  block: "",
+                },
+              },
+              {
+                _id: "sectionTextSecondaryButtonTextId",
+                text: true,
+                v: secondaryButton,
+              },
+          ])
+        ]),
       ],
       styles: [
         {
@@ -162,57 +164,59 @@ module.exports = function (props) {
           createdBy: "zzzzz19b79c288zzzzzzb301",
           selector: null,
         },
-        {
-          _id: "sectionTextButtonsClassId",
-          fake: false,
-          type: "class",
-          name: "FernSectionButtons",
-          namespace: "",
-          comb: "",
-          styleLess:
-            "display: flex; justify-content: center; grid-column-gap: 10px; grid-row-gap: 10px;",
-          variants: {},
-          children: [],
-          createdBy: "zzzzz19b79c288zzzzzzb301",
-          selector: null,
-        },
-        {
-          _id: "sectionTextMainButtonClassId",
-          fake: false,
-          type: "class",
-          name: "FernSectionTextMainButton",
-          namespace: "",
-          comb: "",
-          styleLess: `
-          ${webflowBorder({width: 1.2, color: theme.buttons.themeColor || theme.color})}
-          ${webflowBorderRadii(borderRadius)}
-          background-color: ${theme.buttons.themeColor || theme.color};
-          color: white;
-        `,
-          variants: {},
-          children: [],
-          createdBy: "zzzzz19b79c288zzzzzzb301",
-          selector: null,
-        },
-        ...(!secondaryButton ? [] : [
-            {
-              _id: "sectionTextSecondaryButtonClassId",
-              fake: false,
-              type: "class",
-              name: "FernSectionTextSecondaryButton",
-              namespace: "",
-              comb: "",
-              styleLess: `
-                ${webflowBorder({width: 1.2, color: theme.color})}
-                ${webflowBorderRadii(borderRadius)}
-                background-color: transparent; 
-                color: ${theme.color};
-            `,
-              variants: {},
-              children: [],
-              createdBy: "zzzzz19b79c288zzzzzzb301",
-              selector: null,
-            },
+        ...(!buttons ? [] : [
+          {
+            _id: "sectionTextButtonsClassId",
+            fake: false,
+            type: "class",
+            name: "FernSectionButtons",
+            namespace: "",
+            comb: "",
+            styleLess:
+              "display: flex; justify-content: center; grid-column-gap: 10px; grid-row-gap: 10px;",
+            variants: {},
+            children: [],
+            createdBy: "zzzzz19b79c288zzzzzzb301",
+            selector: null,
+          },
+          {
+            _id: "sectionTextMainButtonClassId",
+            fake: false,
+            type: "class",
+            name: "FernSectionTextMainButton",
+            namespace: "",
+            comb: "",
+            styleLess: `
+            ${webflowBorder({width: 1.2, color: theme.buttons.themeColor || theme.color})}
+            ${webflowBorderRadii(borderRadius)}
+            background-color: ${theme.buttons.themeColor || theme.color};
+            color: white;
+          `,
+            variants: {},
+            children: [],
+            createdBy: "zzzzz19b79c288zzzzzzb301",
+            selector: null,
+          },
+          ...(!secondaryButton ? [] : [
+              {
+                _id: "sectionTextSecondaryButtonClassId",
+                fake: false,
+                type: "class",
+                name: "FernSectionTextSecondaryButton",
+                namespace: "",
+                comb: "",
+                styleLess: `
+                  ${webflowBorder({width: 1.2, color: theme.color})}
+                  ${webflowBorderRadii(borderRadius)}
+                  background-color: transparent; 
+                  color: ${theme.color};
+              `,
+                variants: {},
+                children: [],
+                createdBy: "zzzzz19b79c288zzzzzzb301",
+                selector: null,
+              },
+          ]),
         ]),
       ],
       assets: [],

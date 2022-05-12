@@ -4,7 +4,7 @@ const { webflowBorder, webflowBorderRadii } = require("../../../utils");
 module.exports = function (props) {
   const { heading, subHeading, buttons, theme } = props;
   const { backgroundColor, shadow, border } = theme;
-  const [mainButton, secondaryButton] = (buttons || []).split(",");
+  const [mainButton, secondaryButton] = (buttons || "").split(",");
 
   const buttonProps = buttonSizeMap[theme.buttons.size];
   const [sm, md] = buttonProps.cornerRadius;
@@ -60,7 +60,9 @@ module.exports = function (props) {
           children: [
             "d96d78c5-b344-4f48-67de-51926d3ba5f0",
             "d96d78c5-b344-4f48-67de-51926d3ba5f2",
-            "d96d78c5-b344-4f48-67de-51926d3ba5f4",
+            ...(!buttons ? [] : [
+              "mediaSectionButtonsId",
+            ])
           ],
           type: "Block",
           data: { tag: "div" },
@@ -90,40 +92,23 @@ module.exports = function (props) {
           text: true,
           v: subHeading,
         },
-        {
-          _id: "d96d78c5-b344-4f48-67de-51926d3ba5f4",
-          tag: "div",
-          classes: ["e201d317-b6a8-62bb-7c31-eef7bae08ec8"],
-          children: [
-            "d96d78c5-b344-4f48-67de-51926d3ba5f5",
-            ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])
-          ],
-          type: "Block",
-          data: { tag: "div", text: false },
-        },
-        {
-          _id: "d96d78c5-b344-4f48-67de-51926d3ba5f5",
-          tag: "a",
-          classes: ["e201d317-b6a8-62bb-7c31-eef7bae08ec9"],
-          children: ["d96d78c5-b344-4f48-67de-51926d3ba5f6"],
-          type: "Link",
-          data: {
-            button: true,
-            link: { mode: "external", url: "#" },
-            block: "",
-          },
-        },
-        {
-          _id: "d96d78c5-b344-4f48-67de-51926d3ba5f6",
-          text: true,
-          v: mainButton,
-        },
-        ...(!secondaryButton ? [] : [
+        ...(!buttons ? [] : [
           {
-            _id: "sectionTextSecondaryButtonId",
+            _id: "mediaSectionButtonsId",
+            tag: "div",
+            classes: ["e201d317-b6a8-62bb-7c31-eef7bae08ec8"],
+            children: [
+              "d96d78c5-b344-4f48-67de-51926d3ba5f5",
+              ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])
+            ],
+            type: "Block",
+            data: { tag: "div", text: false },
+          },
+          {
+            _id: "d96d78c5-b344-4f48-67de-51926d3ba5f5",
             tag: "a",
-            classes: ["e201d317-b6a8-62bb-7c31-eef7bae08eca"],
-            children: ["d96d78c5-b344-4f48-67de-51926d3ba5f8"],
+            classes: ["e201d317-b6a8-62bb-7c31-eef7bae08ec9"],
+            children: ["d96d78c5-b344-4f48-67de-51926d3ba5f6"],
             type: "Link",
             data: {
               button: true,
@@ -132,10 +117,29 @@ module.exports = function (props) {
             },
           },
           {
-            _id: "d96d78c5-b344-4f48-67de-51926d3ba5f8",
+            _id: "d96d78c5-b344-4f48-67de-51926d3ba5f6",
             text: true,
-            v: secondaryButton,
+            v: mainButton,
           },
+          ...(!secondaryButton ? [] : [
+            {
+              _id: "sectionTextSecondaryButtonId",
+              tag: "a",
+              classes: ["e201d317-b6a8-62bb-7c31-eef7bae08eca"],
+              children: ["d96d78c5-b344-4f48-67de-51926d3ba5f8"],
+              type: "Link",
+              data: {
+                button: true,
+                link: { mode: "external", url: "#" },
+                block: "",
+              },
+            },
+            {
+              _id: "d96d78c5-b344-4f48-67de-51926d3ba5f8",
+              text: true,
+              v: secondaryButton,
+            },
+          ]),
         ]),
         {
           _id: "64c512dc-79e4-6dc1-d969-3fa0f3b302a4",
@@ -234,47 +238,49 @@ module.exports = function (props) {
           createdBy: "zzzzz19b79c288zzzzzzb301",
           selector: null,
         },
-        {
-          _id: "e201d317-b6a8-62bb-7c31-eef7bae08ec8",
-          fake: false,
-          type: "class",
-          name: "MediaSectionButtons",
-          namespace: "",
-          comb: "",
-          styleLess:
-            "display: flex; justify-content: flex-start; grid-column-gap: 10px; grid-row-gap: 10px; margin-top: 24px",
-          variants: {},
-          children: [],
-          createdBy: "zzzzz19b79c288zzzzzzb301",
-          selector: null,
-        },
-        {
-          _id: "e201d317-b6a8-62bb-7c31-eef7bae08ec9",
-          fake: false,
-          type: "class",
-          name: "MediaSectionMainButton",
-          namespace: "",
-          comb: "",
-          styleLess: mainButtonStyles,
-          variants: {},
-          children: [],
-          createdBy: "zzzzz19b79c288zzzzzzb301",
-          selector: null,
-        },
-        ...(!secondaryButton ? [] : [
+        ...(!buttons ? [] : [
           {
-            _id: "e201d317-b6a8-62bb-7c31-eef7bae08eca",
+            _id: "e201d317-b6a8-62bb-7c31-eef7bae08ec8",
             fake: false,
             type: "class",
-            name: "MediaSectionSecondaryButton",
+            name: "MediaSectionButtons",
             namespace: "",
             comb: "",
-            styleLess: secondaryButtonStyles,
+            styleLess:
+              "display: flex; justify-content: flex-start; grid-column-gap: 10px; grid-row-gap: 10px; margin-top: 24px",
             variants: {},
             children: [],
             createdBy: "zzzzz19b79c288zzzzzzb301",
             selector: null,
           },
+          {
+            _id: "e201d317-b6a8-62bb-7c31-eef7bae08ec9",
+            fake: false,
+            type: "class",
+            name: "MediaSectionMainButton",
+            namespace: "",
+            comb: "",
+            styleLess: mainButtonStyles,
+            variants: {},
+            children: [],
+            createdBy: "zzzzz19b79c288zzzzzzb301",
+            selector: null,
+          },
+          ...(!secondaryButton ? [] : [
+            {
+              _id: "e201d317-b6a8-62bb-7c31-eef7bae08eca",
+              fake: false,
+              type: "class",
+              name: "MediaSectionSecondaryButton",
+              namespace: "",
+              comb: "",
+              styleLess: secondaryButtonStyles,
+              variants: {},
+              children: [],
+              createdBy: "zzzzz19b79c288zzzzzzb301",
+              selector: null,
+            },
+          ]),
         ]),
         {
           _id: "5c006375-5441-cd29-dc1a-6904da56fe42",
