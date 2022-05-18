@@ -338,7 +338,7 @@ function createGridCards(props){
 
     const { width } = props.container.localBounds;
     // const cardWidth = (width - 64 - ( columnSpacing * (columns - 1))) / columns;
-    const containerPadding = 64;
+    const containerPadding = 0; // 64;
     const totalSpaces = columnSpacing * (columns - 1);
     const cardWidth = (width - containerPadding - totalSpaces) / columns;
 

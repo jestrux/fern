@@ -30875,7 +30875,7 @@ function assembleGrid(props = {}, images) {
         type: SceneNode.LAYOUT_PADDING,
         padding: {
             background: container,
-            values: getPadding(32, 32)
+            values: getPadding(32, 0)
         }
     };
     container = selection.items[0];
@@ -31356,7 +31356,7 @@ function createGridCards(props) {
 
     const { width } = props.container.localBounds;
     // const cardWidth = (width - 64 - ( columnSpacing * (columns - 1))) / columns;
-    const containerPadding = 64;
+    const containerPadding = 0; // 64;
     const totalSpaces = columnSpacing * (columns - 1);
     const cardWidth = (width - containerPadding - totalSpaces) / columns;
 

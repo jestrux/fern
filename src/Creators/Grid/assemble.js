@@ -55,7 +55,7 @@ function assembleGrid(props = {}, images){
         type: SceneNode.LAYOUT_PADDING,
         padding: {
             background: container,
-            values: getPadding(32, 32)
+            values: getPadding(32, 0)
         }
     };
     container = selection.items[0];
