@@ -25,7 +25,8 @@ function createFooterBackground({ width, height, backgroundColor }){
 
 function assembleFooter(props = {}, images){
     props = {
-        ...props, ...images,
+        ...props,
+        images,
         width: 1600, //1920, 
         height: 70, 
         // icons: [
@@ -38,17 +39,22 @@ function assembleFooter(props = {}, images){
         // ]
     };
 
-    const bg = createFooterBackground(props);
-    
+    const bg = createFooterBackground({...props, ...props.theme});
+
+    const {
+        aboutSection, menu1, menu2, menu3, menu4, menu5, subscribeSection
+    } = props;
     const slotDefinitions = [
-        ["logo", "about"],
-        ["menu"],
-        // ["subscribe"],
-        // ["menu"],
-        // ["menu"],
-        ["menu"],
-        ["socials", "subscribe"],
-    ];
+        aboutSection,
+        !menu1 ? null : {"menu": menu1},
+        !menu2 ? null : {"menu": menu2},
+        !menu3 ? null : {"menu": menu3},
+        !menu4 ? null : {"menu": menu4},
+        !menu5 ? null : {"menu": menu5},
+        subscribeSection
+    ].filter(slot => slot);
+
+    console.log("Slot defns: ", slotDefinitions);
 
     const slots = Array(slotDefinitions);
 
@@ -56,22 +62,22 @@ function assembleFooter(props = {}, images){
         slots[index] = createFooterSlot(props, slotDefinitions[index]);
     }
     
-    const slotsWrapperPadding = 30;
-    let spaceBetweenSlots = 180;
+    const slotsWrapperPadding = 0; // 30;
+    let spaceBetweenSlots = 50;
 
     try {
         const fixedSlotSpace = [...slots].filter((_, index) => {
-            const slot = slotDefinitions[index];
-            return slot.length > 0 && slot[0] != "menu";
+            const slot = Object.keys(slotDefinitions[index]);
+            return slot.includes("about") || slot.includes("subscribe");
         })
         .reduce((agg, slot) => agg + slot.localBounds.width, 0);
 
         const resizableSlots = [...slots].filter((_, index) => {
-            const slot = slotDefinitions[index];
-            return slot.length == 1 && slot[0] == "menu";
+            const slot = Object.keys(slotDefinitions[index]);
+            return !slot.includes("about") && !slot.includes("subscribe");
         });
 
-        const containerWidth = 1400; //1600;
+        const containerWidth = props.width == 1920 ? 1600 : 1400;
 
         let totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
         let availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));
@@ -111,9 +117,6 @@ function assembleFooter(props = {}, images){
             orientation: SceneNode.STACK_HORIZONTAL,
             spacings: spaceBetweenSlots
         },
-        padding: {
-            values: getPadding(slotsWrapperPadding, 0)
-        }
     };
     
     const footerHeight = container.localBounds.height;

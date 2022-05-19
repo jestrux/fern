@@ -17,6 +17,7 @@ const defaultNavbarProps = {
     width: 1600,
     backgroundColor: "white",
     color: "black",
+    iconOpacity: 0.6,
     // themeColor: "#17FD9B",
     // inActiveOpacity: 0.5,
     shadow: null,

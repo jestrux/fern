@@ -4,30 +4,34 @@ const { insertNode, createText } = require("../../../utils");
 const createInput = require("../../Input/createInput");
 const createButton = require("../../Button/createButton");
 
-function footerSubscribeComponent(props = {}) {
-    const {
-        subscribeMessage = "Subscribe to newsletter to get premium content.",
-        subscribeWidth = 380,
-        subscribeInset = true,
-        subscribeRoundness = "md",
-        subscribeColor,
-    } = {...props, ...{subscribeColor: "#00A860"}};
-    
+function footerSubscribeComponent(props = {}, 
+  {
+    message,
+    placeholder,
+    action
+  }
+  ) {
+  
+  const roundness = props.theme.subscribe.roundness;
   const input = createInput({
     // icon: "mail",
-    // iconColor: subscribeColor,
-    // value: "watson@sherlocks.com",
-    width: subscribeWidth,
-    placeholder: "e.g. apwbd@hogwarts.com",
-    roundness: subscribeRoundness,
+    // iconColor: props.theme.subscribe.color || props.theme.color,
+    placeholder,
+    theme: {
+      width: props.theme.subscribe.width,
+      roundness,
+    }
   });
-  
+
+  console.log("Inset: ", props.theme.subscribe.inset);
   const button = createButton({
-    // color: subscribeColor,
     // icon: "send",
-    text: "Join",
-    size: subscribeInset ? "xs" : "sm",
-    roundness: subscribeRoundness,
+    text: action,
+    theme: {
+      // color: subscribeColor,
+      size: props.theme.subscribe.inset ? "sm" : "md",
+      roundness: roundness == "md" ? "sm" : roundness,
+    }
   });
 
   selection.items = [input, button];
@@ -38,15 +42,17 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  // if(subscribeInset) button.moveInParentCoordinates(-5, 0);
+  button.moveInParentCoordinates(
+    props.theme.subscribe.inset ? -5 : 3, 
+    props.theme.subscribe.inset ? 0 : 0.5,
+  );
 
-  const subscribeText = createText(subscribeMessage, {
+  const subscribeText = createText(message, {
     name: "FernFooterSubscribeText",
-    fill: new Color("#606060"),
+    fill: props.theme.color,
     fontSize: 16,
-    width: subscribeWidth,
+    width: props.theme.subscribe.width,
     lineSpacing: 32,
-    fontStyle: "Regular",
   });
 
   insertNode(subscribeText);

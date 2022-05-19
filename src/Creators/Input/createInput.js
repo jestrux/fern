@@ -21,8 +21,12 @@ function createInput(props = {}) {
     value,
     theme,
     rightIcon,
-  } = { ...defaultInputProps, ...props };
-  
+  } = {
+    ...defaultInputProps, ...props, theme: {
+      ...defaultInputProps.theme, ...props.theme
+    }
+  };
+
   const {
     backgroundColor,
     iconColor,
@@ -90,7 +94,7 @@ function createInput(props = {}) {
     });
     insertNode(iconNode);
   }
-  
+
   if (validRightIconWaSet) {
     rightIconNode = createIcon(iconData[rightIcon], {
       fill: iconColor || color,
@@ -128,7 +132,7 @@ function createInput(props = {}) {
     insertNode(borderNode);
   }
 
-  return assembleInput({bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode}, {
+  return assembleInput({ bgRectangle, inputText, labelNode, iconNode, rightIconNode, border, borderNode }, {
     ...props,
     iconSize: 20,
     padding,

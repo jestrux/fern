@@ -2,25 +2,32 @@ const { selection, Color, Text, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const { insertNode, createText } = require("../../../utils");
 
-function createSectionTitle(text = "Quick Links"){
-    const linkText = createText(text, {
+function createSectionTitle(text = "Quick Links", {
+    color,
+    menu
+}){
+    const sectionTitle = createText(text, {
         name: text,
-        fill: new Color("#606060"),
+        fill: menu.title.color || color,
         fontStyle: "Bold",
-        fontSize: 13,
+        fontSize: 16,
         type: Text.POINT,
         textTransform: "uppercase"
     });
-    
-    insertNode(linkText);
 
-    return linkText;
+    sectionTitle.opacity = menu.title.opacity;
+
+    console.log("Create title: ", text, sectionTitle);
+    
+    insertNode(sectionTitle);
+
+    return sectionTitle;
 }
 
-function createLink(text = "FernNavLinkText"){
+function createLink(text = "FernNavLinkText", {color}){
     const linkText = createText(text, {
         name: text,
-        fill: new Color("#606060"),
+        fill: color,
         fontSize: 16,
         type: Text.POINT,
     });
@@ -30,16 +37,14 @@ function createLink(text = "FernNavLinkText"){
     return linkText;
 }
 
-function footerMenuComponent(props = {}){
-    const {
-        links = [],
-    } = props;
-
+function footerMenuComponent(props = {}, {links = "Home, About", title}) {
+    links = links.split(",").map(link => link.trim());
+    
     const linkItems = [...links];
     linkItems.reverse();
 
     try {
-        const linkNode = createLink(linkItems[0]);
+        const linkNode = createLink(linkItems[0], props.theme);
         linkNode.name = linkItems[0];
         const navLinkNodes = [linkNode];
         selection.items = [linkNode];
@@ -53,13 +58,13 @@ function footerMenuComponent(props = {}){
             newLink.text = linkItems[i];
         }
 
-        if(props.showLinkTitles){
-            const sectionTitle = createSectionTitle();
+        if(!props.theme.menu.showTitles || !title)
+            selection.items = navLinkNodes;
+        else {
+            const sectionTitle = createSectionTitle(title, props.theme);
             selection.items = [...navLinkNodes, sectionTitle];
         }
-        else
-            selection.items = navLinkNodes;
-            
+
         commands.group();
         let footerMenu = selection.items[0];
         footerMenu.layout = {

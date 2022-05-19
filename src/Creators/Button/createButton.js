@@ -16,6 +16,9 @@ function createButton(props = {}) {
   let { icon, text, theme } = {
     ...defaultButtonProps,
     ...props,
+    theme: {
+      ...defaultButtonProps.theme, ...props.theme
+    }
   };
 
   if(!icon && !text) props.text = text = "Submit";

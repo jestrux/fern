@@ -5,18 +5,18 @@ const footerMenuComponent = require("./components/menu");
 const footerLogoComponent = require("./components/logo");
 const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 const footerSubscribeComponent = require("./components/subscribe");
+const navLogoComponent = require("../Navbar/components/logo");
 
-function footerAboutUsComponent({
-    aboutUs = "Making the world a better place by making very elegant visual hierarchies."
-}){
+function footerAboutUsComponent(
+    { theme, }, 
+    aboutUs = "Making the world a better place by making very elegant visual hierarchies.",
+){
     const linkText = createText(aboutUs, {
         name: "FernFooterAboutUs",
-        fill: new Color("#606060"),
+        fill: theme.color,
         fontSize: 16,
-        width: 310,
+        width: theme.about.width,
         lineSpacing: 28,
-        fontStyle: "Regular",
-        // type: Text.POINT,
     });
     
     insertNode(linkText);
@@ -24,11 +24,11 @@ function footerAboutUsComponent({
     return linkText;
 }
 
-function createFooterSlot(props, components = []){
+function createFooterSlot(props, components = {}){
     const componentMap = {
-        "logo": footerLogoComponent,
+        "logo": navLogoComponent,
         "about": footerAboutUsComponent,
-        "socials": createSocialMediaIcons,
+        socials: (props, icons) => createSocialMediaIcons({...props.theme, icons}),
         "menu": footerMenuComponent,
         "subscribe": footerSubscribeComponent,
     }
@@ -43,10 +43,19 @@ function createFooterSlot(props, components = []){
         slotBg.name = "FernFooterSlotBg";
         insertNode(slotBg);
 
-        if(components.length){
-            const content = components.reverse().map(component => {
-                return componentMap[component](props);
-            });
+        const componentsAvailable = components && Object.keys(components).length;
+        const validComponents = !componentsAvailable
+            ? null
+            : Object.fromEntries(
+                Object.entries(components).filter(
+                    ([key, value]) => value && componentMap[key]
+                )
+            );
+
+        if (validComponents && Object.keys(validComponents).length) {
+            const content = Object.entries(validComponents)
+                    .reverse()
+                    .map(([component, data]) => componentMap[component](props, data));
             
             selection.items = content;
             commands.group();
@@ -86,9 +95,9 @@ function createFooterSlot(props, components = []){
             slot = selection.items[0];
 
             placeInParent(slot, {x: 0, y: 0});
-        }
 
-        slot.name = "FernFooterSlot";
+            slot.name = "FernFooterSlot";
+        }
 
         return slot;
     } catch (error) {

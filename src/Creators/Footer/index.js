@@ -21,17 +21,17 @@ async function Footer(userProps) {
   let logoImage = logos.logo4;
 
   try {
-    const oldNavbar = userProps ? selection.items[0] : null;
-    if (oldNavbar) {
+    const oldFooter = userProps ? selection.items[0] : null;
+    if (oldFooter) {
       if (props.logo == "custom") {
-        const logoNode = getFooterComponent(oldNavbar, "logo");
+        const logoNode = getFooterComponent(oldFooter, "logo");
         logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
       }
     }
 
     editDom(() => {
       try {
-        const footer = assembleFooter(props, { logoImage, logos });
+        const footer = assembleFooter(props, { logoImage, ...logos });
         footer.name = "FernFooter";
 
         tagNode(footer, { type: "Footer", ...props });

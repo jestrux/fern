@@ -29571,7 +29571,9 @@ const buttonSizeMap = __webpack_require__(/*! ./buttonSizeMap */ "./src/Creators
 const defaultButtonProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 
 function createButton(props = {}) {
-  let { icon, text, theme } = _extends({}, defaultButtonProps, props);
+  let { icon, text, theme } = _extends({}, defaultButtonProps, props, {
+    theme: _extends({}, defaultButtonProps.theme, props.theme)
+  });
 
   if (!icon && !text) props.text = text = "Submit";
 
@@ -30490,7 +30492,8 @@ function createFooterBackground({ width, height, backgroundColor }) {
 }
 
 function assembleFooter(props = {}, images) {
-    props = _extends({}, props, images, {
+    props = _extends({}, props, {
+        images,
         width: 1600, //1920, 
         height: 70
         // icons: [
@@ -30503,13 +30506,14 @@ function assembleFooter(props = {}, images) {
         // ]
     });
 
-    const bg = createFooterBackground(props);
+    const bg = createFooterBackground(_extends({}, props, props.theme));
 
-    const slotDefinitions = [["logo", "about"], ["menu"],
-    // ["subscribe"],
-    // ["menu"],
-    // ["menu"],
-    ["menu"], ["socials", "subscribe"]];
+    const {
+        aboutSection, menu1, menu2, menu3, menu4, menu5, subscribeSection
+    } = props;
+    const slotDefinitions = [aboutSection, !menu1 ? null : { "menu": menu1 }, !menu2 ? null : { "menu": menu2 }, !menu3 ? null : { "menu": menu3 }, !menu4 ? null : { "menu": menu4 }, !menu5 ? null : { "menu": menu5 }, subscribeSection].filter(slot => slot);
+
+    console.log("Slot defns: ", slotDefinitions);
 
     const slots = Array(slotDefinitions);
 
@@ -30517,21 +30521,21 @@ function assembleFooter(props = {}, images) {
         slots[index] = createFooterSlot(props, slotDefinitions[index]);
     }
 
-    const slotsWrapperPadding = 30;
-    let spaceBetweenSlots = 180;
+    const slotsWrapperPadding = 0; // 30;
+    let spaceBetweenSlots = 50;
 
     try {
         const fixedSlotSpace = [...slots].filter((_, index) => {
-            const slot = slotDefinitions[index];
-            return slot.length > 0 && slot[0] != "menu";
+            const slot = Object.keys(slotDefinitions[index]);
+            return slot.includes("about") || slot.includes("subscribe");
         }).reduce((agg, slot) => agg + slot.localBounds.width, 0);
 
         const resizableSlots = [...slots].filter((_, index) => {
-            const slot = slotDefinitions[index];
-            return slot.length == 1 && slot[0] == "menu";
+            const slot = Object.keys(slotDefinitions[index]);
+            return !slot.includes("about") && !slot.includes("subscribe");
         });
 
-        const containerWidth = 1400; //1600;
+        const containerWidth = props.width == 1920 ? 1600 : 1400;
 
         let totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
         let availableWidth = containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - slotsWrapperPadding * 2;
@@ -30570,9 +30574,6 @@ function assembleFooter(props = {}, images) {
         stack: {
             orientation: SceneNode.STACK_HORIZONTAL,
             spacings: spaceBetweenSlots
-        },
-        padding: {
-            values: getPadding(slotsWrapperPadding, 0)
         }
     };
 
@@ -30652,25 +30653,32 @@ const { selection, Color, Text, SceneNode } = __webpack_require__(/*! scenegraph
 const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createText } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function createSectionTitle(text = "Quick Links") {
-    const linkText = createText(text, {
+function createSectionTitle(text = "Quick Links", {
+    color,
+    menu
+}) {
+    const sectionTitle = createText(text, {
         name: text,
-        fill: new Color("#606060"),
+        fill: menu.title.color || color,
         fontStyle: "Bold",
-        fontSize: 13,
+        fontSize: 16,
         type: Text.POINT,
         textTransform: "uppercase"
     });
 
-    insertNode(linkText);
+    sectionTitle.opacity = menu.title.opacity;
 
-    return linkText;
+    console.log("Create title: ", text, sectionTitle);
+
+    insertNode(sectionTitle);
+
+    return sectionTitle;
 }
 
-function createLink(text = "FernNavLinkText") {
+function createLink(text = "FernNavLinkText", { color }) {
     const linkText = createText(text, {
         name: text,
-        fill: new Color("#606060"),
+        fill: color,
         fontSize: 16,
         type: Text.POINT
     });
@@ -30680,16 +30688,14 @@ function createLink(text = "FernNavLinkText") {
     return linkText;
 }
 
-function footerMenuComponent(props = {}) {
-    const {
-        links = []
-    } = props;
+function footerMenuComponent(props = {}, { links = "Home, About", title }) {
+    links = links.split(",").map(link => link.trim());
 
     const linkItems = [...links];
     linkItems.reverse();
 
     try {
-        const linkNode = createLink(linkItems[0]);
+        const linkNode = createLink(linkItems[0], props.theme);
         linkNode.name = linkItems[0];
         const navLinkNodes = [linkNode];
         selection.items = [linkNode];
@@ -30703,10 +30709,10 @@ function footerMenuComponent(props = {}) {
             newLink.text = linkItems[i];
         }
 
-        if (props.showLinkTitles) {
-            const sectionTitle = createSectionTitle();
+        if (!props.theme.menu.showTitles || !title) selection.items = navLinkNodes;else {
+            const sectionTitle = createSectionTitle(title, props.theme);
             selection.items = [...navLinkNodes, sectionTitle];
-        } else selection.items = navLinkNodes;
+        }
 
         commands.group();
         let footerMenu = selection.items[0];
@@ -30737,38 +30743,38 @@ module.exports = footerMenuComponent;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const { Rectangle, Color, selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createText } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const createInput = __webpack_require__(/*! ../../Input/createInput */ "./src/Creators/Input/createInput.js");
 const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src/Creators/Button/createButton.js");
 
-function footerSubscribeComponent(props = {}) {
-  const {
-    subscribeMessage = "Subscribe to newsletter to get premium content.",
-    subscribeWidth = 380,
-    subscribeInset = true,
-    subscribeRoundness = "md",
-    subscribeColor
-  } = _extends({}, props, { subscribeColor: "#00A860" });
+function footerSubscribeComponent(props = {}, {
+  message,
+  placeholder,
+  action
+}) {
 
+  const roundness = props.theme.subscribe.roundness;
   const input = createInput({
     // icon: "mail",
-    // iconColor: subscribeColor,
-    // value: "watson@sherlocks.com",
-    width: subscribeWidth,
-    placeholder: "e.g. apwbd@hogwarts.com",
-    roundness: subscribeRoundness
+    // iconColor: props.theme.subscribe.color || props.theme.color,
+    placeholder,
+    theme: {
+      width: props.theme.subscribe.width,
+      roundness
+    }
   });
 
+  console.log("Inset: ", props.theme.subscribe.inset);
   const button = createButton({
-    // color: subscribeColor,
     // icon: "send",
-    text: "Join",
-    size: subscribeInset ? "xs" : "sm",
-    roundness: subscribeRoundness
+    text: action,
+    theme: {
+      // color: subscribeColor,
+      size: props.theme.subscribe.inset ? "sm" : "md",
+      roundness: roundness == "md" ? "sm" : roundness
+    }
   });
 
   selection.items = [input, button];
@@ -30779,15 +30785,14 @@ function footerSubscribeComponent(props = {}) {
   commands.group();
   const subscribeForm = selection.items[0];
 
-  // if(subscribeInset) button.moveInParentCoordinates(-5, 0);
+  button.moveInParentCoordinates(props.theme.subscribe.inset ? -5 : 3, props.theme.subscribe.inset ? 0 : 0.5);
 
-  const subscribeText = createText(subscribeMessage, {
+  const subscribeText = createText(message, {
     name: "FernFooterSubscribeText",
-    fill: new Color("#606060"),
+    fill: props.theme.color,
     fontSize: 16,
-    width: subscribeWidth,
-    lineSpacing: 32,
-    fontStyle: "Regular"
+    width: props.theme.subscribe.width,
+    lineSpacing: 32
   });
 
   insertNode(subscribeText);
@@ -30822,6 +30827,8 @@ module.exports = footerSubscribeComponent;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { selection, SceneNode, Rectangle, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, insertNode, getPadding, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
@@ -30829,18 +30836,15 @@ const footerMenuComponent = __webpack_require__(/*! ./components/menu */ "./src/
 const footerLogoComponent = __webpack_require__(/*! ./components/logo */ "./src/Creators/Footer/components/logo.js");
 const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/createIcons */ "./src/Creators/SocialMediaIcons/createIcons.js");
 const footerSubscribeComponent = __webpack_require__(/*! ./components/subscribe */ "./src/Creators/Footer/components/subscribe.js");
+const navLogoComponent = __webpack_require__(/*! ../Navbar/components/logo */ "./src/Creators/Navbar/components/logo.js");
 
-function footerAboutUsComponent({
-    aboutUs = "Making the world a better place by making very elegant visual hierarchies."
-}) {
+function footerAboutUsComponent({ theme }, aboutUs = "Making the world a better place by making very elegant visual hierarchies.") {
     const linkText = createText(aboutUs, {
         name: "FernFooterAboutUs",
-        fill: new Color("#606060"),
+        fill: theme.color,
         fontSize: 16,
-        width: 310,
-        lineSpacing: 28,
-        fontStyle: "Regular"
-        // type: Text.POINT,
+        width: theme.about.width,
+        lineSpacing: 28
     });
 
     insertNode(linkText);
@@ -30848,11 +30852,11 @@ function footerAboutUsComponent({
     return linkText;
 }
 
-function createFooterSlot(props, components = []) {
+function createFooterSlot(props, components = {}) {
     const componentMap = {
-        "logo": footerLogoComponent,
+        "logo": navLogoComponent,
         "about": footerAboutUsComponent,
-        "socials": createSocialMediaIcons,
+        socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, { icons })),
         "menu": footerMenuComponent,
         "subscribe": footerSubscribeComponent
     };
@@ -30867,10 +30871,11 @@ function createFooterSlot(props, components = []) {
         slotBg.name = "FernFooterSlotBg";
         insertNode(slotBg);
 
-        if (components.length) {
-            const content = components.reverse().map(component => {
-                return componentMap[component](props);
-            });
+        const componentsAvailable = components && Object.keys(components).length;
+        const validComponents = !componentsAvailable ? null : Object.fromEntries(Object.entries(components).filter(([key, value]) => value && componentMap[key]));
+
+        if (validComponents && Object.keys(validComponents).length) {
+            const content = Object.entries(validComponents).reverse().map(([component, data]) => componentMap[component](props, data));
 
             selection.items = content;
             commands.group();
@@ -30909,9 +30914,9 @@ function createFooterSlot(props, components = []) {
             slot = selection.items[0];
 
             placeInParent(slot, { x: 0, y: 0 });
-        }
 
-        slot.name = "FernFooterSlot";
+            slot.name = "FernFooterSlot";
+        }
 
         return slot;
     } catch (error) {
@@ -30931,20 +30936,50 @@ module.exports = createFooterSlot;
 /***/ (function(module, exports) {
 
 const defaultFooterProps = {
-    backgroundColor: "white",
-    color: "#888",
-    shadow: true,
-    border: true,
-    showLinkTitles: false,
-    links: [
-    // "About Us",
-    "Careers", "Newsroom", "Privacy Policy"],
-    activeLink: "Home",
-    themeColor: "#00A860",
-    buttons: ["Get Started"],
-    socialMediaIcons: ["facebook", "twitter", "instagram"],
-    profile: true,
-    search: true
+    aboutSection: {
+        logo: "4",
+        about: "Making the world a better place by making very elegant visual hierarchies."
+    },
+    menu1: {
+        title: "Company",
+        links: "Careers, Newsroom, Privacy Policy"
+    },
+    menu2: {
+        title: "About Us",
+        links: "Services, Our Values, Founding Team"
+    },
+    menu3: {
+        title: "Product",
+        links: "Features, Pricing, Changelog"
+    },
+    menu4: null,
+    menu5: {
+        title: "Contact Us",
+        links: "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co"
+    },
+    subscribeSection: null,
+    theme: {
+        backgroundColor: "white",
+        color: "#000",
+        shadow: true,
+        iconOpacity: 0.6,
+        border: true,
+        about: {
+            width: 310
+        },
+        menu: {
+            showTitles: true,
+            title: {
+                opacity: 0.45
+            }
+        },
+        subscribe: {
+            // icon: "mail",
+            // iconColor: "#00A860",
+            width: 360,
+            roundness: "md"
+        }
+    }
 };
 
 module.exports = defaultFooterProps;
@@ -31006,17 +31041,17 @@ async function Footer(userProps) {
   let logoImage = logos.logo4;
 
   try {
-    const oldNavbar = userProps ? selection.items[0] : null;
-    if (oldNavbar) {
+    const oldFooter = userProps ? selection.items[0] : null;
+    if (oldFooter) {
       if (props.logo == "custom") {
-        const logoNode = getFooterComponent(oldNavbar, "logo");
+        const logoNode = getFooterComponent(oldFooter, "logo");
         logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
       }
     }
 
     editDom(() => {
       try {
-        const footer = assembleFooter(props, { logoImage, logos });
+        const footer = assembleFooter(props, _extends({ logoImage }, logos));
         footer.name = "FernFooter";
 
         tagNode(footer, _extends({ type: "Footer" }, props));
@@ -32111,7 +32146,8 @@ function createInput(props = {}) {
     value,
     theme,
     rightIcon
-  } = _extends({}, defaultInputProps, props);
+  } = _extends({}, defaultInputProps, props, { theme: _extends({}, defaultInputProps.theme, props.theme)
+  });
 
   const {
     backgroundColor,
@@ -33361,7 +33397,7 @@ function createNavSlot(props, components = {}) {
     logo: navLogoComponent,
     menu: navMenuComponent,
     dp: navDpComponent,
-    socials: (props, icons) => createSocialMediaIcons(_extends({}, props, { icons })),
+    socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, { icons })),
     search: navSearchInputComponent,
     buttons: (props, buttons) => navButtonsComponent(_extends({}, props, props.theme.buttons, {
       themeColor: props.theme.buttons.themeColor
@@ -33493,6 +33529,7 @@ const defaultNavbarProps = {
     width: 1600,
     backgroundColor: "white",
     color: "black",
+    iconOpacity: 0.6,
     // themeColor: "#17FD9B",
     // inActiveOpacity: 0.5,
     shadow: null,
@@ -36380,121 +36417,6 @@ module.exports = FernComponent;
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Footer/Links.jsx":
-/*!***********************************************!*\
-  !*** ./src/screens/Elements/Footer/Links.jsx ***!
-  \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Toggle = __webpack_require__(/*! ../../../components/Toggle */ "./src/components/Toggle.jsx");
-
-function FooterLinks({ links, onChange }) {
-    const [linkBeingEdited, setLinkBeingEdited] = React.useState(null);
-    function handleSetLinks(links) {
-        onChange(links);
-    }
-
-    function handleLinkTextChanged(e) {
-        e.preventDefault();
-        const form = e.target;
-        const newValue = form.elements[0].value;
-
-        if (links[linkBeingEdited] != newValue) {
-            const newLinks = [...links];
-            newLinks.splice(linkBeingEdited, 1, newValue);
-            onChange(newLinks);
-        } else setLinkBeingEdited(null);
-    }
-
-    function handleMoveLink(e, linkIndex) {
-        const isLastItem = linkIndex === links.length - 1;
-        const { shiftKey, altKey } = e;
-        const leap = shiftKey ? 3 : 1;
-        let newIndex = isLastItem || altKey ? linkIndex - leap : linkIndex + leap;
-
-        // clamp
-        newIndex = Math.max(0, Math.min(newIndex, links.length - 1));
-
-        const newLinks = [...links];
-        const link = newLinks.splice(linkIndex, 1)[0];
-        newLinks.splice(newIndex, 0, link);
-
-        onChange(newLinks);
-    }
-
-    return React.createElement(
-        'div',
-        { className: 'pt-2 mt-3' },
-        React.createElement(
-            'div',
-            { className: 'flex items-center justify-between px-3' },
-            React.createElement(
-                'label',
-                { className: 'text-md' },
-                'Links'
-            ),
-            React.createElement(Toggle, { checked: links, onChange: handleSetLinks })
-        ),
-        links && React.createElement(
-            'div',
-            { className: '-mx-12pxs mt-1' },
-            React.createElement(
-                'div',
-                { className: 'bg-white' },
-                links.map((link, index) => {
-                    const editting = linkBeingEdited === index;
-
-                    return React.createElement(
-                        'div',
-                        { key: index, className: 'parent bg-white py-2 px-3 border-b border-light-gray flex items-center' },
-                        editting && React.createElement(
-                            'form',
-                            { action: '#', className: 'flex-1 bg-gray', onSubmit: handleLinkTextChanged },
-                            React.createElement('input', {
-                                autoFocus: true,
-                                className: 'w-full',
-                                defaultValue: link,
-                                name: 'link',
-                                'uxp-quiet': 'true',
-                                onKeyDown: e => e.key == 'Escape' ? setLinkBeingEdited(null) : null
-                            })
-                        ),
-                        !editting && React.createElement(
-                            React.Fragment,
-                            null,
-                            React.createElement(
-                                'h5',
-                                { className: 'flex-1 text-base font-normal cursor-pointer',
-                                    onClick: () => setLinkBeingEdited(index)
-                                },
-                                link
-                            ),
-                            React.createElement(
-                                'div',
-                                { className: 'visible-on-parent-hover cursor-pointer rounded-full bg-light-gray flex center-center',
-                                    style: { width: "20px", height: "20px" },
-                                    onClick: e => handleMoveLink(e, index)
-                                },
-                                React.createElement(
-                                    'svg',
-                                    { width: '14px', height: '14px', viewBox: '0 0 24 24' },
-                                    React.createElement('polygon', { points: '13,6.99 16,6.99 12,3 8,6.99 11,6.99 11,17.01 8,17.01 12,21 16,17.01 13,17.01' })
-                                )
-                            )
-                        )
-                    );
-                })
-            )
-        )
-    );
-}
-
-module.exports = FooterLinks;
-
-/***/ }),
-
 /***/ "./src/screens/Elements/Footer/index.jsx":
 /*!***********************************************!*\
   !*** ./src/screens/Elements/Footer/index.jsx ***!
@@ -36502,47 +36424,204 @@ module.exports = FooterLinks;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../../Creators */ "./src/Creators/index.js");
-const FooterLinks = __webpack_require__(/*! ./Links */ "./src/screens/Elements/Footer/Links.jsx");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+// const webflowSectionText = require("./webflowSectionText");
+
+const schema = {
+    aboutSection: {
+        type: "section",
+        children: {
+            logo: {
+                type: "radio",
+                choices: [
+                // "custom", 
+                "1", "2", "3", "4", "5"],
+                defaultValue: "2",
+                offValue: "",
+                optional: true
+            },
+            about: {
+                defaultValue: "Making the world a better place by making very elegant visual hierarchies.",
+                optional: true
+            },
+            socials: {
+                defaultValue: "facebook, twitter, instagram",
+                optional: true
+            }
+        },
+        optional: true
+    },
+    menu1: {
+        type: "section",
+        children: {
+            title: {
+                defaultValue: "Company",
+                optional: true
+            },
+            links: {
+                defaultValue: "Careers, Newsroom, Privacy Policy"
+            }
+        },
+        optional: true
+    },
+    menu2: {
+        type: "section",
+        children: {
+            title: {
+                defaultValue: "About Us",
+                optional: true
+            },
+            links: {
+                defaultValue: "Services, Our Values, Founding Team"
+            }
+        },
+        optional: true
+    },
+    menu3: {
+        type: "section",
+        children: {
+            title: {
+                defaultValue: "Product",
+                optional: true
+            },
+            links: {
+                defaultValue: "Features, Pricing, Changelog"
+            }
+        },
+        optional: true
+    },
+    menu4: {
+        type: "section",
+        children: {
+            title: {
+                defaultValue: "Support",
+                optional: true
+            },
+            links: {
+                defaultValue: "FAQs, Help Center, Report Issue"
+            }
+        },
+        optional: true
+    },
+    menu5: {
+        type: "section",
+        children: {
+            title: {
+                defaultValue: "Contact Us",
+                optional: true
+            },
+            links: {
+                defaultValue: "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co"
+            }
+        },
+        optional: true
+    },
+    subscribeSection: {
+        type: "section",
+        children: {
+            socials: {
+                defaultValue: "facebook, twitter, instagram",
+                optional: true
+            },
+            subscribe: {
+                type: "section",
+                children: {
+                    message: "text",
+                    placeholder: "text",
+                    action: "text"
+                    // icon: {
+                    //     defaultValue: "mail",
+                    //     optional: true,
+                    // },
+                    // value: "text", "watson@sherlocks.com",
+                },
+                defaultValue: {
+                    message: "Subscribe to newsletter to get premium content.",
+                    // message: "Subscribe to newsletter to get well researched, premium content in your inbox ever morning.",
+                    placeholder: "e.g. apwbd@hogwarts.com",
+                    action: "Join"
+                }
+            }
+        },
+        optional: true
+    },
+    theme: {
+        type: "section",
+        children: {
+            center: "boolean",
+            width: {
+                type: "radio",
+                choices: [1600, 1920]
+            },
+            backgroundColor: {
+                label: "Background",
+                type: "color",
+                choices: ["transparent", "black", "white"]
+            },
+            color: {
+                label: "Text Color",
+                type: "color",
+                choices: ["black", "white"]
+            },
+            border: "boolean",
+            about: {
+                type: "section",
+                children: {
+                    width: {
+                        type: "number",
+                        defaultValue: 310,
+                        min: 280,
+                        max: 340
+                    }
+                }
+            },
+            menu: {
+                type: "section",
+                children: {
+                    showTitles: "boolean",
+                    title: {
+                        type: "section",
+                        children: {
+                            opacity: {
+                                type: "number",
+                                defaultValue: 0.5,
+                                min: 0.45,
+                                max: 1
+                            }
+                        }
+                    }
+                }
+            },
+            subscribe: {
+                type: "section",
+                children: {
+                    // iconColor: "#00A860",
+                    inset: "boolean",
+                    width: {
+                        type: "number",
+                        defaultValue: 360,
+                        min: 300,
+                        max: 380
+                    },
+                    roundness: {
+                        type: "radio",
+                        choices: ["none", { label: "Regular", value: "md" }, "full"]
+                    }
+                }
+            }
+        }
+    }
+};
 
 function Footer({ value, onClose }) {
-    const [links, setLinks] = React.useState(value ? value.links : []);
-
-    function handleSetLinks(links) {
-        setLinks(links);
-        Creators.Footer(_extends({}, value, { links }));
-    }
-
-    return React.createElement(
-        'div',
-        { style: { margin: "0.5rem -12px" } },
-        React.createElement(
-            'div',
-            { className: 'flex items-center px-1' },
-            React.createElement(
-                'span',
-                { className: 'cursor-pointer opacity-65', onClick: onClose },
-                React.createElement(
-                    'svg',
-                    { height: '16', viewBox: '0 0 24 24', width: '24' },
-                    React.createElement('path', { fill: 'black', d: 'M11.67 3.87L9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z' })
-                )
-            ),
-            React.createElement(
-                'h2',
-                { className: 'px-0 text-md ml-1' },
-                'Footer'
-            )
-        ),
-        React.createElement(FooterLinks, {
-            links: links,
-            activeLink: value.activeLink,
-            onChange: handleSetLinks
-        })
-    );
+    return React.createElement(ComponentPage, {
+        title: "Footer",
+        onClose: onClose,
+        schema: schema,
+        data: value
+        //   webflow={webflowFooter}
+    });
 }
 
 module.exports = Footer;
