@@ -7,6 +7,7 @@ const defaultCTASectionProps = {
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
+        roundness: "sm",
         verticalPadding: 65,
         border: {
             color: "black", thickness: 2, opacity: 0.5,
@@ -25,6 +26,7 @@ const defaultCTASectionProps = {
             icons: true,
             iconPlacement: "right",
             size: "cta",
+            roundness: "sm",
             reversed: false,
             // themeColor: "#FFD26C",
             mainButton: {

@@ -9,6 +9,7 @@ function createCTASectionBackground({
   height,
   backgroundColor = "white",
   border,
+  roundness,
 }) {
   const bg = createRectangle(width, height, { name: "BG" });
   insertNode(bg);
@@ -16,7 +17,7 @@ function createCTASectionBackground({
   const container = createRectangle(containerWidth, height, {
     fill: backgroundColor,
     name: "Container",
-    cornerRadius: "md",
+    cornerRadius: roundness || "md",
     border,
   });
   insertNode(container);

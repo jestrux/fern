@@ -29721,7 +29721,8 @@ function createCTASectionBackground({
   containerWidth,
   height,
   backgroundColor = "white",
-  border
+  border,
+  roundness
 }) {
   const bg = createRectangle(width, height, { name: "BG" });
   insertNode(bg);
@@ -29729,7 +29730,7 @@ function createCTASectionBackground({
   const container = createRectangle(containerWidth, height, {
     fill: backgroundColor,
     name: "Container",
-    cornerRadius: "md",
+    cornerRadius: roundness || "md",
     border
   });
   insertNode(container);
@@ -29826,6 +29827,7 @@ const defaultCTASectionProps = {
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
+        roundness: "sm",
         verticalPadding: 65,
         border: {
             color: "black", thickness: 2, opacity: 0.5
@@ -29844,6 +29846,7 @@ const defaultCTASectionProps = {
             icons: true,
             iconPlacement: "right",
             size: "cta",
+            roundness: "sm",
             reversed: false,
             // themeColor: "#FFD26C",
             mainButton: {
@@ -35559,6 +35562,11 @@ const schema = {
         type: "color",
         choices: ["black", "white"]
       },
+      roundness: {
+        label: "Corner Radius",
+        type: "radio",
+        choices: ["none", "md", "lg"]
+      },
       border: {
         type: "section",
         optional: true,
@@ -35596,15 +35604,15 @@ const schema = {
           //   min: 400,
           //   max: 1500,
           // },
-          size: {
-            type: "radio",
-            choices: ["md", "lg"]
-          },
+          // size: {
+          //   type: "radio",
+          //   choices: ["md", "lg"],
+          // },
           font: {
             type: "radio",
             choices: ["sans", "serif", "quirky", "fancy"]
-          }
-          // brazen: "boolean"
+          },
+          brazen: "boolean"
         }
       },
       subHeading: {
@@ -35616,15 +35624,15 @@ const schema = {
           //   optional: true,
           //   defaultValue: "black"
           // },
-          width: {
-            type: "number",
-            min: 400,
-            max: 1500
-          },
-          size: {
-            type: "radio",
-            choices: ["sm", "md"]
-          }
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
+          // size: {
+          //   type: "radio",
+          //   choices: ["sm", "md"],
+          // },
         }
       },
       buttons: {
@@ -35646,7 +35654,7 @@ const schema = {
           roundness: {
             label: "Corner Radius",
             type: "radio",
-            choices: ["none", "sm", "full"]
+            choices: ["none", { label: "Regular", value: "sm" }, "full"]
           }
         }
       }
@@ -35659,8 +35667,8 @@ function CTA({ value, onClose }) {
     title: "CTA",
     onClose: onClose,
     schema: schema,
-    data: value,
-    webflow: webflowCTASection
+    data: value
+    // webflow={webflowCTASection}
   });
 }
 

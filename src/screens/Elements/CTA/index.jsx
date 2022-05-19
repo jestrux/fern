@@ -34,6 +34,11 @@ const schema = {
         type: "color",
         choices: ["black", "white"],
       },
+      roundness: {
+        label: "Corner Radius",
+        type: "radio",
+        choices: ["none", "md", "lg"],
+      },
       border: {
         type: "section",
         optional: true,
@@ -71,15 +76,15 @@ const schema = {
           //   min: 400,
           //   max: 1500,
           // },
-          size: {
-            type: "radio",
-            choices: ["md", "lg"],
-          },
+          // size: {
+          //   type: "radio",
+          //   choices: ["md", "lg"],
+          // },
           font: {
             type: "radio",
             choices: ["sans", "serif", "quirky", "fancy"],
           },
-          // brazen: "boolean"
+          brazen: "boolean"
         },
       },
       subHeading: {
@@ -91,15 +96,15 @@ const schema = {
           //   optional: true,
           //   defaultValue: "black"
           // },
-          width: {
-            type: "number",
-            min: 400,
-            max: 1500,
-          },
-          size: {
-            type: "radio",
-            choices: ["sm", "md"],
-          },
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
+          // size: {
+          //   type: "radio",
+          //   choices: ["sm", "md"],
+          // },
         },
       },
       buttons: {
@@ -121,7 +126,7 @@ const schema = {
           roundness: {
             label: "Corner Radius",
             type: "radio",
-            choices: ["none", "sm", "full"],
+            choices: ["none", {label: "Regular", value: "sm"}, "full"],
           },
         },
       },
@@ -136,7 +141,7 @@ function CTA({ value, onClose }) {
       onClose={onClose}
       schema={schema}
       data={value}
-      webflow={webflowCTASection}
+      // webflow={webflowCTASection}
     />
   );
 }
