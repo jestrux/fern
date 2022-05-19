@@ -9,7 +9,8 @@ const defaultSectionTextProps = require("./defaultProps");
       heading,
       subHeading,
       buttons,
-      theme
+      theme,
+      headingSubHeadingSpacing = 20,
     } = {...defaultSectionTextProps, ...(userProps || {})}
     let buttonsNode;
   
@@ -28,6 +29,8 @@ const defaultSectionTextProps = require("./defaultProps");
         },
         buttons
       );
+
+      buttonsNode.name = "FernSectionButtons";
     }
   
     const subHeadingNode = createText(subHeading, {
@@ -75,7 +78,7 @@ const defaultSectionTextProps = require("./defaultProps");
         type: SceneNode.LAYOUT_STACK,
         stack: {
           orientation: SceneNode.STACK_VERTICAL,
-          spacings: 20,
+          spacings: headingSubHeadingSpacing,
         },
       };
     }
@@ -105,7 +108,7 @@ const defaultSectionTextProps = require("./defaultProps");
       sectionTextElement = headingAndSubHeading;
     }
   
-    sectionTextElement.name = "FernMediaText";
+    sectionTextElement.name = "FernSectionText";
     return sectionTextElement;
   }
   

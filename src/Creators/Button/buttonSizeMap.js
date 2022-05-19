@@ -35,6 +35,18 @@ module.exports = {
             right: 20,
         }
     },
+    "cta": {
+        size: [82, 38],
+        fontSize: 22,
+        fontStyle: "Medium",
+        cornerRadius: [6, 6],
+        padding: {
+            top: 16,
+            bottom: 16,
+            left: 24,
+            right: 24,
+        }
+    },
     "lg": {
         size: [101, 48],
         fontSize: 22,

@@ -29519,6 +29519,18 @@ module.exports = {
             right: 20
         }
     },
+    "cta": {
+        size: [82, 38],
+        fontSize: 22,
+        fontStyle: "Medium",
+        cornerRadius: [6, 6],
+        padding: {
+            top: 16,
+            bottom: 16,
+            left: 24,
+            right: 24
+        }
+    },
     "lg": {
         size: [101, 48],
         fontSize: 22,
@@ -29687,6 +29699,216 @@ async function Button(userProps) {
 }
 
 module.exports = Button;
+
+/***/ }),
+
+/***/ "./src/Creators/CTA/assemble.js":
+/*!**************************************!*\
+  !*** ./src/Creators/CTA/assemble.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
+const { insertNode, getPadding, createRectangle, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+
+function createCTASectionBackground({
+  width,
+  containerWidth,
+  height,
+  backgroundColor = "white",
+  border
+}) {
+  const bg = createRectangle(width, height, { name: "BG" });
+  insertNode(bg);
+
+  const container = createRectangle(containerWidth, height, {
+    fill: backgroundColor,
+    name: "Container",
+    cornerRadius: "md",
+    border
+  });
+  insertNode(container);
+
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+
+  return [bg, container];
+}
+
+function assembleCTASection(props = {}, images) {
+  props = _extends({}, props, {
+    images,
+    width: props.theme.width,
+    height: 250
+  });
+
+  const containerWidth = props.width == 1920 ? 1600 : 1400;
+  const [bg, container] = createCTASectionBackground(_extends({}, props, { containerWidth }, props.theme));
+  props.container = container;
+
+  let sectionText;
+  const center = props.theme.center;
+  sectionText = createSectionText(_extends({}, props, {
+    theme: _extends({}, props.theme, {
+      center
+    }),
+    headingSubHeadingSpacing: 30
+  }));
+  commands.ungroup();
+
+  selection.items = [...selection.items, container];
+  commands.alignVerticalCenter();
+  commands.alignLeft();
+
+  if (center) commands.alignHorizontalCenter();
+
+  commands.group();
+  const content = selection.items[0];
+
+  getGroupChildByName(content, "FernSectionButtons", buttons => {
+    const containerRight = container.localBounds.x + container.localBounds.width;
+    buttons.moveInParentCoordinates(containerRight - buttons.localBounds.width, 0);
+  });
+
+  content.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: container,
+      values: getPadding(57, 57, 73, 57)
+    }
+  };
+
+  selection.items = [bg, content];
+  commands.alignTop();
+  commands.alignHorizontalCenter();
+  commands.group();
+
+  let CTASectionContent = selection.items[0];
+  const horizontalPadding = (props.theme.width - containerWidth) / 2;
+  const verticalPadding = props.theme.verticalPadding;
+
+  CTASectionContent.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bg,
+      values: getPadding(0, horizontalPadding)
+    }
+  };
+
+  CTASectionContent.resize(props.width, CTASectionContent.localBounds.height);
+
+  return CTASectionContent;
+}
+
+module.exports = assembleCTASection;
+
+/***/ }),
+
+/***/ "./src/Creators/CTA/defaultProps.js":
+/*!******************************************!*\
+  !*** ./src/Creators/CTA/defaultProps.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultCTASectionProps = {
+    heading: "Ready to take part in the safety of future of teenage online shopping?",
+    subHeading: "Join many other early stage investors and employees joining Ecosafe.",
+    buttons: "Get to know us,  Join the team",
+    theme: {
+        center: false,
+        width: 1600, // 1920
+        backgroundColor: "transparent", // "#eee",
+        color: "black",
+        verticalPadding: 65,
+        border: {
+            color: "black", thickness: 2, opacity: 0.5
+        },
+        heading: {
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
+            width: 700,
+            size: "md" // "lg"
+        },
+        subHeading: {
+            width: 700,
+            size: "md" // "md"
+        },
+        buttons: {
+            icons: true,
+            iconPlacement: "right",
+            size: "cta",
+            reversed: false,
+            // themeColor: "#FFD26C",
+            mainButton: {
+                icon: "chevron-right",
+                style: "fill"
+            },
+            secondaryButton: {
+                icon: "chevron-right",
+                style: "outline"
+            }
+        }
+    }
+};
+
+module.exports = defaultCTASectionProps;
+
+/***/ }),
+
+/***/ "./src/Creators/CTA/index.js":
+/*!***********************************!*\
+  !*** ./src/Creators/CTA/index.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleCTASection = __webpack_require__(/*! ./assemble */ "./src/Creators/CTA/assemble.js");
+const defaultCTASectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/CTA/defaultProps.js");
+
+async function CTASection(userProps) {
+    const props = _extends({}, defaultCTASectionProps, userProps || {});
+
+    try {
+        const oldCTASection = userProps ? selection.items[0] : null;
+
+        editDom(async selection => {
+            try {
+                const cta = assembleCTASection(props);
+                selection.items = [cta];
+                cta.name = "FernCTA";
+
+                const data = _extends({
+                    type: "CTA"
+                }, props ? props : defaultCTASectionProps);
+
+                cta.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+
+                if (oldCTASection) {
+                    placeInParent(cta, oldCTASection.topLeftInParent);
+                    oldCTASection.removeFromParent();
+                } else placeInParent(cta, { x: 0, y: 0 });
+            } catch (error) {
+                console.log("Error creating cta section: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating card: ", error);
+    }
+}
+
+module.exports = CTASection;
 
 /***/ }),
 
@@ -33572,7 +33794,8 @@ function createSectionText(userProps) {
     heading,
     subHeading,
     buttons,
-    theme
+    theme,
+    headingSubHeadingSpacing = 20
   } = _extends({}, defaultSectionTextProps, userProps || {});
   let buttonsNode;
 
@@ -33588,6 +33811,8 @@ function createSectionText(userProps) {
     }, theme.buttons, {
       reversed: secondaryButton ? !theme.buttons.reversed : theme.buttons.reversed
     }), buttons);
+
+    buttonsNode.name = "FernSectionButtons";
   }
 
   const subHeadingNode = createText(subHeading, {
@@ -33634,7 +33859,7 @@ function createSectionText(userProps) {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 20
+        spacings: headingSubHeadingSpacing
       }
     };
   }
@@ -33662,7 +33887,7 @@ function createSectionText(userProps) {
     sectionTextElement = headingAndSubHeading;
   }
 
-  sectionTextElement.name = "FernMediaText";
+  sectionTextElement.name = "FernSectionText";
   return sectionTextElement;
 }
 
@@ -33843,6 +34068,7 @@ const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/Creato
 const SectionText = __webpack_require__(/*! ./SectionText */ "./src/Creators/SectionText/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
+const CTA = __webpack_require__(/*! ./CTA */ "./src/Creators/CTA/index.js");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/Creators/FernComponent/index.js");
 
@@ -33944,6 +34170,7 @@ Creators.SectionText = SectionText;
 Creators.FeatureSection = FeatureSection;
 Creators.Grid = Grid;
 Creators.Footer = Footer;
+Creators.CTA = CTA;
 Creators.FernComponent = FernComponent;
 
 Creators.Card = async function (props) {
@@ -35062,7 +35289,7 @@ module.exports = Toggle;
 module.exports = {
   PLUGIN_ID: "f6e24b19",
   DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"],
-  ELEMENT_TYPES: ["Button", "Input", "SectionText", "card", "Image", "Navbar", "Hero", "MediaSection", "FeatureSection", "Grid", "Footer", "FernComponent"]
+  ELEMENT_TYPES: ["Button", "Input", "SectionText", "card", "Image", "Navbar", "Hero", "MediaSection", "FeatureSection", "Grid", "CTA", "Footer", "FernComponent"]
 };
 
 /***/ }),
@@ -35276,6 +35503,378 @@ module.exports = function (props) {
       assets: [],
       ix1: [],
       ix2: { interactions: [], events: [], actionLists: [] }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
+
+/***/ }),
+
+/***/ "./src/screens/Elements/CTA/index.jsx":
+/*!********************************************!*\
+  !*** ./src/screens/Elements/CTA/index.jsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const webflowCTASection = __webpack_require__(/*! ./webflowCTASection */ "./src/screens/Elements/CTA/webflowCTASection.js");
+
+const schema = {
+  heading: {
+    type: "text",
+    defaultValue: "Ready to take part in the safety of future of teenage online shopping?"
+  },
+  subHeading: {
+    type: "text",
+    defaultValue: "Join a other early stage investors and employees joining Ecosafe."
+  },
+  buttons: {
+    type: "text",
+    defaultValue: "Invest in Cilo, Join Our Team",
+    optional: true
+  },
+  theme: {
+    type: "section",
+    children: {
+      center: "boolean",
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        choices: ["transparent", "black", "white"]
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["black", "white"]
+      },
+      border: {
+        type: "section",
+        optional: true,
+        children: {
+          color: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["black", "white"],
+            meta: { small: true }
+          },
+          thickness: {
+            type: "number",
+            defaultValue: 1.5,
+            min: 1.5
+          },
+          opacity: {
+            type: "number",
+            defaultValue: 0.5,
+            min: 0.1,
+            max: 1
+          }
+        }
+      },
+      heading: {
+        type: "section",
+        children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 1500,
+          // },
+          size: {
+            type: "radio",
+            choices: ["md", "lg"]
+          },
+          font: {
+            type: "radio",
+            choices: ["sans", "serif", "quirky", "fancy"]
+          }
+          // brazen: "boolean"
+        }
+      },
+      subHeading: {
+        type: "section",
+        children: {
+          // color: {
+          //   type: "color",
+          //   choices: ["black", "white"],
+          //   optional: true,
+          //   defaultValue: "black"
+          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          }
+        }
+      },
+      buttons: {
+        type: "section",
+        children: {
+          icons: "boolean",
+          reversed: "boolean",
+          themeColor: {
+            type: "color",
+            defaultValue: "#E2406C",
+            choices: ["#E2406C", "#007BFF", "black", "white"],
+            optional: true,
+            meta: { small: true }
+          },
+          // size: {
+          //   type: "radio",
+          //   choices: ["sm", "md"],
+          // },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            choices: ["none", "sm", "full"]
+          }
+        }
+      }
+    }
+  }
+};
+
+function CTA({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "CTA",
+    onClose: onClose,
+    schema: schema,
+    data: value,
+    webflow: webflowCTASection
+  });
+}
+
+module.exports = CTA;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/CTA/webflowCTASection.js":
+/*!*******************************************************!*\
+  !*** ./src/screens/Elements/CTA/webflowCTASection.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const buttonSizeMap = __webpack_require__(/*! ../../../Creators/Button/buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+module.exports = function (props) {
+  const { heading, subHeading, buttons, theme } = props;
+  const { backgroundColor, shadow, border } = theme;
+  const [mainButton, secondaryButton] = (buttons || "").split(",");;
+
+  const buttonProps = buttonSizeMap[theme.buttons.size];
+  const [sm, md] = buttonProps.cornerRadius;
+  const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
+
+  let mainButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+
+  let secondaryButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: transparent; 
+    color: ${theme.color};
+  `;
+
+  if (props.theme.buttons.reversed) {
+    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    mainButtonStyles = secondaryButtonStyles;
+    secondaryButtonStyles = mainButtonStylesClone;
+  }
+
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "sectionText",
+        tag: "div",
+        classes: ["sectionTextClassId"],
+        children: ["sectionTextHeadingId", "sectionTextSubHeadingId", ...(!buttons ? [] : ["sectionTextButtonsId"])],
+        type: "Section",
+        data: {
+          grid: {
+            type: "section"
+          },
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextHeadingId",
+        tag: "h1",
+        classes: ["sectionTextHeadingClassId"],
+        children: ["sectionTextHeadingTextId"],
+        type: "Heading",
+        data: {
+          tag: "h1"
+        }
+      }, {
+        _id: "sectionTextHeadingTextId",
+        text: true,
+        v: heading
+      }, {
+        _id: "sectionTextSubHeadingId",
+        tag: "p",
+        classes: ["sectionTextSubheadingClassId"],
+        children: ["sectionTextSubHeadingTextId"],
+        type: "Paragraph"
+      }, {
+        _id: "sectionTextSubHeadingTextId",
+        text: true,
+        v: subHeading
+      }, ...(!buttons ? [] : [{
+        _id: "sectionTextButtonsId",
+        tag: "div",
+        classes: ["sectionTextButtonsClassId"],
+        children: ["sectionTextMainButtonId", ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])],
+        type: "Block",
+        data: {
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextMainButtonId",
+        tag: "a",
+        classes: ["sectionTextMainButtonClassId"],
+        children: ["sectionTextMainButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextMainButtonTextId",
+        text: true,
+        v: mainButton
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonId",
+        tag: "a",
+        classes: ["sectionTextSecondaryButtonClassId"],
+        children: ["sectionTextSecondaryButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextSecondaryButtonTextId",
+        text: true,
+        v: secondaryButton
+      }])])],
+      styles: [{
+        _id: "sectionTextClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionText",
+        namespace: "",
+        comb: "",
+        styleLess: `background-color: ${backgroundColor}; padding-top: 70px; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextHeadingClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextHeading",
+        namespace: "",
+        comb: "",
+        styleLess: `color: ${theme.heading.color || theme.color};margin-top: 0px; margin-bottom: 6px; font-size: 36px; text-align: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextSubheadingClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextSubheading",
+        namespace: "",
+        comb: "",
+        styleLess: `
+            color: ${theme.subHeading.color || theme.color};
+            max-width: ${theme.subHeading.width}px; 
+            font-size: 16px; text-align: center;
+          `,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!buttons ? [] : [{
+        _id: "sectionTextButtonsClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionButtons",
+        namespace: "",
+        comb: "",
+        styleLess: "display: flex; justify-content: center; grid-column-gap: 10px; grid-row-gap: 10px;",
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextMainButtonClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextMainButton",
+        namespace: "",
+        comb: "",
+        styleLess: mainButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextSecondaryButton",
+        namespace: "",
+        comb: "",
+        styleLess: secondaryButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }])])],
+      assets: [],
+      ix1: [],
+      ix2: {
+        interactions: [],
+        events: [],
+        actionLists: []
+      }
     },
     meta: {
       unlinkedSymbolCount: 0,
@@ -35557,7 +36156,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'Footer'].map((element, index) => React.createElement(
+            ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'CTA', 'Footer'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -38166,6 +38765,7 @@ const Input = __webpack_require__(/*! ./Input */ "./src/screens/Elements/Input.j
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button/index.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 const Hero = __webpack_require__(/*! ./Hero */ "./src/screens/Elements/Hero.jsx");
+const CTA = __webpack_require__(/*! ./CTA */ "./src/screens/Elements/CTA/index.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
 const SectionText = __webpack_require__(/*! ./SectionText */ "./src/screens/Elements/SectionText/index.jsx");
 const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/screens/Elements/FeatureSection.jsx");
@@ -38226,6 +38826,7 @@ function Elements({ value, subscription, onUpgrade }) {
             MediaSection,
             Grid,
             Footer,
+            CTA,
             FernComponent
         };
 
@@ -39630,13 +40231,14 @@ function createRectangle(width = 200, height, userProps = {}) {
     props = _extends({}, nonShadowProps);
   }
 
-  const strokeProps = {
-    strokeEnabled: true,
-    strokeWidth: 1.5,
-    stroke: new Color("#e0e0e0")
-  };
-
   if (props.border) {
+    const border = props.border;
+    const strokeProps = {
+      strokeEnabled: true,
+      strokeWidth: border.thickness || 1.5,
+      stroke: new Color(border.color || "#e0e0e0", border.opacity || 1)
+    };
+
     props = _extends({}, props, strokeProps);
   }
 

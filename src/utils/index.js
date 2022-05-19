@@ -613,14 +613,15 @@ function createRectangle(width = 200, height, userProps = {}) {
       ...nonShadowProps
     };
   }
-
-  const strokeProps = {
-    strokeEnabled: true,
-    strokeWidth: 1.5,
-    stroke: new Color("#e0e0e0"),
-  }
-
+  
   if(props.border){
+    const border = props.border;
+    const strokeProps = {
+      strokeEnabled: true,
+      strokeWidth: border.thickness || 1.5,
+      stroke: new Color(border.color || "#e0e0e0", border.opacity || 1),
+    }
+
     props = {
       ...props,
       ...strokeProps

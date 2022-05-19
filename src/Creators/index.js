@@ -7,6 +7,7 @@ const FeatureSection = require("./FeatureSection");
 const SectionText = require("./SectionText");
 const MediaSection = require("./MediaSection");
 const Grid = require("./Grid");
+const CTA = require("./CTA");
 const Footer = require("./Footer");
 const FernComponent = require("./FernComponent");
 
@@ -20,6 +21,7 @@ class Creators {
     static FeatureSection = FeatureSection
     static Grid = Grid
     static Footer = Footer
+    static CTA = CTA
     static FernComponent = FernComponent
     
     static Rating(selection, props = {}){
