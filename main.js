@@ -30471,21 +30471,24 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { placeInParent, createBorder, insertNode, getPadding, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createFooterSlot = __webpack_require__(/*! ./createSlot */ "./src/Creators/Footer/createSlot.js");
 
-function createFooterBackground({ width, height, backgroundColor }) {
+function createFooterBackground({ width, height, backgroundColor, border }) {
     let bg = new Rectangle();
     bg.resize(width, height);
     bg.fill = new Color(backgroundColor);
     bg.strokeEnabled = false;
     insertNode(bg);
 
-    const borderNode = createBorder({ width });
-    borderNode.opacity = 0.1;
-    insertNode(borderNode);
+    if (border) {
+        const borderNode = createBorder({ width });
+        borderNode.opacity = 0.1;
+        insertNode(borderNode);
 
-    selection.items = [bg, borderNode];
-    commands.group();
-    bg = selection.items[0];
-    placeInParent(borderNode, { x: 0, y: 0 });
+        selection.items = [bg, borderNode];
+        commands.group();
+        bg = selection.items[0];
+        placeInParent(borderNode, { x: 0, y: 0 });
+    }
+
     bg.name = "BG";
 
     return bg;
@@ -36527,9 +36530,15 @@ const schema = {
             subscribe: {
                 type: "section",
                 children: {
-                    message: "text",
-                    placeholder: "text",
-                    action: "text"
+                    message: {
+                        defaultValue: "Subscribe to newsletter to get premium content."
+                    },
+                    placeholder: {
+                        defaultValue: "e.g. snape@hogwarts.com"
+                    },
+                    action: {
+                        defaultValue: "Join"
+                    }
                     // icon: {
                     //     defaultValue: "mail",
                     //     optional: true,
@@ -36541,7 +36550,8 @@ const schema = {
                     // message: "Subscribe to newsletter to get well researched, premium content in your inbox ever morning.",
                     placeholder: "e.g. apwbd@hogwarts.com",
                     action: "Join"
-                }
+                },
+                optional: true
             }
         },
         optional: true

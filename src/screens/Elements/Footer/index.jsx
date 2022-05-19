@@ -102,9 +102,15 @@ const schema = {
             subscribe: {
                 type: "section",
                 children: {
-                    message: "text",
-                    placeholder: "text",
-                    action: "text",
+                    message: {
+                        defaultValue: "Subscribe to newsletter to get premium content."
+                    },
+                    placeholder: {
+                        defaultValue: "e.g. snape@hogwarts.com"
+                    },
+                    action: {
+                        defaultValue: "Join"
+                    },
                     // icon: {
                     //     defaultValue: "mail",
                     //     optional: true,
@@ -117,6 +123,7 @@ const schema = {
                     placeholder: "e.g. apwbd@hogwarts.com",
                     action: "Join",
                 },
+                optional: true,
             },
         },
         optional: true,

@@ -3,21 +3,24 @@ const commands = require("commands");
 const { placeInParent, createBorder, insertNode, getPadding, getGroupChildByName } = require("../../utils");
 const createFooterSlot = require("./createSlot");
 
-function createFooterBackground({ width, height, backgroundColor }){
+function createFooterBackground({ width, height, backgroundColor, border }){
     let bg = new Rectangle();
     bg.resize(width, height);
     bg.fill = new Color(backgroundColor);
     bg.strokeEnabled = false;
     insertNode(bg);
 
-    const borderNode = createBorder({ width });
-    borderNode.opacity = 0.1;
-    insertNode(borderNode);
+    if(border){
+        const borderNode = createBorder({ width });
+        borderNode.opacity = 0.1;
+        insertNode(borderNode);
+    
+        selection.items = [bg, borderNode];
+        commands.group();
+        bg = selection.items[0];
+        placeInParent(borderNode, {x: 0, y: 0});
+    }
 
-    selection.items = [bg, borderNode];
-    commands.group();
-    bg = selection.items[0];
-    placeInParent(borderNode, {x: 0, y: 0});
     bg.name = "BG";
 
     return bg;
