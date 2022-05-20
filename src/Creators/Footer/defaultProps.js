@@ -4,20 +4,20 @@ const defaultFooterProps = {
         about: "Making the world a better place by making very elegant visual hierarchies.",
     },
     menu1: {
-        title: "Company",
+        title: "COMPANY",
         links: "Careers, Newsroom, Privacy Policy",
     },
     menu2: {
-        title: "About Us",
+        title: "ABOUT US",
         links: "Services, Our Values, Founding Team",
     },
     menu3: {
-        title: "Product",
+        title: "PRODUCT",
         links: "Features, Pricing, Changelog",
     },
     menu4: null,
     menu5: {
-        title: "Contact Us",
+        title: "CONTACT US",
         links: "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co",
     },
     subscribeSection: null,

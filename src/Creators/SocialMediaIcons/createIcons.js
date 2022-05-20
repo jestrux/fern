@@ -25,7 +25,7 @@ function createSocialMediaIcons({
         if(background){
             bg = createRectangle(40, 40, {
                 fill: background.color || color,
-                opacity: background.opacity || opacity,
+                opacity: background.opacity,
                 cornerRadius: background.roundness,
             });
             insertNode(bg);
@@ -33,7 +33,7 @@ function createSocialMediaIcons({
 
         const icon = createIcon(iconPaths[socialMedia], { 
             size: 20, fill: color,
-            opacity: background ? 0.6 : opacity,
+            opacity: opacity,
         });
         insertNode(icon);
 

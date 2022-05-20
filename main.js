@@ -29829,7 +29829,7 @@ const defaultCTASectionProps = {
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
-        roundness: "sm",
+        roundness: "md",
         verticalPadding: 65,
         border: {
             color: "black", thickness: 2, opacity: 0.5
@@ -30665,8 +30665,8 @@ function createSectionTitle(text = "Quick Links", {
         fill: menu.title.color || color,
         fontStyle: "Bold",
         fontSize: 16,
-        type: Text.POINT,
-        textTransform: "uppercase"
+        type: Text.POINT
+        // textTransform: "uppercase"
     });
 
     sectionTitle.opacity = menu.title.opacity;
@@ -30766,6 +30766,7 @@ function footerSubscribeComponent(props = {}, {
     // iconColor: props.theme.subscribe.color || props.theme.color,
     placeholder,
     theme: {
+      // color: props.theme.color,
       width: props.theme.subscribe.width,
       roundness
     }
@@ -30777,7 +30778,7 @@ function footerSubscribeComponent(props = {}, {
     // icon: "send",
     text: action,
     theme: {
-      // color: subscribeColor,
+      color: props.theme.subscribe.color || props.theme.color,
       size: props.theme.subscribe.inset ? "sm" : "md",
       roundness: roundness == "md" ? "sm" : roundness
     }
@@ -30958,20 +30959,20 @@ const defaultFooterProps = {
         about: "Making the world a better place by making very elegant visual hierarchies."
     },
     menu1: {
-        title: "Company",
+        title: "COMPANY",
         links: "Careers, Newsroom, Privacy Policy"
     },
     menu2: {
-        title: "About Us",
+        title: "ABOUT US",
         links: "Services, Our Values, Founding Team"
     },
     menu3: {
-        title: "Product",
+        title: "PRODUCT",
         links: "Features, Pricing, Changelog"
     },
     menu4: null,
     menu5: {
-        title: "Contact Us",
+        title: "CONTACT US",
         links: "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co"
     },
     subscribeSection: null,
@@ -32762,7 +32763,7 @@ module.exports = createMedia;
 
 const defaultMediaSectionProps = {
     heading: "Experts you can trust",
-    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat.\n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail; from art direction and branding to speed, reach and performance.",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. We’ve taken the time to study every part of the industry and have the process down pat. \n\nWe’re very passionate and take a lot of pride in everything we do and that's clear in the meticulous care into every little detail.",
     // subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
     buttons: "Get to know us",
     image: "4",
@@ -32788,7 +32789,7 @@ const defaultMediaSectionProps = {
         buttons: {
             icons: false,
             iconPlacement: "right",
-            size: "sm",
+            size: "md", // "sm"
             roundness: "sm",
             reversed: true,
             mainButton: {
@@ -34114,7 +34115,7 @@ function createSocialMediaIcons({
         if (background) {
             bg = createRectangle(40, 40, {
                 fill: background.color || color,
-                opacity: background.opacity || opacity,
+                opacity: background.opacity,
                 cornerRadius: background.roundness
             });
             insertNode(bg);
@@ -34122,7 +34123,7 @@ function createSocialMediaIcons({
 
         const icon = createIcon(iconPaths[socialMedia], {
             size: 20, fill: color,
-            opacity: background ? 0.6 : opacity
+            opacity: opacity
         });
         insertNode(icon);
 
@@ -36524,7 +36525,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Company",
+                defaultValue: "COMPANY",
                 optional: true
             },
             links: {
@@ -36537,7 +36538,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "About Us",
+                defaultValue: "ABOUT US",
                 optional: true
             },
             links: {
@@ -36550,7 +36551,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Product",
+                defaultValue: "PRODUCT",
                 optional: true
             },
             links: {
@@ -36563,7 +36564,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Support",
+                defaultValue: "SUPPORT",
                 optional: true
             },
             links: {
@@ -36576,7 +36577,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Contact Us",
+                defaultValue: "CONTACT US",
                 optional: true
             },
             links: {
@@ -36672,6 +36673,12 @@ const schema = {
                 type: "section",
                 children: {
                     // iconColor: "#00A860",
+                    color: {
+                        type: "color",
+                        choices: ["black", "white"],
+                        defaultValue: "black",
+                        optional: true
+                    },
                     inset: "boolean",
                     width: {
                         type: "number",
@@ -36691,6 +36698,7 @@ const schema = {
                     color: {
                         type: "color",
                         choices: ["black", "white"],
+                        defaultValue: "black",
                         optional: true
                     },
                     opacity: {
@@ -38227,6 +38235,7 @@ const schema = {
           color: {
             type: "color",
             choices: ["black", "white"],
+            defaultValue: "black",
             optional: true
           },
           opacity: {

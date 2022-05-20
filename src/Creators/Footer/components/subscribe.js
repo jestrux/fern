@@ -18,6 +18,7 @@ function footerSubscribeComponent(props = {},
     // iconColor: props.theme.subscribe.color || props.theme.color,
     placeholder,
     theme: {
+      // color: props.theme.color,
       width: props.theme.subscribe.width,
       roundness,
     }
@@ -29,7 +30,7 @@ function footerSubscribeComponent(props = {},
     // icon: "send",
     text: action,
     theme: {
-      // color: subscribeColor,
+      color: props.theme.subscribe.color || props.theme.color,
       size: props.theme.subscribe.inset ? "sm" : "md",
       roundness: roundness == "md" ? "sm" : roundness,
     }

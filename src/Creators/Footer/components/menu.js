@@ -12,7 +12,7 @@ function createSectionTitle(text = "Quick Links", {
         fontStyle: "Bold",
         fontSize: 16,
         type: Text.POINT,
-        textTransform: "uppercase"
+        // textTransform: "uppercase"
     });
 
     sectionTitle.opacity = menu.title.opacity;

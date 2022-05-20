@@ -7,7 +7,7 @@ const defaultCTASectionProps = {
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
-        roundness: "sm",
+        roundness: "md",
         verticalPadding: 65,
         border: {
             color: "black", thickness: 2, opacity: 0.5,

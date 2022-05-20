@@ -171,6 +171,7 @@ const schema = {
           color: {
             type: "color",
             choices: ["black", "white"],
+            defaultValue: "black",
             optional: true,
           },
           opacity: {

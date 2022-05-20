@@ -31,7 +31,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Company",
+                defaultValue: "COMPANY",
                 optional: true,
             },
             links: {
@@ -44,7 +44,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "About Us",
+                defaultValue: "ABOUT US",
                 optional: true,
             },
             links: {
@@ -57,7 +57,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Product",
+                defaultValue: "PRODUCT",
                 optional: true,
             },
             links: {
@@ -70,7 +70,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Support",
+                defaultValue: "SUPPORT",
                 optional: true,
             },
             links: {
@@ -83,7 +83,7 @@ const schema = {
         type: "section",
         children: {
             title: {
-                defaultValue: "Contact Us",
+                defaultValue: "CONTACT US",
                 optional: true,
             },
             links: {
@@ -179,6 +179,12 @@ const schema = {
                 type: "section",
                 children: {
                     // iconColor: "#00A860",
+                    color: {
+                        type: "color",
+                        choices: ["black", "white"],
+                        defaultValue: "black",
+                        optional: true,
+                    },
                     inset: "boolean",
                     width: {
                         type: "number",
@@ -198,6 +204,7 @@ const schema = {
                     color: {
                         type: "color",
                         choices: ["black", "white"],
+                        defaultValue: "black",
                         optional: true,
                     },
                     opacity: {
