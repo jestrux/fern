@@ -191,6 +191,44 @@ const schema = {
                         choices: ["none", {label: "Regular", value: "md"}, "full"],
                     },
                 }
+            },
+            socials: {
+                type: "section",
+                children: {
+                    color: {
+                        type: "color",
+                        choices: ["black", "white"],
+                        optional: true,
+                    },
+                    opacity: {
+                        type: "number",
+                        min: 0.3,
+                        max: 1,
+                    },
+                    background: {
+                        type: "section",
+                        children: {
+                            color: {
+                                type: "color",
+                                defaultValue: "black",
+                                choices: ["black", "white"],
+                                optional: true,
+                            },
+                            opacity: {
+                                type: "number",
+                                defaultValue: 0.3,
+                                min: 0.2,
+                                max: 0.6,
+                            },
+                            roundness: {
+                                type: "radio",
+                                defaultValue: "sm",
+                                choices: ["none", {label: "Regular", value: "sm"}, "full"],
+                            },
+                        },
+                        optional: true,
+                    },
+                }
             }
         },
     },

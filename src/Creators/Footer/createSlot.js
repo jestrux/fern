@@ -28,7 +28,11 @@ function createFooterSlot(props, components = {}){
     const componentMap = {
         "logo": navLogoComponent,
         "about": footerAboutUsComponent,
-        socials: (props, icons) => createSocialMediaIcons({...props.theme, icons}),
+        socials: (props, icons) => createSocialMediaIcons({
+            ...props.theme, 
+            ...props.theme.socials,
+            icons
+        }),
         "menu": footerMenuComponent,
         "subscribe": footerSubscribeComponent,
     }

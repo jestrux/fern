@@ -1,6 +1,6 @@
 const { Rectangle, Color, selection, SceneNode } = require("scenegraph");
 const commands = require("commands");
-const { insertNode, createText } = require("../../../utils");
+const { insertNode, createText, getGroupChildByName } = require("../../../utils");
 const createInput = require("../../Input/createInput");
 const createButton = require("../../Button/createButton");
 
@@ -23,7 +23,8 @@ function footerSubscribeComponent(props = {},
     }
   });
 
-  console.log("Inset: ", props.theme.subscribe.inset);
+  // console.log("Inset: ", props.theme.subscribe.inset);
+
   const button = createButton({
     // icon: "send",
     text: action,
@@ -33,6 +34,16 @@ function footerSubscribeComponent(props = {},
       roundness: roundness == "md" ? "sm" : roundness,
     }
   });
+
+  if(!props.theme.subscribe.inset){
+    getGroupChildByName(button, "BG", bg => {
+      bg.cornerRadii = {
+        ...bg.cornerRadii,
+        topLeft: 0,
+        bottomLeft: 0,
+      };
+    })
+  }
 
   selection.items = [input, button];
   

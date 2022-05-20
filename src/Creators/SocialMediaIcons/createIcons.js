@@ -1,11 +1,12 @@
 const { SceneNode, selection } = require("scenegraph");
 const commands = require("commands");
-const { insertNode, createIcon } = require("../../utils");
+const { insertNode, createIcon, createRectangle } = require("../../utils");
 
 function createSocialMediaIcons({
     icons = "facebook, twitter, instagram",
     color = "#888",
-    iconOpacity = 1
+    opacity = 1,
+    background
 }){
     icons = icons.split(",").map(icon => icon.trim());
     // https://simpleicons.org/
@@ -19,8 +20,32 @@ function createSocialMediaIcons({
     };
 
     const iconNodes = icons.reverse().map(socialMedia => {
-        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: color, opacity: iconOpacity });
+        let bg;
+
+        if(background){
+            bg = createRectangle(40, 40, {
+                fill: background.color || color,
+                opacity: background.opacity || opacity,
+                cornerRadius: background.roundness,
+            });
+            insertNode(bg);
+        }
+
+        const icon = createIcon(iconPaths[socialMedia], { 
+            size: 20, fill: color,
+            opacity: background ? 0.6 : opacity,
+        });
         insertNode(icon);
+
+        if(background){
+            selection.items = [bg, icon];
+            commands.alignVerticalCenter();
+            commands.alignHorizontalCenter();
+            commands.group();
+    
+            return selection.items[0];
+        }
+        
         return icon;
     });
 
@@ -33,7 +58,7 @@ function createSocialMediaIcons({
         type: SceneNode.LAYOUT_STACK,
         stack: {
             orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 24
+            spacings: background ? 18 : 24,
         }
     }
 

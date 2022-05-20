@@ -15,7 +15,11 @@ function createNavSlot(props, components = {}) {
     logo: navLogoComponent,
     menu: navMenuComponent,
     dp: navDpComponent,
-    socials: (props, icons) => createSocialMediaIcons({...props.theme, icons}),
+    socials: (props, icons) => createSocialMediaIcons({
+      ...props.theme, 
+      ...props.theme.socials,
+      icons
+    }),
     search: navSearchInputComponent,
     buttons: (props, buttons) => navButtonsComponent({
       ...props,

@@ -575,6 +575,7 @@ function createRectangle(width = 200, height, userProps = {}) {
   const defaultProps = {
     name: "BG",
     fill: "transparent",
+    opacity: 1,
     width, height,
     border: false,
     shadow: "none",
@@ -588,10 +589,10 @@ function createRectangle(width = 200, height, userProps = {}) {
 
   if(typeof props.fill == "string"){
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
   
-  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16, full: 999 };
   const radius = radiusMap[props.cornerRadius || 'none'] || radiusMap["none"];
 
   if(props.shadow && props.shadow != "none"){

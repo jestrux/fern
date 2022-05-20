@@ -6,6 +6,7 @@ function navSearchInputComponent({color, theme}, {placeholder = "Type here to se
         placeholder,
         value,
         theme: {
+            size: "sm",
             roundness: theme.searchbar ? theme.searchbar.roundness || "full" : "full",
             width: 350,
             backgroundColor: "transparent",

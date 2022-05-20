@@ -1,4 +1,15 @@
 module.exports = {
+    "sm": {
+        size: [82, 38],
+        fontSize: 18,
+        fontStyle: "Regular",
+        labelFontSize: 15,
+        cornerRadius: 4,
+        padding: {
+            bottom: 13, top: 13,
+            left: 16, right: 16,
+        }
+    },
     "md": {
         size: [82, 38],
         fontSize: 20,

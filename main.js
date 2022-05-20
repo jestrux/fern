@@ -30746,9 +30746,11 @@ module.exports = footerMenuComponent;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const { Rectangle, Color, selection, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createText } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const { insertNode, createText, getGroupChildByName } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const createInput = __webpack_require__(/*! ../../Input/createInput */ "./src/Creators/Input/createInput.js");
 const createButton = __webpack_require__(/*! ../../Button/createButton */ "./src/Creators/Button/createButton.js");
 
@@ -30769,7 +30771,8 @@ function footerSubscribeComponent(props = {}, {
     }
   });
 
-  console.log("Inset: ", props.theme.subscribe.inset);
+  // console.log("Inset: ", props.theme.subscribe.inset);
+
   const button = createButton({
     // icon: "send",
     text: action,
@@ -30779,6 +30782,15 @@ function footerSubscribeComponent(props = {}, {
       roundness: roundness == "md" ? "sm" : roundness
     }
   });
+
+  if (!props.theme.subscribe.inset) {
+    getGroupChildByName(button, "BG", bg => {
+      bg.cornerRadii = _extends({}, bg.cornerRadii, {
+        topLeft: 0,
+        bottomLeft: 0
+      });
+    });
+  }
 
   selection.items = [input, button];
 
@@ -30859,7 +30871,9 @@ function createFooterSlot(props, components = {}) {
     const componentMap = {
         "logo": navLogoComponent,
         "about": footerAboutUsComponent,
-        socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, { icons })),
+        socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, props.theme.socials, {
+            icons
+        })),
         "menu": footerMenuComponent,
         "subscribe": footerSubscribeComponent
     };
@@ -30965,7 +30979,6 @@ const defaultFooterProps = {
         backgroundColor: "white",
         color: "#000",
         shadow: true,
-        iconOpacity: 0.6,
         border: true,
         about: {
             width: 310
@@ -30981,6 +30994,13 @@ const defaultFooterProps = {
             // iconColor: "#00A860",
             width: 360,
             roundness: "md"
+        },
+        socials: {
+            opacity: 0.5
+            // background: {
+            //     opacity: 0.3,
+            //     roundness: "sm",
+            // },
         }
     }
 };
@@ -32337,6 +32357,17 @@ module.exports = Input;
 /***/ (function(module, exports) {
 
 module.exports = {
+    "sm": {
+        size: [82, 38],
+        fontSize: 18,
+        fontStyle: "Regular",
+        labelFontSize: 15,
+        cornerRadius: 4,
+        padding: {
+            bottom: 13, top: 13,
+            left: 16, right: 16
+        }
+    },
     "md": {
         size: [82, 38],
         fontSize: 20,
@@ -33354,6 +33385,7 @@ function navSearchInputComponent({ color, theme }, { placeholder = "Type here to
         placeholder,
         value,
         theme: {
+            size: "sm",
             roundness: theme.searchbar ? theme.searchbar.roundness || "full" : "full",
             width: 350,
             backgroundColor: "transparent",
@@ -33400,7 +33432,9 @@ function createNavSlot(props, components = {}) {
     logo: navLogoComponent,
     menu: navMenuComponent,
     dp: navDpComponent,
-    socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, { icons })),
+    socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, props.theme.socials, {
+      icons
+    })),
     search: navSearchInputComponent,
     buttons: (props, buttons) => navButtonsComponent(_extends({}, props, props.theme.buttons, {
       themeColor: props.theme.buttons.themeColor
@@ -33532,7 +33566,6 @@ const defaultNavbarProps = {
     width: 1600,
     backgroundColor: "white",
     color: "black",
-    iconOpacity: 0.6,
     // themeColor: "#17FD9B",
     // inActiveOpacity: 0.5,
     shadow: null,
@@ -33556,6 +33589,13 @@ const defaultNavbarProps = {
         // icon: "chevron-right",
         style: "outline"
       }
+    },
+    socials: {
+      opacity: 0.5
+      // background: {
+      //     opacity: 0.3,
+      //     roundness: "sm",
+      // },
     }
     // buttons: {
     //     size: "sm",
@@ -34049,12 +34089,13 @@ module.exports = SectionText;
 
 const { SceneNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createIcon, createRectangle } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createSocialMediaIcons({
     icons = "facebook, twitter, instagram",
     color = "#888",
-    iconOpacity = 1
+    opacity = 1,
+    background
 }) {
     icons = icons.split(",").map(icon => icon.trim());
     // https://simpleicons.org/
@@ -34068,8 +34109,32 @@ function createSocialMediaIcons({
     };
 
     const iconNodes = icons.reverse().map(socialMedia => {
-        const icon = createIcon(iconPaths[socialMedia], { size: 20, fill: color, opacity: iconOpacity });
+        let bg;
+
+        if (background) {
+            bg = createRectangle(40, 40, {
+                fill: background.color || color,
+                opacity: background.opacity || opacity,
+                cornerRadius: background.roundness
+            });
+            insertNode(bg);
+        }
+
+        const icon = createIcon(iconPaths[socialMedia], {
+            size: 20, fill: color,
+            opacity: background ? 0.6 : opacity
+        });
         insertNode(icon);
+
+        if (background) {
+            selection.items = [bg, icon];
+            commands.alignVerticalCenter();
+            commands.alignHorizontalCenter();
+            commands.group();
+
+            return selection.items[0];
+        }
+
         return icon;
     });
 
@@ -34082,7 +34147,7 @@ function createSocialMediaIcons({
         type: SceneNode.LAYOUT_STACK,
         stack: {
             orientation: SceneNode.STACK_HORIZONTAL,
-            spacings: 24
+            spacings: background ? 18 : 24
         }
     };
 
@@ -36619,6 +36684,44 @@ const schema = {
                         choices: ["none", { label: "Regular", value: "md" }, "full"]
                     }
                 }
+            },
+            socials: {
+                type: "section",
+                children: {
+                    color: {
+                        type: "color",
+                        choices: ["black", "white"],
+                        optional: true
+                    },
+                    opacity: {
+                        type: "number",
+                        min: 0.3,
+                        max: 1
+                    },
+                    background: {
+                        type: "section",
+                        children: {
+                            color: {
+                                type: "color",
+                                defaultValue: "black",
+                                choices: ["black", "white"],
+                                optional: true
+                            },
+                            opacity: {
+                                type: "number",
+                                defaultValue: 0.3,
+                                min: 0.2,
+                                max: 0.6
+                            },
+                            roundness: {
+                                type: "radio",
+                                defaultValue: "sm",
+                                choices: ["none", { label: "Regular", value: "sm" }, "full"]
+                            }
+                        },
+                        optional: true
+                    }
+                }
             }
         }
     }
@@ -38115,6 +38218,44 @@ const schema = {
             type: "radio",
             defaultValue: "sm",
             choices: ["none", "sm", "full"]
+          }
+        }
+      },
+      socials: {
+        type: "section",
+        children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true
+          },
+          opacity: {
+            type: "number",
+            min: 0.3,
+            max: 1
+          },
+          background: {
+            type: "section",
+            children: {
+              color: {
+                type: "color",
+                defaultValue: "black",
+                choices: ["black", "white"],
+                optional: true
+              },
+              opacity: {
+                type: "number",
+                defaultValue: 0.3,
+                min: 0.2,
+                max: 0.6
+              },
+              roundness: {
+                type: "radio",
+                defaultValue: "sm",
+                choices: ["none", { label: "Regular", value: "sm" }, "full"]
+              }
+            },
+            optional: true
           }
         }
       }
@@ -40294,6 +40435,7 @@ function createRectangle(width = 200, height, userProps = {}) {
   const defaultProps = {
     name: "BG",
     fill: "transparent",
+    opacity: 1,
     width, height,
     border: false,
     shadow: "none",
@@ -40304,10 +40446,10 @@ function createRectangle(width = 200, height, userProps = {}) {
 
   if (typeof props.fill == "string") {
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
 
-  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+  const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16, full: 999 };
   const radius = radiusMap[props.cornerRadius || 'none'] || radiusMap["none"];
 
   if (props.shadow && props.shadow != "none") {

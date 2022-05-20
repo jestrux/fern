@@ -25,7 +25,6 @@ const defaultFooterProps = {
         backgroundColor: "white",
         color: "#000",
         shadow: true,
-        iconOpacity: 0.6,
         border: true,
         about: {
             width: 310,
@@ -41,6 +40,13 @@ const defaultFooterProps = {
             // iconColor: "#00A860",
             width: 360,
             roundness: "md",
+        },
+        socials: {
+            opacity: 0.5,
+            // background: {
+            //     opacity: 0.3,
+            //     roundness: "sm",
+            // },
         }
     }
 };
