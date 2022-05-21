@@ -96,7 +96,7 @@ function assembleMediaSection(props = {}, images) {
   const center = props.theme.layout == "center";
   const overlay = props.theme.layout == "overlay";
 
-  const noText = !props.heading && !props.subHeading;
+  const noText = !props.heading && !props.subHeading && !props.checklist;
   const minTextWidth = center || overlay ? 900 : 300;
   const maxTextWidth = center || overlay ? 1300 : 600;
   const fullWidthImage = center && props.theme.image.fullWidth;

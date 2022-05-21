@@ -22,10 +22,13 @@ const schema = {
   theme: {
     type: "section",
     children: {
-      center: "boolean",
       width: {
         type: "radio",
         choices: [1600, 1920],
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center"],
       },
       backgroundColor: {
         label: "Background",
@@ -41,6 +44,12 @@ const schema = {
       heading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           width: {
             type: "number",
             min: 400,

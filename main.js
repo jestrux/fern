@@ -29989,21 +29989,19 @@ function assembleFeatureSection(props = {}, images) {
 
   const features = createFeatures(props);
   let sectionText;
-  const center = props.theme.center;
   const noText = !props.heading && !props.subHeading;
 
   if (!noText) {
     sectionText = createSectionText(_extends({}, props, {
       theme: _extends({}, props.theme, {
         backgroundColor: "transparent",
-        verticalPadding: 0,
-        center
+        verticalPadding: 0
       })
     }));
 
     selection.items = [sectionText, features];
 
-    if (center) commands.alignHorizontalCenter();else commands.alignLeft();
+    if (props.theme.layout == "center") commands.alignHorizontalCenter();else commands.alignLeft();
 
     commands.group();
 
@@ -30012,7 +30010,7 @@ function assembleFeatureSection(props = {}, images) {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 50
+        spacings: 55
       }
     };
     container.resize(container.localBounds.width, featuresAndText.localBounds.height);
@@ -30099,9 +30097,10 @@ const createFeature = (props = {}) => {
     } = props;
 
     const bg = createRectangle(width + padding * 2);
-    const circle = createCircle(30);
+    const circle = createCircle(30, { fill: "black", opacity: 0.27 });
     const icon = createIcon(icons.seat, { fill: "#333", size: 22 });
     const number = createText("01", {
+        name: "number",
         fontSize: 20,
         lineSpacing: 0,
         // letterSpacing: 40, 
@@ -30118,11 +30117,11 @@ const createFeature = (props = {}) => {
     insertNode(description);
     insertNode(title);
     insertNode(circle);
-    insertNode(icon);
-    // insertNode(number);
+    // insertNode(icon);
+    insertNode(number);
 
-    selection.items = [icon, circle];
-    // selection.items = [number, circle];
+    // selection.items = [icon, circle];
+    selection.items = [number, circle];
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
     commands.group();
@@ -30216,6 +30215,7 @@ const defaultFeatureSectionProps = {
     theme: {
         backgroundColor: "white",
         width: 1600, // 1920
+        layout: "regular",
         color: "black",
         border: false,
         verticalPadding: 65,
@@ -30263,6 +30263,7 @@ module.exports = defaultFeatureSectionProps;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleFeatureSection = __webpack_require__(/*! ./assemble */ "./src/Creators/FeatureSection/assemble.js");
@@ -30292,7 +30293,9 @@ async function FeatureSection(userProps) {
                 if (oldFeatureSection) {
                     placeInParent(featureSection, oldFeatureSection.topLeftInParent);
                     oldFeatureSection.removeFromParent();
-                } else placeInParent(featureSection, { x: 0, y: 0 });
+                } else {
+                    placeInParent(featureSection, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating FeatureSection: ", error);
             }
@@ -31406,13 +31409,20 @@ function createCard(props) {
         priceText,
         cardDescription,
         textNodes = [];
+    const baseTextSize = {
+        "sm": 14,
+        "md": 18,
+        "lg": 22,
+        "xl": 26
+    }[props.textSize || "sm"];
 
     if (showPrice) {
         priceText = createText("$" + price, {
             name: "Price",
             fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             type: Text.POINT,
-            fontSize: 18, fontStyle: "Bold"
+            fontSize: baseTextSize * 1.3,
+            fontStyle: "Bold"
         });
 
         insertNode(priceText);
@@ -31426,7 +31436,8 @@ function createCard(props) {
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2),
             height: showDescription || showPrice ? 21 : null,
             type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT,
-            fontSize: 18, fontStyle: "Medium"
+            fontSize: baseTextSize * 1.3,
+            fontStyle: "Medium"
         });
     }
 
@@ -31436,7 +31447,8 @@ function createCard(props) {
         cardDescription = createText(descriptionText, {
             name: "Description",
             fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"),
-            fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
+            fontSize: baseTextSize,
+            fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2)
         });
 
@@ -31479,7 +31491,7 @@ function createCard(props) {
                 type: SceneNode.LAYOUT_STACK,
                 stack: {
                     orientation: SceneNode.STACK_VERTICAL,
-                    spacings: 7
+                    spacings: Math.floor(baseTextSize / 1.1)
                 }
             };
 
@@ -31534,7 +31546,7 @@ function createCard(props) {
                 type: SceneNode.LAYOUT_STACK,
                 stack: {
                     orientation: SceneNode.STACK_VERTICAL,
-                    spacings: 12
+                    spacings: Math.floor(baseTextSize / 1.1)
                 }
             };
         }
@@ -32478,7 +32490,7 @@ function assembleMediaSection(props = {}, images) {
   const center = props.theme.layout == "center";
   const overlay = props.theme.layout == "overlay";
 
-  const noText = !props.heading && !props.subHeading;
+  const noText = !props.heading && !props.subHeading && !props.checklist;
   const minTextWidth = center || overlay ? 900 : 300;
   const maxTextWidth = center || overlay ? 1300 : 600;
   const fullWidthImage = center && props.theme.image.fullWidth;
@@ -32605,6 +32617,163 @@ function assembleMediaSection(props = {}, images) {
 }
 
 module.exports = assembleMediaSection;
+
+/***/ }),
+
+/***/ "./src/Creators/MediaSection/createChecklist.js":
+/*!******************************************************!*\
+  !*** ./src/Creators/MediaSection/createChecklist.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+const { selection, Color, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createText, createIcon, getGroupChildByName, createCircle } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const icons = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
+
+function createCheckListItem({
+    title = "Don't like meetings?",
+    description = "Invite your entire team, so anyone can submit requests and track their progress.",
+    width = 600,
+    color = "black"
+}) {
+    const descriptionNode = createText(description, {
+        name: "description",
+        fill: color,
+        opacity: 0.75,
+        fontSize: 18,
+        lineSpacing: 30,
+        width
+    });
+
+    insertNode(descriptionNode);
+
+    const titleNode = createText(title, {
+        name: "title",
+        fill: color,
+        fontSize: 22,
+        width,
+        fontStyle: "Medium"
+    });
+
+    insertNode(titleNode);
+
+    selection.items = [titleNode, descriptionNode];
+    commands.group();
+    let textNode = selection.items[0];
+    textNode.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 8
+        }
+    };
+    textNode.name = "text";
+
+    const circle = createCircle(18, {
+        fill: "#435CB0", // color, "#000", 
+        opacity: 0.28
+    });
+    const icon = createIcon(icons["check-circle"], {
+        fill: "#435CB0", // color, "#333", 
+        size: 18
+    });
+    insertNode(circle);
+    insertNode(icon);
+
+    selection.items = [icon, circle];
+
+    commands.alignHorizontalCenter();
+    commands.alignVerticalCenter();
+    commands.group();
+    const iconNode = selection.items[0];
+
+    selection.items = [iconNode, textNode];
+    commands.alignTop();
+    textNode.moveInParentCoordinates(0, 2);
+    commands.group();
+
+    const checklistItem = selection.items[0];
+    checklistItem.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_HORIZONTAL,
+            spacings: 20
+        }
+    };
+
+    return checklistItem;
+}
+
+function createChecklist(_ref = {}) {
+    let {
+        checklist = [{
+            title: "Details, polish and speed",
+            description: "Most requests are delivered in a day. The keen level of detail and polish we pack in will make you blush."
+            // description: "Requests are delivered in a day, the level of detail will make you blush."
+        }, {
+            title: "Completely async",
+            description: "Don't like meetings? We don't either; so much so that we've outlawed them completely."
+            // description: "Don't like meetings? We don't either; so we outlawed them.",
+        }, {
+            title: "Invite unlimited team members",
+            description: "We realise that sometimes it takes a village, so bring on your entire team, so they can all contribute ideas and influence."
+            // description: "We realise that sometimes it takes a village, bring your entire team."
+        }, {
+            title: "Follow progress with ease",
+            description: "Manage your design board using Trello. View active, queued and completed tasks with ease."
+            // description: "Manage your design board using Trello, and easily adjust the direction."
+        }]
+    } = _ref,
+        props = _objectWithoutProperties(_ref, ["checklist"]);
+
+    const checklistItems = [...checklist];
+    checklistItems.reverse();
+
+    try {
+        const checklistItemNode = createCheckListItem(_extends({}, props, checklistItems[0]));
+        const checklistItemNodes = [checklistItemNode];
+        selection.items = [checklistItemNode];
+
+        for (let i = 1; i < checklistItems.length; i++) {
+            commands.duplicate();
+            const newItem = selection.items[0];
+            selection.items = [newItem];
+            checklistItemNodes.push(newItem);
+
+            getGroupChildByName(newItem, "text", text => {
+                getGroupChildByName(text, "title", titleNode => {
+                    titleNode.text = checklistItems[i].title;
+                });
+                getGroupChildByName(text, "description", descriptionNode => {
+                    descriptionNode.text = checklistItems[i].description;
+                });
+            });
+        }
+
+        selection.items = checklistItemNodes;
+        commands.group();
+        let checklistContent = selection.items[0];
+        checklistContent.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_VERTICAL,
+                spacings: 34
+            }
+        };
+
+        return checklistContent;
+    } catch (error) {
+        console.log("Error creating checklist: ", error);
+    }
+}
+
+module.exports = createChecklist;
 
 /***/ }),
 
@@ -32806,6 +32975,7 @@ const defaultMediaSectionProps = {
             }
         },
         image: {
+            aspectRatio: "landscape",
             width: 680, // 760
             height: 400, // 464,
             // 560 / 680 (landscape)
@@ -33057,6 +33227,8 @@ function assembleNavbar(props = {}, images) {
   bg.resize(bg.localBounds.width, navbar.localBounds.height);
   container.resize(container.localBounds.width, navbar.localBounds.height);
   navbar.resize(navbar.localBounds.width + 60, navbar.localBounds.height);
+
+  navbar.fixedWhenScrolling = props.theme.pin;
 
   return navbar;
 }
@@ -33873,19 +34045,19 @@ const commands = __webpack_require__(/*! commands */ "commands");
 const { insertNode, createText, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const navButtonsComponent = __webpack_require__(/*! ../Navbar/components/buttons */ "./src/Creators/Navbar/components/buttons.js");
 const defaultSectionTextProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/SectionText/defaultProps.js");
+const createChecklist = __webpack_require__(/*! ../MediaSection/createChecklist */ "./src/Creators/MediaSection/createChecklist.js");
 
 function createSectionText(userProps) {
   const {
     heading,
     subHeading,
+    checklist,
     buttons,
     theme
   } = _extends({}, defaultSectionTextProps, userProps || {});
   const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
   const centerContent = theme.layout == "center";
-  let buttonsNode, subHeadingNode, headingNode, headingAndSubHeading;
-
-  console.log("Horizontal layout: ", theme.layout == "horizontal");
+  let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
 
   if (buttons && buttons.split(",").length) {
     const icon = theme.buttons.icons ? "chevron-right" : "";
@@ -33902,6 +34074,8 @@ function createSectionText(userProps) {
 
     buttonsNode.name = "FernSectionButtons";
   }
+
+  if (checklist) checklistNode = createChecklist();
 
   if (subHeading) {
     subHeadingNode = createText(subHeading, {
@@ -33955,6 +34129,23 @@ function createSectionText(userProps) {
   } else if (heading) headingAndSubHeading = headingNode;else if (subHeading) headingAndSubHeading = headingNode;
 
   let sectionTextElement;
+
+  if (checklistNode) {
+    if (!headingAndSubHeading) headingAndSubHeading = checklistNode;else {
+      selection.items = [headingAndSubHeading, checklistNode];
+      if (centerContent) commands.alignHorizontalCenter();else commands.alignLeft();
+
+      commands.group();
+      headingAndSubHeading = selection.items[0];
+      headingAndSubHeading.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+          orientation: SceneNode.STACK_VERTICAL,
+          spacings: 30
+        }
+      };
+    }
+  }
 
   if (buttonsNode) {
     if (headingAndSubHeading) {
@@ -36357,10 +36548,13 @@ const schema = {
   theme: {
     type: "section",
     children: {
-      center: "boolean",
       width: {
         type: "radio",
         choices: [1600, 1920]
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center"]
       },
       backgroundColor: {
         label: "Background",
@@ -36376,6 +36570,12 @@ const schema = {
       heading: {
         type: "section",
         children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
           width: {
             type: "number",
             min: 400,
@@ -37061,6 +37261,20 @@ function Grid({ value, onClose }) {
             ),
             React.createElement(
                 'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'block text-md' },
+                    'Text Size'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: !value.textSize ? "sm" : value.textSize,
+                    choices: ["sm", "md", "lg", "xl"],
+                    onChange: textSize => Creators.Grid(_extends({}, value, { textSize }))
+                })
+            ),
+            React.createElement(
+                'div',
                 { className: 'mt-2' },
                 React.createElement(
                     'label',
@@ -37581,6 +37795,10 @@ const mediaSectionSchema = {
   subHeading: {
     type: "text",
     defaultValue: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
+    sectionedGroup: "text"
+  },
+  checklist: {
+    type: "boolean",
     sectionedGroup: "text"
   },
   buttons: {
@@ -38180,6 +38398,10 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      pin: {
+        label: "Fix while scrolling",
+        type: "boolean"
+      },
       width: {
         type: "radio",
         choices: [1600, 1920]
@@ -40543,6 +40765,7 @@ function createCircle(radius = 50, userProps = {}) {
     radiusX: radius,
     radiusY: radius,
     border: false,
+    opacity: 1,
     shadow: "none"
   };
 
@@ -40550,7 +40773,7 @@ function createCircle(radius = 50, userProps = {}) {
 
   if (typeof props.fill == "string") {
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
 
   if (props.shadow && props.shadow != "none") {

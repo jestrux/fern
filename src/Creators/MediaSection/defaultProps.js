@@ -41,6 +41,7 @@ const defaultMediaSectionProps = {
             },
         },
         image: {
+            aspectRatio: "landscape",
             width: 680, // 760
             height: 400, // 464,
             // 560 / 680 (landscape)

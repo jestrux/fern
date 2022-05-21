@@ -645,6 +645,7 @@ function createCircle(radius = 50, userProps = {}) {
     radiusX: radius,
     radiusY: radius,
     border: false,
+    opacity: 1,
     shadow: "none",
   };
 
@@ -655,7 +656,7 @@ function createCircle(radius = 50, userProps = {}) {
 
   if(typeof props.fill == "string"){
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
 
   if(props.shadow && props.shadow != "none"){

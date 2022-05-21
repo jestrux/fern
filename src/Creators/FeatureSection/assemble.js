@@ -72,7 +72,6 @@ function assembleFeatureSection(props = {}, images) {
 
   const features = createFeatures(props);
   let sectionText;
-  const center = props.theme.center;
   const noText = !props.heading && !props.subHeading;
 
   if(!noText){
@@ -82,13 +81,12 @@ function assembleFeatureSection(props = {}, images) {
         ...props.theme,
         backgroundColor: "transparent", 
         verticalPadding: 0,
-        center,
       }
     });
 
     selection.items = [sectionText, features];
     
-    if(center) commands.alignHorizontalCenter();
+    if(props.theme.layout == "center") commands.alignHorizontalCenter();
     else commands.alignLeft();
 
     commands.group();
@@ -98,7 +96,7 @@ function assembleFeatureSection(props = {}, images) {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 50
+        spacings: 55
       },
     };
     container.resize(container.localBounds.width,  featuresAndText.localBounds.height);

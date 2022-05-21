@@ -5,6 +5,7 @@ const defaultFeatureSectionProps = {
     theme: {
         backgroundColor: "white",
         width: 1600, // 1920
+        layout: "regular",
         color: "black",
         border: false,
         verticalPadding: 65,

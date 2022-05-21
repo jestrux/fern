@@ -103,13 +103,20 @@ function createCard(props){
     };
 
     let cardText, cardTitle, priceText, cardDescription, textNodes = [];
+    const baseTextSize = {
+        "sm": 14,
+        "md": 18,
+        "lg": 22,
+        "xl": 26,
+    }[props.textSize || "sm"]
     
     if(showPrice){
         priceText = createText("$" + price, {
             name: "Price", 
             fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             type: Text.POINT, 
-            fontSize: 18, fontStyle: "Bold", 
+            fontSize: baseTextSize * 1.3, 
+            fontStyle: "Bold", 
         });
 
         insertNode(priceText);
@@ -123,7 +130,8 @@ function createCard(props){
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
             height: showDescription || showPrice ? 21 : null, 
             type: showDescription || showPrice ? Text.FIXED_HEIGHT : Text.AUTO_HEIGHT, 
-            fontSize: 18, fontStyle: "Medium", 
+            fontSize: baseTextSize * 1.3,
+            fontStyle: "Medium", 
         });
     }
 
@@ -133,7 +141,8 @@ function createCard(props){
         cardDescription = createText(descriptionText, {
             name: "Description",
             fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"), 
-            fontSize: 14, fontStyle: "Regular", lineSpacing: 22,
+            fontSize: baseTextSize,
+            fontStyle: "Regular", lineSpacing: 22,
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
         });
     
@@ -178,7 +187,7 @@ function createCard(props){
                 type: SceneNode.LAYOUT_STACK,
                 stack: {
                     orientation: SceneNode.STACK_VERTICAL,
-                    spacings: 7
+                    spacings: Math.floor(baseTextSize / 1.1)
                 },
             };
     
@@ -237,7 +246,7 @@ function createCard(props){
                 type: SceneNode.LAYOUT_STACK,
                 stack: {
                     orientation: SceneNode.STACK_VERTICAL,
-                    spacings: 12
+                    spacings: Math.floor(baseTextSize / 1.1)
                 },
             };
         }

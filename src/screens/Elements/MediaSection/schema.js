@@ -11,6 +11,10 @@ const mediaSectionSchema = {
       "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
     sectionedGroup: "text",
   },
+  checklist: {
+    type: "boolean",
+    sectionedGroup: "text",
+  },
   buttons: {
     type: "text",
     defaultValue: "Get to know us",

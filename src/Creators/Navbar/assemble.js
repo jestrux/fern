@@ -114,6 +114,8 @@ function assembleNavbar(props = {}, images) {
   container.resize(container.localBounds.width, navbar.localBounds.height);
   navbar.resize(navbar.localBounds.width + 60, navbar.localBounds.height);
 
+  navbar.fixedWhenScrolling = props.theme.pin;
+
   return navbar;
 }
 

@@ -86,6 +86,10 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      pin: {
+        label: "Fix while scrolling",
+        type: "boolean"
+      },
       width: {
         type: "radio",
         choices: [1600, 1920],

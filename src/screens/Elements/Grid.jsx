@@ -217,6 +217,16 @@ function Grid({value, onClose}){
                     }
                 </div>
 
+                <div className="px-3 mt-3">
+                    <label className="block text-md">Text Size</label>
+                    
+                    <ButtonGroup 
+                        value={!value.textSize ? "sm" : value.textSize}
+                        choices={["sm", "md", "lg", "xl"]}
+                        onChange={(textSize) => Creators.Grid({...value, textSize})}
+                    />
+                </div>
+
                 <div className="mt-2">
                     <label className="text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26">
                         CARD IMAGE

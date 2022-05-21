@@ -12,11 +12,12 @@ const createFeature = (props = {}) => {
     } = props;
 
     const bg = createRectangle(width + (padding * 2));
-    const circle = createCircle(30);
+    const circle = createCircle(30, {fill: "black", opacity: 0.27});
     const icon = createIcon(icons.seat, { fill: "#333", size: 22 });
     const number = createText(
         "01", 
         {
+            name: "number",
             fontSize: 20,
             lineSpacing: 0,
             // letterSpacing: 40, 
@@ -37,11 +38,11 @@ const createFeature = (props = {}) => {
     insertNode(description);
     insertNode(title);
     insertNode(circle);
-    insertNode(icon);
-    // insertNode(number);
+    // insertNode(icon);
+    insertNode(number);
 
-    selection.items = [icon, circle];
-    // selection.items = [number, circle];
+    // selection.items = [icon, circle];
+    selection.items = [number, circle];
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
     commands.group();

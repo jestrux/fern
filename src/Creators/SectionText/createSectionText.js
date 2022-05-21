@@ -3,19 +3,19 @@ const commands = require("commands");
 const { insertNode, createText, getContainerWidth } = require("../../utils");
 const navButtonsComponent = require("../Navbar/components/buttons");
 const defaultSectionTextProps = require("./defaultProps");
+const createChecklist = require("../MediaSection/createChecklist");
   
   function createSectionText(userProps) {
     const {
       heading,
       subHeading,
+      checklist,
       buttons,
       theme,
     } = {...defaultSectionTextProps, ...(userProps || {})};
     const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
     const centerContent = theme.layout == "center";
-    let buttonsNode, subHeadingNode, headingNode, headingAndSubHeading;
-
-    console.log("Horizontal layout: ", theme.layout == "horizontal");
+    let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
   
     if(buttons && buttons.split(",").length){
       const icon = theme.buttons.icons ? "chevron-right" : "";
@@ -35,6 +35,9 @@ const defaultSectionTextProps = require("./defaultProps");
 
       buttonsNode.name = "FernSectionButtons";
     }
+
+    if(checklist)
+      checklistNode = createChecklist();
 
     if(subHeading){
       subHeadingNode = createText(subHeading, {
@@ -93,6 +96,26 @@ const defaultSectionTextProps = require("./defaultProps");
       headingAndSubHeading = headingNode;
 
     let sectionTextElement;
+
+    if(checklistNode){
+      if(!headingAndSubHeading)
+        headingAndSubHeading = checklistNode;
+      else {
+        selection.items = [headingAndSubHeading, checklistNode];
+        if(centerContent) commands.alignHorizontalCenter();
+        else commands.alignLeft();
+      
+        commands.group();
+        headingAndSubHeading = selection.items[0];
+        headingAndSubHeading.layout = {
+          type: SceneNode.LAYOUT_STACK,
+          stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 30,
+          },
+        };
+      }
+    }
   
     if(buttonsNode){
       if(headingAndSubHeading) {

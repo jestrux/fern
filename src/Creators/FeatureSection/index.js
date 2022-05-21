@@ -1,4 +1,5 @@
 const { PLUGIN_ID } = require("../../constants");
+const viewport = require("viewport");
 const { selection } = require("scenegraph");
 const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
 const assembleFeatureSection = require("./assemble");
@@ -36,8 +37,9 @@ async function FeatureSection(userProps){
                     placeInParent(featureSection, oldFeatureSection.topLeftInParent);
                     oldFeatureSection.removeFromParent();
                 }
-                else
-                    placeInParent(featureSection, {x: 0, y: 0});
+                else {
+                    placeInParent(featureSection, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating FeatureSection: ", error);
             }
