@@ -29868,6 +29868,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { editDom, placeInParent } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleCTASection = __webpack_require__(/*! ./assemble */ "./src/Creators/CTA/assemble.js");
 const defaultCTASectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/CTA/defaultProps.js");
@@ -29893,7 +29894,9 @@ async function CTASection(userProps) {
                 if (oldCTASection) {
                     placeInParent(cta, oldCTASection.topLeftInParent);
                     oldCTASection.removeFromParent();
-                } else placeInParent(cta, { x: 0, y: 0 });
+                } else {
+                    placeInParent(cta, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating cta section: ", error);
             }
@@ -33870,7 +33873,7 @@ function createSectionText(userProps) {
     theme
   } = _extends({}, defaultSectionTextProps, userProps || {});
   const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
-  const centerContent = theme.layout == "center" || theme.center;
+  const centerContent = theme.layout == "center";
   let buttonsNode, subHeadingNode, headingNode, headingAndSubHeading;
 
   console.log("Horizontal layout: ", theme.layout == "horizontal");
@@ -35715,11 +35718,11 @@ const schema = {
             optional: true,
             defaultValue: "black"
           },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 550,
+            max: 850
+          },
           // size: {
           //   type: "radio",
           //   choices: ["md", "lg"],
@@ -35727,8 +35730,8 @@ const schema = {
           font: {
             type: "radio",
             choices: ["sans", "serif", "quirky", "fancy"]
-          },
-          brazen: "boolean"
+          }
+          // brazen: "boolean"
         }
       },
       subHeading: {

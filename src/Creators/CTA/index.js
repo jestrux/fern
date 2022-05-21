@@ -1,5 +1,6 @@
 const { PLUGIN_ID } = require("../../constants");
 const { selection } = require("scenegraph");
+const viewport = require("viewport");
 const { editDom, placeInParent, } = require("../../utils");
 const assembleCTASection = require("./assemble");
 const defaultCTASectionProps = require("./defaultProps");
@@ -30,8 +31,9 @@ async function CTASection(userProps){
                     placeInParent(cta, oldCTASection.topLeftInParent);
                     oldCTASection.removeFromParent();
                 }
-                else
-                    placeInParent(cta, {x: 0, y: 0});
+                else {
+                    placeInParent(cta, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating cta section: ", error);
             }

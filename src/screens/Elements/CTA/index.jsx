@@ -74,11 +74,11 @@ const schema = {
             optional: true,
             defaultValue: "black"
           },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
+          width: {
+            type: "number",
+            min: 550,
+            max: 850,
+          },
           // size: {
           //   type: "radio",
           //   choices: ["md", "lg"],
@@ -87,7 +87,7 @@ const schema = {
             type: "radio",
             choices: ["sans", "serif", "quirky", "fancy"],
           },
-          brazen: "boolean"
+          // brazen: "boolean"
         },
       },
       subHeading: {

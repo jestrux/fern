@@ -12,7 +12,7 @@ const defaultSectionTextProps = require("./defaultProps");
       theme,
     } = {...defaultSectionTextProps, ...(userProps || {})};
     const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
-    const centerContent = theme.layout == "center" || theme.center;
+    const centerContent = theme.layout == "center";
     let buttonsNode, subHeadingNode, headingNode, headingAndSubHeading;
 
     console.log("Horizontal layout: ", theme.layout == "horizontal");
