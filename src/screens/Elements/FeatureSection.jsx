@@ -103,6 +103,27 @@ const schema = {
           },
         },
       },
+      graphic: {
+        type: "section",
+        children: {
+          type: {
+            label: "",
+            type: "radio",
+            choices: ["number", "icon"]
+          },
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            defaultValue: "black",
+            optional: true,
+          },
+          bgOpacity: {
+            type: "number",
+            min: 0.1,
+            max: 0.8,
+          },
+        },
+      },
     },
   },
 };

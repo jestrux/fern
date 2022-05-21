@@ -1,6 +1,6 @@
 const defaultFeatureSectionProps = {
     heading: "Create brand content that builds trust",
-    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow. Talk to us about branding, artistry and the main squeeze.",
+    subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow.",
     buttons: "",
     theme: {
         backgroundColor: "white",
@@ -17,7 +17,7 @@ const defaultFeatureSectionProps = {
         },
         subHeading: {
             width: 750, //530,
-            size: "sm", // "md"
+            size: "md", // "sm"
         },
         buttons: {
             icons: false,
@@ -35,6 +35,11 @@ const defaultFeatureSectionProps = {
                 icon: "chevron-right",
                 style: "outline",
             },
+        },
+        graphic: {
+            type: "number",
+            color: null,
+            bgOpacity: 0.27,
         },
     },
 }
