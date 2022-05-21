@@ -132,7 +132,7 @@ function assembleMediaSection(props = {}, images) {
       ...props,
       theme: {
         ...props.theme,
-        center: center || overlay,
+        layout: center || overlay ? "center" : "regular",
       }
     });
     selection.items = [media, mediaText, container];

@@ -135,6 +135,27 @@ const mediaSectionSchema = {
           },
         },
       },
+      checklist: {
+        type: "section",
+        children: {
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 900,
+          // },
+          iconColor: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black",
+          },
+          bgOpacity: {
+            type: "number",
+            min: 0.1,
+            max: 0.8,
+          },
+        }
+      },
       buttons: {
         type: "section",
         children: {

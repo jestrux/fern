@@ -6,25 +6,24 @@ const icons = require("../../data/icons");
 function createCheckListItem({
     title = "Don't like meetings?",
     description = "Invite your entire team, so anyone can submit requests and track their progress.",
-    width = 600,
-    color = "black",
+    theme,
 }){
     const descriptionNode = createText(description, {
         name: "description",
-        fill: color,
+        fill: theme.color,
         opacity: 0.75,
         fontSize: 18,
         lineSpacing: 30,
-        width,
+        width: theme.checklist.width,
     });
     
     insertNode(descriptionNode);
 
     const titleNode = createText(title, {
         name: "title",
-        fill: color,
+        fill: theme.color,
         fontSize: 22,
-        width,
+        width: theme.checklist.width,
         fontStyle: "Medium",
     });
     
@@ -43,11 +42,11 @@ function createCheckListItem({
     textNode.name = "text";
 
     const circle = createCircle(18, {
-        fill: "#435CB0", // color, "#000", 
-        opacity: 0.28
+        fill: theme.checklist.iconColor || theme.color, // "#435CB0", // color, "#000", 
+        opacity: theme.checklist.bgOpacity || 0.28
     });
     const icon = createIcon(icons["check-circle"], { 
-        fill: "#435CB0", // color, "#333", 
+        fill: theme.checklist.iconColor || theme.color, // "#435CB0", // color, "#333", 
         size: 18 
     });
     insertNode(circle);
@@ -78,7 +77,10 @@ function createCheckListItem({
 }
 
 function createChecklist({
-    checklist = [
+    // checklist,
+    ...props
+} = {}) {
+    const checklist = [
         {
             title: "Details, polish and speed",
             description: "Most requests are delivered in a day. The keen level of detail and polish we pack in will make you blush."
@@ -99,9 +101,8 @@ function createChecklist({
             description: "Manage your design board using Trello. View active, queued and completed tasks with ease."
             // description: "Manage your design board using Trello, and easily adjust the direction."
         },
-    ],
-    ...props
-} = {}) {
+    ];
+
     const checklistItems = [...checklist];
     checklistItems.reverse();
 

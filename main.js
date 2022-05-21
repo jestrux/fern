@@ -32518,7 +32518,7 @@ function assembleMediaSection(props = {}, images) {
     props.theme.subHeading.width = Math.max(minTextWidth, Math.min(props.theme.subHeading.width, maxTextWidth));
     mediaText = createSectionText(_extends({}, props, {
       theme: _extends({}, props.theme, {
-        center: center || overlay
+        layout: center || overlay ? "center" : "regular"
       })
     }));
     selection.items = [media, mediaText, container];
@@ -32639,25 +32639,24 @@ const icons = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js")
 function createCheckListItem({
     title = "Don't like meetings?",
     description = "Invite your entire team, so anyone can submit requests and track their progress.",
-    width = 600,
-    color = "black"
+    theme
 }) {
     const descriptionNode = createText(description, {
         name: "description",
-        fill: color,
+        fill: theme.color,
         opacity: 0.75,
         fontSize: 18,
         lineSpacing: 30,
-        width
+        width: theme.checklist.width
     });
 
     insertNode(descriptionNode);
 
     const titleNode = createText(title, {
         name: "title",
-        fill: color,
+        fill: theme.color,
         fontSize: 22,
-        width,
+        width: theme.checklist.width,
         fontStyle: "Medium"
     });
 
@@ -32676,11 +32675,11 @@ function createCheckListItem({
     textNode.name = "text";
 
     const circle = createCircle(18, {
-        fill: "#435CB0", // color, "#000", 
-        opacity: 0.28
+        fill: theme.checklist.iconColor || theme.color, // "#435CB0", // color, "#000", 
+        opacity: theme.checklist.bgOpacity || 0.28
     });
     const icon = createIcon(icons["check-circle"], {
-        fill: "#435CB0", // color, "#333", 
+        fill: theme.checklist.iconColor || theme.color, // "#435CB0", // color, "#333", 
         size: 18
     });
     insertNode(circle);
@@ -32711,26 +32710,25 @@ function createCheckListItem({
 }
 
 function createChecklist(_ref = {}) {
-    let {
-        checklist = [{
-            title: "Details, polish and speed",
-            description: "Most requests are delivered in a day. The keen level of detail and polish we pack in will make you blush."
-            // description: "Requests are delivered in a day, the level of detail will make you blush."
-        }, {
-            title: "Completely async",
-            description: "Don't like meetings? We don't either; so much so that we've outlawed them completely."
-            // description: "Don't like meetings? We don't either; so we outlawed them.",
-        }, {
-            title: "Invite unlimited team members",
-            description: "We realise that sometimes it takes a village, so bring on your entire team, so they can all contribute ideas and influence."
-            // description: "We realise that sometimes it takes a village, bring your entire team."
-        }, {
-            title: "Follow progress with ease",
-            description: "Manage your design board using Trello. View active, queued and completed tasks with ease."
-            // description: "Manage your design board using Trello, and easily adjust the direction."
-        }]
-    } = _ref,
-        props = _objectWithoutProperties(_ref, ["checklist"]);
+    let props = _objectWithoutProperties(_ref, []);
+
+    const checklist = [{
+        title: "Details, polish and speed",
+        description: "Most requests are delivered in a day. The keen level of detail and polish we pack in will make you blush."
+        // description: "Requests are delivered in a day, the level of detail will make you blush."
+    }, {
+        title: "Completely async",
+        description: "Don't like meetings? We don't either; so much so that we've outlawed them completely."
+        // description: "Don't like meetings? We don't either; so we outlawed them.",
+    }, {
+        title: "Invite unlimited team members",
+        description: "We realise that sometimes it takes a village, so bring on your entire team, so they can all contribute ideas and influence."
+        // description: "We realise that sometimes it takes a village, bring your entire team."
+    }, {
+        title: "Follow progress with ease",
+        description: "Manage your design board using Trello. View active, queued and completed tasks with ease."
+        // description: "Manage your design board using Trello, and easily adjust the direction."
+    }];
 
     const checklistItems = [...checklist];
     checklistItems.reverse();
@@ -32956,6 +32954,11 @@ const defaultMediaSectionProps = {
         subHeading: {
             width: 530,
             size: "sm" // "md"
+        },
+        checklist: {
+            width: 600,
+            iconColor: null,
+            bgOpacity: 0.28
         },
         buttons: {
             icons: false,
@@ -34048,14 +34051,15 @@ const defaultSectionTextProps = __webpack_require__(/*! ./defaultProps */ "./src
 const createChecklist = __webpack_require__(/*! ../MediaSection/createChecklist */ "./src/Creators/MediaSection/createChecklist.js");
 
 function createSectionText(userProps) {
+  const props = _extends({}, defaultSectionTextProps, userProps || {});
   const {
     heading,
     subHeading,
     checklist,
     buttons,
     theme
-  } = _extends({}, defaultSectionTextProps, userProps || {});
-  const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
+  } = props;
+  const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : theme.heading.size == "lg" ? 20 : 16;
   const centerContent = theme.layout == "center";
   let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
 
@@ -34075,7 +34079,7 @@ function createSectionText(userProps) {
     buttonsNode.name = "FernSectionButtons";
   }
 
-  if (checklist) checklistNode = createChecklist();
+  if (checklist) checklistNode = createChecklist(props);
 
   if (subHeading) {
     subHeadingNode = createText(subHeading, {
@@ -34083,7 +34087,7 @@ function createSectionText(userProps) {
       width: theme.subHeading.width,
       fill: new Color(theme.subHeading.color || theme.color),
       fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-      lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
+      lineSpacing: theme.subHeading.size == "sm" ? 28 : 36,
       fontStyle: "Regular"
     });
 
@@ -34141,7 +34145,7 @@ function createSectionText(userProps) {
         type: SceneNode.LAYOUT_STACK,
         stack: {
           orientation: SceneNode.STACK_VERTICAL,
-          spacings: 30
+          spacings: 36
         }
       };
     }
@@ -34211,6 +34215,11 @@ const defaultSectionTextProps = {
         subHeading: {
             width: 900,
             size: "sm" // "md"
+        },
+        checklist: {
+            width: 600,
+            iconColor: null,
+            bgOpacity: 0.28
         },
         buttons: {
             icons: false,
@@ -37913,6 +37922,27 @@ const mediaSectionSchema = {
           size: {
             type: "radio",
             choices: ["sm", "md"]
+          }
+        }
+      },
+      checklist: {
+        type: "section",
+        children: {
+          // width: {
+          //   type: "number",
+          //   min: 400,
+          //   max: 900,
+          // },
+          iconColor: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
+          bgOpacity: {
+            type: "number",
+            min: 0.1,
+            max: 0.8
           }
         }
       },

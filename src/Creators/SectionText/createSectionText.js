@@ -6,14 +6,17 @@ const defaultSectionTextProps = require("./defaultProps");
 const createChecklist = require("../MediaSection/createChecklist");
   
   function createSectionText(userProps) {
+    const props = {...defaultSectionTextProps, ...(userProps || {})};
     const {
       heading,
       subHeading,
       checklist,
       buttons,
       theme,
-    } = {...defaultSectionTextProps, ...(userProps || {})};
-    const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
+    } = props;
+    const headingSubHeadingSpacing = theme.layout == "horizontal" 
+      ? userProps.headingSubHeadingSpacing || 12 
+      : theme.heading.size == "lg" ? 20 : 16;
     const centerContent = theme.layout == "center";
     let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
   
@@ -37,7 +40,7 @@ const createChecklist = require("../MediaSection/createChecklist");
     }
 
     if(checklist)
-      checklistNode = createChecklist();
+      checklistNode = createChecklist(props);
 
     if(subHeading){
       subHeadingNode = createText(subHeading, {
@@ -45,7 +48,7 @@ const createChecklist = require("../MediaSection/createChecklist");
         width: theme.subHeading.width,
         fill: new Color(theme.subHeading.color || theme.color),
         fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-        lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
+        lineSpacing: theme.subHeading.size == "sm" ? 28 : 36,
         fontStyle: "Regular",
       });
     
@@ -111,7 +114,7 @@ const createChecklist = require("../MediaSection/createChecklist");
           type: SceneNode.LAYOUT_STACK,
           stack: {
             orientation: SceneNode.STACK_VERTICAL,
-            spacings: 30,
+            spacings: 36,
           },
         };
       }

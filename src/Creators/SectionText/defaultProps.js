@@ -18,6 +18,11 @@ const defaultSectionTextProps = {
             width: 900,
             size: "sm", // "md"
         },
+        checklist: {
+            width: 600,
+            iconColor: null,
+            bgOpacity: 0.28,
+        },
         buttons: {
             icons: false,
             iconPlacement: "right",
