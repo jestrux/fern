@@ -1,6 +1,6 @@
 const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, SceneNode, GraphicNode, selection } = require("scenegraph");
 const commands = require("commands");
-const { insertNode, createIcon } = require("../../utils");
+const { insertNode, createIcon, createRectangle } = require("../../utils");
 
 function getPlayButton({ color, invertColors, smoothCorners, large }) {
   const buttonRadius = large ? 43 : 35;
@@ -72,8 +72,8 @@ function createMedia({
     lg: 20,
   };
 
-  const imageNode = new Rectangle();
-  imageNode.resize(width, height);
+  console.log("Media height: ", height);
+  const imageNode = createRectangle(width, height);
   imageNode.fill = new ImageFill(images[`banner${image}`]);
   imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
@@ -84,8 +84,6 @@ function createMedia({
   // }
 
   insertNode(imageNode);
-
-  console.log("Media shadow: ", shadow);
 
   const overlay = theme.layout == "overlay";
   const fullWidthImage = theme.layout == "center" && theme.image.fullWidth;

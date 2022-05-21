@@ -1,6 +1,6 @@
 const { selection, Color, LinearGradient, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
-const { createBorder, insertNode, placeInParent, getGroupChildByName } = require("../../utils");
+const { createBorder, insertNode, placeInParent, getGroupChildByName, createRectangle, getContainerWidth } = require("../../utils");
 const createMedia = require("./createMedia");
 const createSectionText = require("../SectionText/createSectionText");
 
@@ -14,13 +14,11 @@ function createSectionBackground({
   fadeBackground,
 }) {
   const transparentColor = new Color("white", 0);
-  const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
 
-  let bg = new Rectangle();
-  bg.resize(width, height);
-  bg.strokeEnabled = false;
-  bg.name = "BG";
-  bg.fill = bgColor;
+  let bg = createRectangle(width, height, {
+    name: "BG",
+    fill: backgroundColor,
+  });
 
   if(layout == "center" && fadeBackground){
     const {
@@ -38,6 +36,7 @@ function createSectionBackground({
     
     gradient.setEndPoints(...endPoints);
     
+    const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
     gradient.colorStops = [
         { color: bgColor, stop: 0 },
         ...(softFade ? [] : [
@@ -52,12 +51,9 @@ function createSectionBackground({
 
   insertNode(bg);
 
-  const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
-  container.resize(Math.min(width, containerWidth), height);
-  container.fill = new Color("white", 0);
-  container.strokeEnabled = false;
-  container.name = "Container";
+  const container = createRectangle(
+    getContainerWidth(width), height, { name: "Container" }
+  );
   insertNode(container);
 
   selection.items = [bg, container];
@@ -65,6 +61,23 @@ function createSectionBackground({
   commands.alignVerticalCenter();
 
   return [bg, container];
+}
+
+function getMediaHeight(props){
+  const noText = !props.heading && !props.subHeading;
+  const center = props.theme.layout == "center";
+  const overlay = props.theme.layout == "overlay";
+  const fullWidthImage = center && props.theme.image.fullWidth;
+
+  if(noText || center || overlay)
+    return overlay 
+      ? props.height 
+      : fullWidthImage 
+        ? props.theme.image.height 
+        : 600;
+  
+  return props.theme.image.aspectRatio == "portrait" 
+    ? 680 : props.theme.image.height;
 }
 
 function assembleMediaSection(props = {}, images) {
@@ -89,7 +102,14 @@ function assembleMediaSection(props = {}, images) {
   const fullWidthImage = center && props.theme.image.fullWidth;
 
   const media = createMedia({
-    ...props, 
+    ...props,
+    theme: {
+      ...props.theme,
+      image: {
+        ...props.theme.image,
+        height: getMediaHeight(props),
+      },
+    },
     ...(noText || center || overlay ? {
       large: noText || center,
       theme: {
@@ -97,7 +117,7 @@ function assembleMediaSection(props = {}, images) {
         image: {
           ...props.theme.image,
           width: overlay || fullWidthImage ? props.theme.width : 1200, 
-          height: overlay ? props.height : fullWidthImage ? props.theme.image.height : 600,
+          height: getMediaHeight(props),
           roundness: overlay || fullWidthImage ? "none" : props.theme.image.roundness
         },
       }

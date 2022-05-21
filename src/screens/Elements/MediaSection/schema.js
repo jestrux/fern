@@ -157,6 +157,10 @@ const mediaSectionSchema = {
       image: {
         type: "section",
         children: {
+          aspectRatio: {
+            type: "radio",
+            choices: [{label: "por", value: "portrait"}, {label: "land", value: "landscape"}],
+          },
           blend: {
             type: "radio",
             choices: [

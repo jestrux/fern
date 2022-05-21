@@ -32399,7 +32399,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection, Color, LinearGradient, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { createBorder, insertNode, placeInParent, getGroupChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { createBorder, insertNode, placeInParent, getGroupChildByName, createRectangle, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createMedia = __webpack_require__(/*! ./createMedia */ "./src/Creators/MediaSection/createMedia.js");
 const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
 
@@ -32413,13 +32413,11 @@ function createSectionBackground({
   fadeBackground
 }) {
   const transparentColor = new Color("white", 0);
-  const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
 
-  let bg = new Rectangle();
-  bg.resize(width, height);
-  bg.strokeEnabled = false;
-  bg.name = "BG";
-  bg.fill = bgColor;
+  let bg = createRectangle(width, height, {
+    name: "BG",
+    fill: backgroundColor
+  });
 
   if (layout == "center" && fadeBackground) {
     const {
@@ -32436,6 +32434,7 @@ function createSectionBackground({
 
     gradient.setEndPoints(...endPoints);
 
+    const bgColor = backgroundColor == "transparent" ? transparentColor : new Color(backgroundColor);
     gradient.colorStops = [{ color: bgColor, stop: 0 }, ...(softFade ? [] : [{ color: bgColor, stop: 0.39 }, { color: fadeToColor, stop: 0.4 }]), { color: fadeToColor, stop: 1 }];
 
     bg.fill = gradient;
@@ -32443,12 +32442,7 @@ function createSectionBackground({
 
   insertNode(bg);
 
-  const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
-  container.resize(Math.min(width, containerWidth), height);
-  container.fill = new Color("white", 0);
-  container.strokeEnabled = false;
-  container.name = "Container";
+  const container = createRectangle(getContainerWidth(width), height, { name: "Container" });
   insertNode(container);
 
   selection.items = [bg, container];
@@ -32456,6 +32450,17 @@ function createSectionBackground({
   commands.alignVerticalCenter();
 
   return [bg, container];
+}
+
+function getMediaHeight(props) {
+  const noText = !props.heading && !props.subHeading;
+  const center = props.theme.layout == "center";
+  const overlay = props.theme.layout == "overlay";
+  const fullWidthImage = center && props.theme.image.fullWidth;
+
+  if (noText || center || overlay) return overlay ? props.height : fullWidthImage ? props.theme.image.height : 600;
+
+  return props.theme.image.aspectRatio == "portrait" ? 680 : props.theme.image.height;
 }
 
 function assembleMediaSection(props = {}, images) {
@@ -32478,12 +32483,18 @@ function assembleMediaSection(props = {}, images) {
   const maxTextWidth = center || overlay ? 1300 : 600;
   const fullWidthImage = center && props.theme.image.fullWidth;
 
-  const media = createMedia(_extends({}, props, noText || center || overlay ? {
+  const media = createMedia(_extends({}, props, {
+    theme: _extends({}, props.theme, {
+      image: _extends({}, props.theme.image, {
+        height: getMediaHeight(props)
+      })
+    })
+  }, noText || center || overlay ? {
     large: noText || center,
     theme: _extends({}, props.theme, {
       image: _extends({}, props.theme.image, {
         width: overlay || fullWidthImage ? props.theme.width : 1200,
-        height: overlay ? props.height : fullWidthImage ? props.theme.image.height : 600,
+        height: getMediaHeight(props),
         roundness: overlay || fullWidthImage ? "none" : props.theme.image.roundness
       })
     })
@@ -32608,7 +32619,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { Color, Rectangle, Ellipse, ImageFill, Shadow, Blur, SceneNode, GraphicNode, selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createIcon, createRectangle } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function getPlayButton({ color, invertColors, smoothCorners, large }) {
   const buttonRadius = large ? 43 : 35;
@@ -32678,8 +32689,8 @@ function createMedia({
     lg: 20
   };
 
-  const imageNode = new Rectangle();
-  imageNode.resize(width, height);
+  console.log("Media height: ", height);
+  const imageNode = createRectangle(width, height);
   imageNode.fill = new ImageFill(images[`banner${image}`]);
   imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
@@ -32690,8 +32701,6 @@ function createMedia({
   // }
 
   insertNode(imageNode);
-
-  console.log("Media shadow: ", shadow);
 
   const overlay = theme.layout == "overlay";
   const fullWidthImage = theme.layout == "center" && theme.image.fullWidth;
@@ -37715,6 +37724,10 @@ const mediaSectionSchema = {
       image: {
         type: "section",
         children: {
+          aspectRatio: {
+            type: "radio",
+            choices: [{ label: "por", value: "portrait" }, { label: "land", value: "landscape" }]
+          },
           blend: {
             type: "radio",
             choices: [{ label: "mltply", value: "mulitply" }, { label: "scrn", value: "screen" }, { label: "ovly", value: "overlay" },
