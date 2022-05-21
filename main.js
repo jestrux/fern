@@ -29756,29 +29756,18 @@ function assembleCTASection(props = {}, images) {
   props.container = container;
 
   let sectionText;
-  const center = props.theme.center;
   sectionText = createSectionText(_extends({}, props, {
-    theme: _extends({}, props.theme, {
-      center
-    }),
     headingSubHeadingSpacing: 30
   }));
-  commands.ungroup();
 
-  selection.items = [...selection.items, container];
+  selection.items = [sectionText, container];
   commands.alignVerticalCenter();
   commands.alignLeft();
 
-  if (center) commands.alignHorizontalCenter();
+  if (props.theme.layout == "center") commands.alignHorizontalCenter();
 
   commands.group();
   const content = selection.items[0];
-
-  getGroupChildByName(content, "FernSectionButtons", buttons => {
-    const containerRight = container.localBounds.x + container.localBounds.width;
-    buttons.moveInParentCoordinates(containerRight - buttons.localBounds.width, 0);
-  });
-
   content.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
@@ -29825,7 +29814,7 @@ const defaultCTASectionProps = {
     subHeading: "Join many other early stage investors and employees joining Ecosafe.",
     buttons: "Get to know us,  Join the team",
     theme: {
-        center: false,
+        layout: "horizontal", // "regular", "center"
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
@@ -29851,6 +29840,7 @@ const defaultCTASectionProps = {
             roundness: "sm",
             reversed: false,
             // themeColor: "#FFD26C",
+            placement: "center",
             mainButton: {
                 icon: "chevron-right",
                 style: "fill"
@@ -32889,6 +32879,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleMediaSection = __webpack_require__(/*! ./assemble */ "./src/Creators/MediaSection/assemble.js");
 const defaultMediaSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
@@ -32925,7 +32916,9 @@ async function MediaSection(userProps) {
                 if (oldMediaSection) {
                     placeInParent(media, oldMediaSection.topLeftInParent);
                     oldMediaSection.removeFromParent();
-                } else placeInParent(media, { x: 0, y: 0 });
+                } else {
+                    placeInParent(media, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
             }
@@ -33659,6 +33652,7 @@ module.exports = getNavbarComponent;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 
 const {
   editDom,
@@ -33703,7 +33697,7 @@ async function Navbar(userProps) {
         tagNode(navbar, _extends({ type: "Navbar" }, props));
 
         placeInParent(navbar, { x: -30, y: 0 });
-        if (oldNavbar) oldNavbar.removeFromParent();
+        if (oldNavbar) oldNavbar.removeFromParent();else viewport.scrollIntoView(navbar);
 
         // if (oldNavbar) {
         //   placeInParent(navbar, oldNavbar.topLeftInParent);
@@ -33734,7 +33728,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
-const { insertNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createRectangle, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createSectionTextBackground({
   width,
@@ -33743,11 +33737,10 @@ function createSectionTextBackground({
   color,
   border
 }) {
-  let bg = new Rectangle();
-  bg.resize(width, height);
-  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
-  bg.strokeEnabled = false;
-  bg.name = "BG";
+  let bg = new createRectangle(width, height, {
+    fill: backgroundColor,
+    name: "BG"
+  });
   insertNode(bg);
 
   if (border) {
@@ -33767,12 +33760,7 @@ function createSectionTextBackground({
     bg = selection.items[0];
   }
 
-  const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
-  container.resize(Math.min(width, containerWidth), height);
-  container.fill = new Color("white", 0);
-  container.strokeEnabled = false;
-  container.name = "Container";
+  const container = createRectangle(getContainerWidth(width), height, { name: "Container" });
   insertNode(container);
 
   selection.items = [bg, container];
@@ -33793,7 +33781,7 @@ function assembleFeatureSection(props = {}, images) {
   props.container = container;
 
   let sectionText;
-  const center = props.theme.center;
+  const center = props.theme.layout == "center" || props.theme.center;
   const noText = !props.heading && !props.subHeading;
   sectionText = createSectionText(_extends({}, props, {
     theme: _extends({}, props.theme, {
@@ -33801,8 +33789,9 @@ function assembleFeatureSection(props = {}, images) {
     })
   }));
   selection.items = [sectionText, container];
+  commands.alignTop();
 
-  if (center) commands.alignHorizontalCenter();
+  if (center) commands.alignHorizontalCenter();else commands.alignLeft();
 
   container.resize(container.localBounds.width, sectionText.localBounds.height);
 
@@ -33869,7 +33858,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { selection, Color, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { insertNode, createText } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createText, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const navButtonsComponent = __webpack_require__(/*! ../Navbar/components/buttons */ "./src/Creators/Navbar/components/buttons.js");
 const defaultSectionTextProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/SectionText/defaultProps.js");
 
@@ -33878,10 +33867,13 @@ function createSectionText(userProps) {
     heading,
     subHeading,
     buttons,
-    theme,
-    headingSubHeadingSpacing = 20
+    theme
   } = _extends({}, defaultSectionTextProps, userProps || {});
-  let buttonsNode;
+  const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : 20;
+  const centerContent = theme.layout == "center" || theme.center;
+  let buttonsNode, subHeadingNode, headingNode, headingAndSubHeading;
+
+  console.log("Horizontal layout: ", theme.layout == "horizontal");
 
   if (buttons && buttons.split(",").length) {
     const icon = theme.buttons.icons ? "chevron-right" : "";
@@ -33899,46 +33891,48 @@ function createSectionText(userProps) {
     buttonsNode.name = "FernSectionButtons";
   }
 
-  const subHeadingNode = createText(subHeading, {
-    align: theme.center ? "center" : "left",
-    width: theme.subHeading.width,
-    fill: new Color(theme.subHeading.color || theme.color),
-    fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-    lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
-    fontStyle: "Regular"
-  });
+  if (subHeading) {
+    subHeadingNode = createText(subHeading, {
+      align: centerContent ? "center" : "left",
+      width: theme.subHeading.width,
+      fill: new Color(theme.subHeading.color || theme.color),
+      fontSize: theme.subHeading.size == "sm" ? 16 : 22,
+      lineSpacing: theme.subHeading.size == "sm" ? 30 : 40,
+      fontStyle: "Regular"
+    });
 
-  insertNode(subHeadingNode);
+    insertNode(subHeadingNode);
+  }
 
-  const fontFamily = {
-    "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
-    "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
-    "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
-    "fancy": "Didot"
-  }[theme.heading.font || "sans"];
+  if (heading) {
+    const fontFamily = {
+      "sans": theme.heading.brazen ? "Poppins" : "Helvetica Neue",
+      "serif": theme.heading.brazen ? "Rockwell" : "Pt Serif",
+      "quirky": theme.heading.brazen ? "Gill Sans" : "Skia",
+      "fancy": "Didot"
+    }[theme.heading.font || "sans"];
 
-  const headingNode = createText(heading, {
-    align: theme.center ? "center" : "left",
-    width: theme.heading.width,
-    fill: new Color(theme.heading.color || theme.color),
-    fontSize: theme.heading.size == "md" ? 36 : 48,
-    lineSpacing: theme.heading.size == "md" ? 50 : 62,
-    fontFamily,
-    fontStyle: "Bold"
-  });
+    headingNode = createText(heading, {
+      align: centerContent ? "center" : "left",
+      width: theme.heading.width,
+      fill: new Color(theme.heading.color || theme.color),
+      fontSize: theme.heading.size == "md" ? 36 : 48,
+      lineSpacing: theme.heading.size == "md" ? 50 : 62,
+      fontFamily,
+      fontStyle: "Bold"
+    });
 
-  insertNode(headingNode);
+    insertNode(headingNode);
+  }
 
-  selection.items = [headingNode, subHeadingNode];
+  if (heading && subHeading) {
+    selection.items = [headingNode, subHeadingNode];
+    if (centerContent) commands.alignHorizontalCenter();else commands.alignLeft();
+    commands.group();
 
-  if (theme.center) commands.alignHorizontalCenter();else commands.alignLeft();
+    headingAndSubHeading = selection.items[0];
+    headingAndSubHeading.name = "FernSectionText";
 
-  commands.group();
-
-  const headingAndSubHeading = selection.items[0];
-  headingAndSubHeading.name = "FernSectionText";
-
-  if (headingAndSubHeading.children.length > 1) {
     headingAndSubHeading.layout = {
       type: SceneNode.LAYOUT_STACK,
       stack: {
@@ -33946,30 +33940,39 @@ function createSectionText(userProps) {
         spacings: headingSubHeadingSpacing
       }
     };
-  }
+  } else if (heading) headingAndSubHeading = headingNode;else if (subHeading) headingAndSubHeading = headingNode;
 
   let sectionTextElement;
 
   if (buttonsNode) {
-    selection.items = [headingAndSubHeading, buttonsNode];
+    if (headingAndSubHeading) {
+      selection.items = [headingAndSubHeading, buttonsNode];
 
-    if (theme.center) commands.alignHorizontalCenter();else commands.alignLeft();
+      if (centerContent) commands.alignHorizontalCenter();else commands.alignLeft();
 
-    commands.group();
+      commands.group();
+      sectionTextElement = selection.items[0];
 
-    sectionTextElement = selection.items[0];
-    if (sectionTextElement.children.length > 1) {
-      sectionTextElement.layout = {
-        type: SceneNode.LAYOUT_STACK,
-        stack: {
-          orientation: SceneNode.STACK_VERTICAL,
-          spacings: 30
+      if (theme.layout == "horizontal") {
+        selection.items = [headingAndSubHeading, buttonsNode];
+        if (theme.buttons.placement == "bottom") commands.alignBottom();else commands.alignVerticalCenter();
+        const containerWidth = getContainerWidth(theme.width);
+        buttonsNode.moveInParentCoordinates(containerWidth, 0);
+      } else {
+        if (sectionTextElement.children.length > 1) {
+          sectionTextElement.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+              orientation: SceneNode.STACK_VERTICAL,
+              spacings: 30
+            }
+          };
         }
-      };
+      }
+    } else {
+      sectionTextElement = buttonsNode;
     }
-  } else {
-    sectionTextElement = headingAndSubHeading;
-  }
+  } else sectionTextElement = headingAndSubHeading;
 
   sectionTextElement.name = "FernSectionText";
   return sectionTextElement;
@@ -33991,7 +33994,7 @@ const defaultSectionTextProps = {
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow.\nTalk to us about branding, artistry and the main squeeze.",
     buttons: "",
     theme: {
-        center: true,
+        layout: "center", // "regular", "horizontal"
         width: 1600, // 1920
         backgroundColor: "transparent",
         color: "black",
@@ -34012,6 +34015,7 @@ const defaultSectionTextProps = {
             size: "sm",
             roundness: "sm",
             reversed: true,
+            placement: "center",
             mainButton: {
                 // color: "black",
                 icon: "chevron-right",
@@ -34040,6 +34044,7 @@ module.exports = defaultSectionTextProps;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleSectionText = __webpack_require__(/*! ./assemble */ "./src/Creators/SectionText/assemble.js");
@@ -34067,7 +34072,9 @@ async function SectionText(userProps) {
                 if (oldSectionText) {
                     placeInParent(sectionText, oldSectionText.topLeftInParent);
                     oldSectionText.removeFromParent();
-                } else placeInParent(sectionText, { x: 0, y: 0 });
+                } else {
+                    placeInParent(sectionText, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating SectionText: ", error);
             }
@@ -35653,10 +35660,13 @@ const schema = {
   theme: {
     type: "section",
     children: {
-      center: "boolean",
       width: {
         type: "radio",
         choices: [1600, 1920]
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center", "horizontal"]
       },
       backgroundColor: {
         label: "Background",
@@ -35744,6 +35754,10 @@ const schema = {
       buttons: {
         type: "section",
         children: {
+          placement: {
+            type: "radio",
+            choices: ["center", "bottom"]
+          },
           icons: "boolean",
           reversed: "boolean",
           themeColor: {
@@ -38673,10 +38687,13 @@ const schema = {
   theme: {
     type: "section",
     children: {
-      center: "boolean",
       width: {
         type: "radio",
         choices: [1600, 1920]
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center", "horizontal"]
       },
       backgroundColor: {
         label: "Background",
@@ -38737,6 +38754,10 @@ const schema = {
       buttons: {
         type: "section",
         children: {
+          placement: {
+            type: "radio",
+            choices: ["center", "bottom"]
+          },
           icons: "boolean",
           reversed: "boolean",
           themeColor: {
@@ -40633,6 +40654,10 @@ function randomUuid() {
   return `${segment1}-${segment2}-${segment3}-${segment4}`;
 }
 
+function getContainerWidth(width = 1600) {
+  return width == 1920 ? 1600 : 1400;
+}
+
 function webflowBorder({ width = 1.25, color = "black", bottomOnly = false }) {
   const restWidth = bottomOnly ? 0 : width;
 
@@ -40694,6 +40719,7 @@ module.exports = {
   getAssetsByType,
   openUrl,
   randomUuid,
+  getContainerWidth,
   webflowBorder,
   webflowBorderRadii
 };
@@ -41196,6 +41222,17 @@ module.exports = require("scenegraph");
 /***/ (function(module, exports) {
 
 module.exports = require("uxp");
+
+/***/ }),
+
+/***/ "viewport":
+/*!***************************!*\
+  !*** external "viewport" ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("viewport");
 
 /***/ })
 

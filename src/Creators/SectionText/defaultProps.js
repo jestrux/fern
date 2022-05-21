@@ -3,7 +3,7 @@ const defaultSectionTextProps = {
     subHeading: "With over 20 years of knowledge, we use emerging technologies to solve problems and shape the behaviors of tomorrow.\nTalk to us about branding, artistry and the main squeeze.",
     buttons: "",
     theme: {
-        center: true,
+        layout: "center", // "regular", "horizontal"
         width: 1600, // 1920
         backgroundColor: "transparent",
         color: "black",
@@ -24,6 +24,7 @@ const defaultSectionTextProps = {
             size: "sm",
             roundness: "sm",
             reversed: true,
+            placement: "center",
             mainButton: {
                 // color: "black",
                 icon: "chevron-right",

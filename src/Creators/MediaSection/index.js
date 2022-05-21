@@ -1,5 +1,6 @@
 const { PLUGIN_ID } = require("../../constants");
 const { selection } = require("scenegraph");
+const viewport = require("viewport");
 const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
 const assembleMediaSection = require("./assemble");
 const defaultMediaSectionProps = require("./defaultProps");
@@ -46,8 +47,9 @@ async function MediaSection(userProps){
                     placeInParent(media, oldMediaSection.topLeftInParent);
                     oldMediaSection.removeFromParent();
                 }
-                else
-                    placeInParent(media, {x: 0, y: 0});
+                else {
+                    placeInParent(media, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating mediaSection: ", error);
             }

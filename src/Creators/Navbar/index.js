@@ -1,4 +1,5 @@
 const { selection } = require("scenegraph");
+const viewport = require("viewport");
 
 const {
   editDom,
@@ -52,6 +53,8 @@ async function Navbar(userProps) {
 
         placeInParent(navbar, { x: -30, y: 0 });
         if (oldNavbar) oldNavbar.removeFromParent();
+        else
+          viewport.scrollIntoView(navbar);
 
         // if (oldNavbar) {
         //   placeInParent(navbar, oldNavbar.topLeftInParent);

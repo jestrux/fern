@@ -19,10 +19,13 @@ const schema = {
   theme: {
     type: "section",
     children: {
-      center: "boolean",
       width: {
         type: "radio",
         choices: [1600, 1920],
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center", "horizontal"],
       },
       backgroundColor: {
         label: "Background",
@@ -83,6 +86,10 @@ const schema = {
       buttons: {
         type: "section",
         children: {
+          placement: {
+            type: "radio",
+            choices: ["center", "bottom"],
+          },
           icons: "boolean",
           reversed: "boolean",
           themeColor: {

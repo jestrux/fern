@@ -1,4 +1,5 @@
 const { PLUGIN_ID } = require("../../constants");
+const viewport = require("viewport");
 const { selection } = require("scenegraph");
 const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
 const assembleSectionText = require("./assemble");
@@ -33,8 +34,9 @@ async function SectionText(userProps){
                     placeInParent(sectionText, oldSectionText.topLeftInParent);
                     oldSectionText.removeFromParent();
                 }
-                else
-                    placeInParent(sectionText, {x: 0, y: 0});
+                else {
+                    placeInParent(sectionText, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating SectionText: ", error);
             }

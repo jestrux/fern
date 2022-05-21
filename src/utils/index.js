@@ -792,6 +792,10 @@ function randomUuid(){
   return `${segment1}-${segment2}-${segment3}-${segment4}`;
 }
 
+function getContainerWidth(width = 1600){
+  return width == 1920 ? 1600 : 1400;
+}
+
 function webflowBorder({width = 1.25, color = "black", bottomOnly = false}){
   const restWidth = bottomOnly ? 0 : width;
 
@@ -853,6 +857,7 @@ module.exports = {
   getAssetsByType,
   openUrl,
   randomUuid,
+  getContainerWidth,
   webflowBorder,
   webflowBorderRadii
 };

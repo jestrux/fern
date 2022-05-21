@@ -3,7 +3,7 @@ const defaultCTASectionProps = {
     subHeading: "Join many other early stage investors and employees joining Ecosafe.",
     buttons: "Get to know us,  Join the team",
     theme: {
-        center: false,
+        layout: "horizontal", // "regular", "center"
         width: 1600, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
@@ -29,6 +29,7 @@ const defaultCTASectionProps = {
             roundness: "sm",
             reversed: false,
             // themeColor: "#FFD26C",
+            placement: "center",
             mainButton: {
                 icon: "chevron-right",
                 style: "fill",

@@ -42,32 +42,20 @@ function assembleCTASection(props = {}, images) {
   props.container = container;
 
   let sectionText;
-  const center = props.theme.center;
   sectionText = createSectionText({
     ...props,
-    theme: {
-      ...props.theme,
-      center,
-    },
     headingSubHeadingSpacing: 30,
   });
-  commands.ungroup();
   
-  selection.items = [...selection.items, container];
+  selection.items = [sectionText, container];
   commands.alignVerticalCenter();
   commands.alignLeft();
   
-  if(center)
+  if(props.theme.layout == "center")
     commands.alignHorizontalCenter();
   
   commands.group();
   const content = selection.items[0];
-
-  getGroupChildByName(content, "FernSectionButtons", (buttons) => {
-    const containerRight = container.localBounds.x + container.localBounds.width;
-    buttons.moveInParentCoordinates(containerRight - buttons.localBounds.width, 0);
-  });
-
   content.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {

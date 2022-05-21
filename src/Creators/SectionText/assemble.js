@@ -1,7 +1,7 @@
 const { selection, Color, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const createSectionText = require("../SectionText/createSectionText");
-const { insertNode } = require("../../utils");
+const { insertNode, createRectangle, getContainerWidth } = require("../../utils");
 
 function createSectionTextBackground({
   width,
@@ -10,14 +10,10 @@ function createSectionTextBackground({
   color,
   border,
 }) {
-  let bg = new Rectangle();
-  bg.resize(width, height);
-  bg.fill =
-    backgroundColor == "transparent"
-      ? new Color("white", 0)
-      : new Color(backgroundColor);
-  bg.strokeEnabled = false;
-  bg.name = "BG";
+  let bg = new createRectangle(width, height, {
+    fill: backgroundColor,
+    name: "BG",
+  });
   insertNode(bg);
 
   if (border) {
@@ -37,12 +33,9 @@ function createSectionTextBackground({
     bg = selection.items[0];
   }
 
-  const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
-  container.resize(Math.min(width, containerWidth), height);
-  container.fill = new Color("white", 0);
-  container.strokeEnabled = false;
-  container.name = "Container";
+  const container = createRectangle(
+    getContainerWidth(width), height, { name: "Container" }
+  ); 
   insertNode(container);
 
   selection.items = [bg, container];
@@ -64,7 +57,7 @@ function assembleFeatureSection(props = {}, images) {
   props.container = container;
 
   let sectionText;
-  const center = props.theme.center;
+  const center = props.theme.layout == "center" || props.theme.center;
   const noText = !props.heading && !props.subHeading;
   sectionText = createSectionText({
     ...props,
@@ -74,9 +67,12 @@ function assembleFeatureSection(props = {}, images) {
     }
   });
   selection.items = [sectionText, container];
+  commands.alignTop();
   
   if(center)
     commands.alignHorizontalCenter();
+  else
+    commands.alignLeft();
     
   container.resize(container.localBounds.width, sectionText.localBounds.height);
   
