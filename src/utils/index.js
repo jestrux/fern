@@ -391,6 +391,13 @@ function getGroupChildByName(
   });
 }
 
+function resizeIcon(icon, size) {
+  const { width, height } = icon.localBounds;
+  const aspectRatio = width / height;
+  if (width > height) icon.resize(size, size / aspectRatio);
+  else icon.resize(size * aspectRatio, size);
+}
+
 function createIcon(pathData, defaultOptions = {}) {
   const { Path, Color } = require("scenegraph");
 
@@ -416,12 +423,8 @@ function createIcon(pathData, defaultOptions = {}) {
     if (options.fill && options.fill.length && options.fill != "none")
       icon.fill = new Color(options.fill, options.opacity);
 
-    if (options.size) {
-      const { width, height } = icon.localBounds;
-      const aspectRatio = width / height;
-      if (width > height) icon.resize(options.size, options.size / aspectRatio);
-      else icon.resize(options.size * aspectRatio, options.size);
-    }
+    if (options.size)
+      resizeIcon(icon, options.size);
 
     return icon;
   } catch (error) {
@@ -840,6 +843,7 @@ module.exports = {
   getGroupChildByName,
   fakeValue,
   createIcon,
+  resizeIcon,
   getAssetFileFromPath,
   getPadding,
   createBorder,

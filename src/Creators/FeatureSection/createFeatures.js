@@ -1,8 +1,8 @@
 const { SceneNode, selection } = require("scenegraph");
 const commands = require("commands");
-const { createRectangle, createText, insertNode, getPadding, createCircle, createIcon, getGroupChildByName } = require("../../utils");
+const { createRectangle, createText, insertNode, getPadding, createCircle, createIcon, getGroupChildByName, resizeIcon } = require("../../utils");
 const defaultFeatureSectionProps = require("./defaultProps");
-const icons = require("../../data/icons");
+const icons = require("../../data/many-icons");
 
 const createFeature = (props = {}) => {
     const {
@@ -10,6 +10,7 @@ const createFeature = (props = {}) => {
         verticalSpace = 12,
         padding = 0,
         number,
+        icon,
         title = "Real data access",
         description = "Create custom landing pages with Fastland that converts more visitors than any website.",
         theme,
@@ -18,6 +19,7 @@ const createFeature = (props = {}) => {
     const graphicSize = theme.graphic.size || 22;
     const bg = createRectangle(width + (padding * 2));
     const circle = createCircle(Math.floor(graphicSize * 1.36), {
+        name: "bg",
         fill: theme.graphic.color || theme.color,
         opacity: theme.graphic.bgOpacity || 0.28,
     });
@@ -37,7 +39,7 @@ const createFeature = (props = {}) => {
         );
     }
     else{
-        graphicChild = createIcon(icons.seat, { 
+        graphicChild = createIcon(icons[icon], { 
             fill: theme.graphic.color || theme.color,
             size: Math.floor(graphicSize)
         });
@@ -141,17 +143,17 @@ const createFeatures = (userProps) => {
         // {
         //     icon: "bakery",
         //     title: "300-point inspection and vetting",
-        //     description: "Each property is vetted for pristine conditions and meticulously maintained."
+        //     description: "Each property is vetted for pristineness and meticulously maintainance."
         // },
         // {
         //     icon: "car",
         //     title: "Effortless arrivals",
-        //     description: "Private airport pick-up, an in-person welcome, and a home stocked are some of our featured add-ons."
+        //     description: "Private airport pick-up, an in-person welcome, and a home stocked are popular add-ons."
         // },
         // {
         //     icon: "restaurant",
         //     title: "Tailored services",
-        //     description: "From personal chefs to massage therapists, a local team of professionals has you covered."
+        //     description: "From personal chefs to massage therapists, a local team of professionals waits for you."
         // },
     ];
 
@@ -183,8 +185,11 @@ const createFeatures = (userProps) => {
             if(props.theme.graphic.type == "number")
                 graphicChild.text = (featureItems.length - i).toString().padStart(2, "0");
             else {
-                console.log("Graphic: ", graphicChild, graphicChild.path);
-                graphicChild.pathData = icons.attachment;
+                graphicChild.pathData = icons[featureItems[i].icon];
+                resizeIcon(graphicChild, props.theme.graphic.size || 22);
+
+                if(graphicChild.localBounds.x > 0)
+                    graphicChild.moveInParentCoordinates(-graphicChild.localBounds.x, 0);
             }
         });
 
