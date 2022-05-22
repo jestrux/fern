@@ -62,8 +62,8 @@ function createMedia({
     image: {},
     playButton: {},
   },
-  large
-}) {
+  large,
+}, {mediaImage, searchQuery}) {
   const { width, height, roundness, shadow, } = theme.image;
   const roundnessMap = {
     none: 0,
@@ -72,7 +72,7 @@ function createMedia({
     lg: 20,
   };
 
-  const searchQuery = {
+  searchQuery = searchQuery || {
     "4": "office, space",
     "5": "mother",
   }[image || "5"]
@@ -81,14 +81,14 @@ function createMedia({
     richData: {type: "Image", searchQuery},
   });
   
-  imageNode.fill = new ImageFill(images[`banner${image}`]);
-  imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
+  // imageNode.fill = new ImageFill(images[`banner${image}`]);
+  // imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
-  // try {
-  //     imageNode.fill = imageNodeImage;
-  // } catch (error) {
-  //     imageNode.fill = new ImageFill(imageNodeImage);
-  // }
+  try {
+      imageNode.fill = mediaImage;
+  } catch (error) {
+      imageNode.fill = new ImageFill(mediaImage);
+  }
 
   insertNode(imageNode);
 
@@ -138,10 +138,11 @@ function createMedia({
     commands.group();
     const imageNodeWithScrim = selection.items[0];
     imageNodeWithScrim.name = "imageWithScrim";
+    return imageNodeWithScrim
   }
-  else if (!overlay && !fullWidthImage && shadow) {
+
+  if (!overlay && !fullWidthImage && shadow)
     imageNode.shadow = getShadow(shadow);
-  }
 
   return imageNode;
 }

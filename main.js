@@ -32461,7 +32461,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { editDom, placeInParent, getAssetsByType, getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleMediaSection = __webpack_require__(/*! ../MediaSection/assemble */ "./src/Creators/MediaSection/assemble.js");
 const defaultMediaSectionProps = __webpack_require__(/*! ../MediaSection/defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
 const getMediaImage = __webpack_require__(/*! ../MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
@@ -32497,20 +32497,23 @@ async function Hero(userProps) {
     }, userProps || {});
 
     const heroImages = await getAssetsByType("banner");
-    let imageFills;
+    let mediaImage = heroImages[`banner${props.image || "5"}`];
+    let searchQuery;
 
     try {
         const oldHero = userProps ? selection.items[0] : null;
         if (oldHero) {
             const mediaImageNode = getMediaImage(oldHero);
-            console.log("Media image: ", mediaImageNode);
-            // if(mediaImageNode)
-            //     imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            if (mediaImageNode) {
+                mediaImage = mediaImageNode.fill;
+                const imageProps = getNodeTag(mediaImageNode);
+                searchQuery = imageProps.searchQuery;
+            }
         }
 
         editDom(async selection => {
             try {
-                const media = assembleMediaSection(props, heroImages);
+                const media = assembleMediaSection(_extends({}, props), { mediaImage, searchQuery });
 
                 selection.items = [media];
                 media.name = "FernHero";
@@ -32522,11 +32525,11 @@ async function Hero(userProps) {
                     oldHero.removeFromParent();
                 } else placeInParent(media, { x: 0, y: 0 });
             } catch (error) {
-                console.log("Error creating mediaSection: ", error);
+                console.log("Error creating hero: ", error);
             }
         });
     } catch (error) {
-        console.log("Error creating card: ", error);
+        console.log("Error creating hero: ", error);
     }
 }
 
@@ -32980,9 +32983,10 @@ function getMediaHeight(props) {
   return props.theme.image.aspectRatio == "portrait" ? 680 : props.theme.image.height;
 }
 
-function assembleMediaSection(props = {}, images) {
+function assembleMediaSection(props = {}, { mediaImage, searchQuery }) {
   props = _extends({}, props, {
-    images,
+    mediaImage,
+    searchQuery,
     width: props.theme.width,
     height: 620
   });
@@ -33015,7 +33019,7 @@ function assembleMediaSection(props = {}, images) {
         roundness: overlay || fullWidthImage ? "none" : props.theme.image.roundness
       })
     })
-  } : {}));
+  } : {}), { mediaImage, searchQuery });
 
   if (!noText) {
     // clamp
@@ -33356,7 +33360,7 @@ function createMedia({
     playButton: {}
   },
   large
-}) {
+}, { mediaImage, searchQuery }) {
   const { width, height, roundness, shadow } = theme.image;
   const roundnessMap = {
     none: 0,
@@ -33365,7 +33369,7 @@ function createMedia({
     lg: 20
   };
 
-  const searchQuery = {
+  searchQuery = searchQuery || {
     "4": "office, space",
     "5": "mother"
   }[image || "5"];
@@ -33374,14 +33378,14 @@ function createMedia({
     richData: { type: "Image", searchQuery }
   });
 
-  imageNode.fill = new ImageFill(images[`banner${image}`]);
-  imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
+  // imageNode.fill = new ImageFill(images[`banner${image}`]);
+  // imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
-  // try {
-  //     imageNode.fill = imageNodeImage;
-  // } catch (error) {
-  //     imageNode.fill = new ImageFill(imageNodeImage);
-  // }
+  try {
+    imageNode.fill = mediaImage;
+  } catch (error) {
+    imageNode.fill = new ImageFill(mediaImage);
+  }
 
   insertNode(imageNode);
 
@@ -33431,9 +33435,10 @@ function createMedia({
     commands.group();
     const imageNodeWithScrim = selection.items[0];
     imageNodeWithScrim.name = "imageWithScrim";
-  } else if (!overlay && !fullWidthImage && shadow) {
-    imageNode.shadow = getShadow(shadow);
+    return imageNodeWithScrim;
   }
+
+  if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
 
   return imageNode;
 }
@@ -33570,7 +33575,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const viewport = __webpack_require__(/*! viewport */ "viewport");
-const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { editDom, placeInParent, getAssetsByType, getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleMediaSection = __webpack_require__(/*! ./assemble */ "./src/Creators/MediaSection/assemble.js");
 const defaultMediaSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
 const getMediaImage = __webpack_require__(/*! ./getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
@@ -33579,20 +33584,23 @@ async function MediaSection(userProps) {
     const props = _extends({}, defaultMediaSectionProps, userProps || {});
 
     const bannerImages = await getAssetsByType("banner");
-    let imageFills;
+    let mediaImage = bannerImages[`banner${props.image || "3"}`];
+    let searchQuery;
 
     try {
         const oldMediaSection = userProps ? selection.items[0] : null;
         if (oldMediaSection) {
-            if (props.image == "custom") {
-                const mediaImageNodes = getMediaImage(oldMediaSection);
-                if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            const mediaImageNode = getMediaImage(oldMediaSection);
+            if (mediaImageNode) {
+                mediaImage = mediaImageNode.fill;
+                const imageProps = getNodeTag(mediaImageNode);
+                searchQuery = imageProps.searchQuery;
             }
         }
 
         editDom(async selection => {
             try {
-                const media = assembleMediaSection(props, bannerImages);
+                const media = assembleMediaSection(props, { mediaImage, searchQuery });
 
                 selection.items = [media];
                 media.name = "FernMedia";
@@ -36016,7 +36024,6 @@ const ImageEditorField = () => {
         console.log("Get image...");
         const image = _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
         if (image) {
-            console.log("Image: ", image.fill);
             let imagePath = await Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getImageFillFromNode"])(image, { base64: true });
             setPreview(imagePath);
         } else console.log("No image");

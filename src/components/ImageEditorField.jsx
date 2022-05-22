@@ -14,7 +14,6 @@ const ImageEditorField = () => {
         console.log("Get image...");
         const image = getMediaImage(selection.items[0]);
         if(image){
-            console.log("Image: ", image.fill);
             let imagePath = await getImageFillFromNode(image, { base64: true });
             setPreview(imagePath);
         }

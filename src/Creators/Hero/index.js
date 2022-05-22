@@ -1,6 +1,6 @@
 const { PLUGIN_ID } = require("../../constants");
 const { selection } = require("scenegraph");
-const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
+const { editDom, placeInParent, getAssetsByType, getNodeTag, } = require("../../utils");
 const assembleMediaSection = require("../MediaSection/assemble");
 const defaultMediaSectionProps = require("../MediaSection/defaultProps");
 const getMediaImage = require("../MediaSection/getMediaImage");
@@ -43,22 +43,25 @@ async function Hero(userProps){
     };
 
     const heroImages = await getAssetsByType("banner");
-    let imageFills;
+    let mediaImage = heroImages[`banner${props.image || "5"}`];
+    let searchQuery;
     
     try {
         const oldHero = userProps ? selection.items[0] : null;
         if(oldHero){
-            const mediaImageNode = getMediaImage(oldHero);
-            console.log("Media image: ", mediaImageNode);
-            // if(mediaImageNode)
-            //     imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            const mediaImageNode = getMediaImage(oldHero)
+            if(mediaImageNode) {
+                mediaImage = mediaImageNode.fill;
+                const imageProps = getNodeTag(mediaImageNode);
+                searchQuery = imageProps.searchQuery;
+            }
         }
         
         editDom(async (selection) => {
             try {
                 const media = assembleMediaSection(
-                    props, 
-                    heroImages
+                    { ...props, }, 
+                    {mediaImage, searchQuery}
                 );
                 
                 selection.items = [media];
@@ -74,11 +77,11 @@ async function Hero(userProps){
                 else
                     placeInParent(media, {x: 0, y: 0});
             } catch (error) {
-                console.log("Error creating mediaSection: ", error);
+                console.log("Error creating hero: ", error);
             }
         });
     } catch (error) {
-        console.log("Error creating card: ", error);
+        console.log("Error creating hero: ", error);
     }
 }
 

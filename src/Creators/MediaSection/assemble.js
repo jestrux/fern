@@ -80,10 +80,11 @@ function getMediaHeight(props){
     ? 680 : props.theme.image.height;
 }
 
-function assembleMediaSection(props = {}, images) {
+function assembleMediaSection(props = {}, {mediaImage, searchQuery}) {
   props = {
     ...props,
-    images,
+    mediaImage,
+    searchQuery,
     width: props.theme.width,
     height: 620,
   };
@@ -122,7 +123,7 @@ function assembleMediaSection(props = {}, images) {
         },
       }
     } : {})
-  });
+  }, {mediaImage, searchQuery});
 
   if(!noText){
     // clamp

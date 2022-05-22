@@ -1,7 +1,7 @@
 const { PLUGIN_ID } = require("../../constants");
 const { selection } = require("scenegraph");
 const viewport = require("viewport");
-const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
+const { editDom, placeInParent, getAssetsByType, getNodeTag, } = require("../../utils");
 const assembleMediaSection = require("./assemble");
 const defaultMediaSectionProps = require("./defaultProps");
 const getMediaImage = require("./getMediaImage");
@@ -13,24 +13,25 @@ async function MediaSection(userProps){
     };
 
     const bannerImages = await getAssetsByType("banner");
-    let imageFills;
+    let mediaImage = bannerImages[`banner${props.image || "3"}`];
+    let searchQuery;
     
     try {
         const oldMediaSection = userProps ? selection.items[0] : null;
         if(oldMediaSection){
-            if (props.image == "custom") {
-                const mediaImageNodes = getMediaImage(oldMediaSection);
-                if(mediaImageNodes)
-                    imageFills = mediaImageNodes.map(image => image ? image.fill : null);
+            const mediaImageNode = getMediaImage(oldMediaSection)
+            if(mediaImageNode) {
+                mediaImage = mediaImageNode.fill;
+                const imageProps = getNodeTag(mediaImageNode);
+                searchQuery = imageProps.searchQuery;
             }
-
         }
         
         editDom(async (selection) => {
             try {
                 const media = assembleMediaSection(
-                    props, 
-                    bannerImages
+                    props,
+                    { mediaImage, searchQuery }
                 );
                 
                 selection.items = [media];
