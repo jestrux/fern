@@ -1,7 +1,7 @@
 const { selection, Color, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const createSectionText = require("../SectionText/createSectionText");
-const { insertNode, createRectangle, getContainerWidth } = require("../../utils");
+const { insertNode, createRectangle, getContainerWidth, createBorder } = require("../../utils");
 
 function createSectionTextBackground({
   width,
@@ -15,23 +15,6 @@ function createSectionTextBackground({
     name: "BG",
   });
   insertNode(bg);
-
-  if (border) {
-    const borderNode = createBorder({
-      width,
-      color: border.color || color,
-      thickness: border.thickness || 1.5,
-    });
-    borderNode.opacity = border.opacity || 0.1;
-    insertNode(borderNode);
-
-    selection.items = [bg, borderNode];
-    commands.alignLeft();
-    commands.alignBottom();
-    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
-    commands.group();
-    bg = selection.items[0];
-  }
 
   const container = createRectangle(
     getContainerWidth(width), height, { name: "Container" }

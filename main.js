@@ -29670,6 +29670,7 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { editDom, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const defaultProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 const createButton = __webpack_require__(/*! ./createButton */ "./src/Creators/Button/createButton.js");
@@ -29690,7 +29691,9 @@ async function Button(userProps) {
                 if (oldButton) {
                     placeInParent(button, oldButton.topLeftInParent);
                     oldButton.removeFromParent();
-                } else button.moveInParentCoordinates(30, 30);
+                } else {
+                    placeInParent(button, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating button: ", error);
             }
@@ -34004,7 +34007,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
-const { insertNode, createRectangle, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createRectangle, getContainerWidth, createBorder } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function createSectionTextBackground({
   width,
@@ -34018,23 +34021,6 @@ function createSectionTextBackground({
     name: "BG"
   });
   insertNode(bg);
-
-  if (border) {
-    const borderNode = createBorder({
-      width,
-      color: border.color || color,
-      thickness: border.thickness || 1.5
-    });
-    borderNode.opacity = border.opacity || 0.1;
-    insertNode(borderNode);
-
-    selection.items = [bg, borderNode];
-    commands.alignLeft();
-    commands.alignBottom();
-    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
-    commands.group();
-    bg = selection.items[0];
-  }
 
   const container = createRectangle(getContainerWidth(width), height, { name: "Container" });
   insertNode(container);

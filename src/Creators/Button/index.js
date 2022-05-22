@@ -1,3 +1,4 @@
+const viewport = require("viewport");
 const { editDom, placeInParent, tagNode } = require("../../utils");
 const defaultProps = require("./defaultButtonProps");
 const createButton = require("./createButton");
@@ -22,8 +23,9 @@ async function Button(userProps){
                     placeInParent(button, oldButton.topLeftInParent);
                     oldButton.removeFromParent();
                 }
-                else
-                    button.moveInParentCoordinates(30, 30);
+                else {
+                    placeInParent(button, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating button: ", error);
             }
