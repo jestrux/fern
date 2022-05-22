@@ -5,6 +5,7 @@ const {
   placeInParent,
   tagNode,
   getAssetsByType,
+  getNodeTag,
 } = require("../../utils");
 
 const defaultFooterProps = require("./defaultProps");
@@ -19,19 +20,24 @@ async function Footer(userProps) {
 
   const logos = await getAssetsByType("logo");
   let logoImage = logos.logo4;
+  let logoSearchQuery;
 
   try {
     const oldFooter = userProps ? selection.items[0] : null;
     if (oldFooter) {
-      if (props.logo == "custom") {
-        const logoNode = getFooterComponent(oldFooter, "logo");
-        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      const logoNode = getFooterComponent(oldFooter, "logo");
+      if(logoNode){
+        logoImage = logoNode.fill;
+        const imageProps = getNodeTag(logoNode);
+        logoSearchQuery = imageProps.searchQuery;
       }
     }
 
     editDom(() => {
       try {
-        const footer = assembleFooter(props, { logoImage, ...logos });
+        const footer = assembleFooter(props, { 
+          logoImage, logoSearchQuery
+        });
         footer.name = "FernFooter";
 
         tagNode(footer, { type: "Footer", ...props });

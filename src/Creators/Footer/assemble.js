@@ -29,7 +29,7 @@ function createFooterBackground({ width, height, backgroundColor, border }){
 function assembleFooter(props = {}, images){
     props = {
         ...props,
-        images,
+        ...images,
         width: 1600, //1920, 
         height: 70, 
         // icons: [
@@ -56,8 +56,6 @@ function assembleFooter(props = {}, images){
         !menu5 ? null : {"menu": menu5},
         subscribeSection
     ].filter(slot => slot);
-
-    console.log("Slot defns: ", slotDefinitions);
 
     const slots = Array(slotDefinitions);
 

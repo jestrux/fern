@@ -1,5 +1,6 @@
 const React = require("react");
 const ComponentPage = require("../../../components/ComponentPage");
+const getNavbarComponent = require("../../../Creators/Navbar/getNavbarComponent");
 const webflowNavbar = require("./webflowNavbar");
 
 const socials = {
@@ -7,8 +8,16 @@ const socials = {
   optional: true,
 };
 
+const queryLeftLogo = (node) => getNavbarComponent(node, "leftLogo");
+const queryMiddleLogo = (node) => getNavbarComponent(node, "rightLogo");
+const queryDp = (node) => getNavbarComponent(node, "dp");
+
 const logo = {
-  type: "radio",
+  type: "image",
+  meta: {
+    queryFn: queryLeftLogo,
+  },
+  // type: "radio",
   choices: [
     // "custom", 
     "1", "2", "3", "4", "5",
@@ -56,7 +65,13 @@ const schema = {
   middleSlot: {
     type: "section",
     children: {
-      logo, menu,
+      logo: {
+        ...logo,
+        meta: {
+          queryFn: queryMiddleLogo,
+        },
+      }, 
+      menu,
       search: "boolean"
     },
   },
@@ -72,9 +87,12 @@ const schema = {
       socials,
       dp: {
         label: "Profile Picture",
-        type: "radio",
+        type: "image",
+        meta: {
+          queryFn: queryDp,
+        },
+        // type: "radio",
         choices: [
-          // "custom", 
           "1", "2", "3",
           "4", "5", "6",
         ],

@@ -216,7 +216,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
           )}
 
           {type == "image" && (
-            <ImageEditorField />
+            <ImageEditorField key={meta} {...meta} />
           )}
 
           {!isCustomFieldType && (

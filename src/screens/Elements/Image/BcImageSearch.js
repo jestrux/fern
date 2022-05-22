@@ -59,12 +59,23 @@ function BcImageSearch({
 
     function ResultImage({image}){
         return (
-            <div className="p-1">
-                <div className="bg-gray-100 rounded-xs overflow-hidden relative"
-                    style={{background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%`}}
+            <div className="p-1" style={
+                    image.aspectRatio ? {} : {padding: 0}
+                }>
+                <div className="bg-gray-100 rounded-xs overflow-hidden relative flex center-center"
+                    style={
+                        image.aspectRatio ? {background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%`}
+                        : {borderRadius: 0, height: "65px", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0"}
+                    }
+                    title={image.name}
                     onClick={() => onChange(image.full, searchQuery)}
                 >
-                    <img loading="lazy" className="absolute inset-0 h-full w-full object-cover" src={image.preview} alt="" />
+                    <img loading="lazy" className="absolute inset-0 h-full w-full object-cover" src={image.preview} alt="" 
+                        style={
+                            image.aspectRatio ? {}
+                            : {position: "relative", width: "auto", maxWidth: "60%", height: "auto", maxHeight: "60%", objectFit: "contain"}
+                        }
+                    />
                 </div>
             </div>
         );

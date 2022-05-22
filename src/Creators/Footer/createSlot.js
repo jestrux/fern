@@ -26,7 +26,10 @@ function footerAboutUsComponent(
 
 function createFooterSlot(props, components = {}){
     const componentMap = {
-        "logo": navLogoComponent,
+        logo: () => navLogoComponent({
+            image: props.logoImage,
+            searchQuery: props.searchQuery,
+        }),
         "about": footerAboutUsComponent,
         socials: (props, icons) => createSocialMediaIcons({
             ...props.theme, 
@@ -100,7 +103,9 @@ function createFooterSlot(props, components = {}){
 
             placeInParent(slot, {x: 0, y: 0});
 
-            slot.name = "FernFooterSlot";
+            const componentNames = Object.keys(validComponents);
+            const aboutSlot = componentNames.includes("about") || componentNames.includes("logo");
+            slot.name = aboutSlot ? "FernFooterAboutSlot" : "FernFooterSlot";
         }
 
         return slot;

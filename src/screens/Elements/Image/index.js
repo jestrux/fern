@@ -6,7 +6,8 @@ const BcImageSearch = require("./BcImageSearch");
 
 function Image({value, onSelect, onClose}){
     const searchQuery = value && value.searchQuery && value.searchQuery.length 
-        ? value.searchQuery : "office space";
+        ? value.searchQuery 
+        : value.logo ? "as" : "office space";
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
     const [loading, setLoading] = React.useState(false);
 
@@ -25,15 +26,34 @@ function Image({value, onSelect, onClose}){
     }
 
     function getLatestPhotos(){
-        // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
-        // return fetchPhotos(url);
+        if(value.logo) return searchLogos(searchQuery);
+        
         return searchUnsplash(searchQuery);
     }
 
     function searchUnsplash(q){
+        if(value.logo) return searchLogos(q);
+
         const query = q.split(" ").join(",");
         const url = `https://api.unsplash.com/search/photos?query=${query}&per_page=30&client_id=${clientId}`;
         return fetchPhotos(url);
+    }
+
+    async function searchLogos(query = "as"){
+        query = !query.length || query == "office space" || query == "office, space" ? "as" : query;
+        const url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${query}`;
+        const res = await fetch(url);
+        let response = await res.json();
+
+        console.log("Logo response: ", response);
+
+        return response.map(res => {
+            return { 
+                preview: res.logo,
+                full: res.logo,
+                name: response.name,
+            };
+        });
     }
 
     async function setImage(url, searchQuery){

@@ -10,11 +10,25 @@ const createSocialMediaIcons = require("../SocialMediaIcons/createIcons");
 
 function createNavSlot(props, components = {}) {
   props.iconOpacity = props.inActiveOpacity;
+  const {
+    leftLogoImage,
+    middleLogoImage,
+    leftLogoSearchQuery,
+    middleLogoSearchQuery,
+    dpImage,
+    dpSearchQuery,
+  } = props;
 
   const componentMap = {
-    logo: navLogoComponent,
+    logo: () => navLogoComponent({
+      image: props.alignment == "left" ? leftLogoImage : middleLogoImage,
+      searchQuery: props.alignment == "left" ? leftLogoSearchQuery : middleLogoSearchQuery,
+    }),
     menu: navMenuComponent,
-    dp: navDpComponent,
+    dp: () => navDpComponent({
+      image: dpImage,
+      searchQuery: dpSearchQuery
+    }),
     socials: (props, icons) => createSocialMediaIcons({
       ...props.theme, 
       ...props.theme.socials,

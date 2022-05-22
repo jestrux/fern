@@ -1,21 +1,20 @@
 const { Ellipse, ImageFill } = require("scenegraph");
 const { insertNode, tagNode } = require("../../../utils");
 
-function navDpComponent({dpImage, images}, dpIndex){
+function navDpComponent({image, searchQuery = "face"}){
     const dp = new Ellipse();
     dp.radiusX = 20;
     dp.radiusY = 20;
     dp.name = "FernNavDp";
-    dp.fill = new ImageFill(images[`dp${dpIndex}`]);
 
-    // try {
-    //     dp.fill = dpImage;
-    // } catch (error) {
-    //     dp.fill = new ImageFill(dpImage);
-    // }
+    try {
+        dp.fill = image;
+    } catch (error) {
+        dp.fill = new ImageFill(image);
+    }
     
     insertNode(dp);
-    tagNode(dp, {type: "Image", searchQuery: "face"});
+    tagNode(dp, {type: "Image", searchQuery});
 
     return dp;
 }

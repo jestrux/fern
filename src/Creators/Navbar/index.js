@@ -6,6 +6,7 @@ const {
   placeInParent,
   tagNode,
   getAssetsByType,
+  getNodeTag,
 } = require("../../utils");
 
 const defaultNavbarProps = require("./defaultProps");
@@ -23,29 +24,45 @@ async function Navbar(userProps) {
     getAssetsByType("dp"),
   ]);
 
-  let logoImage = logos.logo3;
+  let leftLogoImage = logos.logo4;
+  let middleLogoImage = logos.logo4;
   let dpImage = dps.dp1;
+  let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
   try {
     const oldNavbar = userProps ? selection.items[0] : null;
     if (oldNavbar) {
-      if (props.logo == "custom") {
-        const logoNode = getNavbarComponent(oldNavbar, "logo");
-        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+      if(leftLogoNode){
+        leftLogoImage = leftLogoNode.fill;
+        const imageProps = getNodeTag(leftLogoNode);
+        leftLogoSearchQuery = imageProps.searchQuery;
       }
-      if (props.dp == "custom") {
-        const dpNode = getNavbarComponent(oldNavbar, "dp");
-        dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+
+      const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+      if(middleLogoNode) {
+        middleLogoImage = middleLogoNode.fill;
+        const imageProps = getNodeTag(middleLogoNode);
+        middleLogoSearchQuery = imageProps.searchQuery;
+      }
+
+      const dpNode = getNavbarComponent(oldNavbar, "dp");
+      if(dpNode) {
+        dpImage = dpNode.fill;
+        const imageProps = getNodeTag(dpNode);
+        dpSearchQuery = imageProps.searchQuery;
       }
     }
 
     editDom(() => {
       try {
         const navbar = assembleNavbar(props, {
-          logoImage,
+          leftLogoImage,
+          middleLogoImage,
+          leftLogoSearchQuery,
+          middleLogoSearchQuery,
           dpImage,
-          ...logos,
-          ...dps
+          dpSearchQuery
         });
         navbar.name = "FernNavbar";
 
@@ -55,11 +72,6 @@ async function Navbar(userProps) {
         if (oldNavbar) oldNavbar.removeFromParent();
         else
           viewport.scrollIntoView(navbar);
-
-        // if (oldNavbar) {
-        //   placeInParent(navbar, oldNavbar.topLeftInParent);
-        //   oldNavbar.removeFromParent();
-        // } else placeInParent(navbar, { x: -30, y: 0 });
       } catch (error) {
         console.log("Error creating navbar: ", error);
       }

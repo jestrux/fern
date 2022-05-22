@@ -7,7 +7,7 @@ function getFooterComponent(navbar, component){
 
     const componentChildrenPathMap = {
         "leftSlot": "Container/FernFooterLeftSlot",
-        "logo": "Container/FernFooterLeftSlot/FernFooterSlotContent/FernFooterLogo",
+        "logo": "Container/FernFooterAboutSlot/FernFooterSlotContent/FernNavLogo",
     };
 
     return getFernComponentChildByName(navbar, component, componentChildrenPathMap);

@@ -30996,8 +30996,7 @@ function createFooterBackground({ width, height, backgroundColor, border }) {
 }
 
 function assembleFooter(props = {}, images) {
-    props = _extends({}, props, {
-        images,
+    props = _extends({}, props, images, {
         width: 1600, //1920, 
         height: 70
         // icons: [
@@ -31016,8 +31015,6 @@ function assembleFooter(props = {}, images) {
         aboutSection, menu1, menu2, menu3, menu4, menu5, subscribeSection
     } = props;
     const slotDefinitions = [aboutSection, !menu1 ? null : { "menu": menu1 }, !menu2 ? null : { "menu": menu2 }, !menu3 ? null : { "menu": menu3 }, !menu4 ? null : { "menu": menu4 }, !menu5 ? null : { "menu": menu5 }, subscribeSection].filter(slot => slot);
-
-    console.log("Slot defns: ", slotDefinitions);
 
     const slots = Array(slotDefinitions);
 
@@ -31371,7 +31368,10 @@ function footerAboutUsComponent({ theme }, aboutUs = "Making the world a better 
 
 function createFooterSlot(props, components = {}) {
     const componentMap = {
-        "logo": navLogoComponent,
+        logo: () => navLogoComponent({
+            image: props.logoImage,
+            searchQuery: props.searchQuery
+        }),
         "about": footerAboutUsComponent,
         socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, props.theme.socials, {
             icons
@@ -31434,7 +31434,9 @@ function createFooterSlot(props, components = {}) {
 
             placeInParent(slot, { x: 0, y: 0 });
 
-            slot.name = "FernFooterSlot";
+            const componentNames = Object.keys(validComponents);
+            const aboutSlot = componentNames.includes("about") || componentNames.includes("logo");
+            slot.name = aboutSlot ? "FernFooterAboutSlot" : "FernFooterSlot";
         }
 
         return slot;
@@ -31527,7 +31529,7 @@ function getFooterComponent(navbar, component) {
 
     const componentChildrenPathMap = {
         "leftSlot": "Container/FernFooterLeftSlot",
-        "logo": "Container/FernFooterLeftSlot/FernFooterSlotContent/FernFooterLogo"
+        "logo": "Container/FernFooterAboutSlot/FernFooterSlotContent/FernNavLogo"
     };
 
     return getFernComponentChildByName(navbar, component, componentChildrenPathMap);
@@ -31552,7 +31554,8 @@ const {
   editDom,
   placeInParent,
   tagNode,
-  getAssetsByType
+  getAssetsByType,
+  getNodeTag
 } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const defaultFooterProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Footer/defaultProps.js");
@@ -31564,19 +31567,24 @@ async function Footer(userProps) {
 
   const logos = await getAssetsByType("logo");
   let logoImage = logos.logo4;
+  let logoSearchQuery;
 
   try {
     const oldFooter = userProps ? selection.items[0] : null;
     if (oldFooter) {
-      if (props.logo == "custom") {
-        const logoNode = getFooterComponent(oldFooter, "logo");
-        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      const logoNode = getFooterComponent(oldFooter, "logo");
+      if (logoNode) {
+        logoImage = logoNode.fill;
+        const imageProps = getNodeTag(logoNode);
+        logoSearchQuery = imageProps.searchQuery;
       }
     }
 
     editDom(() => {
       try {
-        const footer = assembleFooter(props, _extends({ logoImage }, logos));
+        const footer = assembleFooter(props, {
+          logoImage, logoSearchQuery
+        });
         footer.name = "FernFooter";
 
         tagNode(footer, _extends({ type: "Footer" }, props));
@@ -33692,8 +33700,7 @@ function createNavBackground({
 }
 
 function assembleNavbar(props = {}, images) {
-  props = _extends({}, props, {
-    images,
+  props = _extends({}, props, images, {
     width: props.theme.width,
     height: 70
   });
@@ -33845,21 +33852,20 @@ module.exports = navButtonsComponent;
 const { Ellipse, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { insertNode, tagNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function navDpComponent({ dpImage, images }, dpIndex) {
+function navDpComponent({ image, searchQuery = "face" }) {
     const dp = new Ellipse();
     dp.radiusX = 20;
     dp.radiusY = 20;
     dp.name = "FernNavDp";
-    dp.fill = new ImageFill(images[`dp${dpIndex}`]);
 
-    // try {
-    //     dp.fill = dpImage;
-    // } catch (error) {
-    //     dp.fill = new ImageFill(dpImage);
-    // }
+    try {
+        dp.fill = image;
+    } catch (error) {
+        dp.fill = new ImageFill(image);
+    }
 
     insertNode(dp);
-    tagNode(dp, { type: "Image", searchQuery: "face" });
+    tagNode(dp, { type: "Image", searchQuery });
 
     return dp;
 }
@@ -33876,19 +33882,19 @@ module.exports = navDpComponent;
 /***/ (function(module, exports, __webpack_require__) {
 
 const { Rectangle, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
-const { insertNode, calculateAspectRatioFit } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const { insertNode, calculateAspectRatioFit, createRectangle } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function navLogoComponent({ logoImage, images }, logoIndex) {
-    const logo = new Rectangle();
-    logo.resize(163, 25);
-    logo.name = "FernNavLogo";
-    logo.fill = new ImageFill(images[`logo${logoIndex}`]);
+function navLogoComponent({ image, searchQuery = "as" }) {
+    const logo = createRectangle(163, 25, {
+        name: "FernNavLogo",
+        richData: { type: "Image", searchQuery, logo: true }
+    });
 
-    // try {
-    //     logo.fill = logoImage;
-    // } catch (error) {
-    //     logo.fill = new ImageFill(logoImage);
-    // }
+    try {
+        logo.fill = image;
+    } catch (error) {
+        logo.fill = new ImageFill(image);
+    }
 
     if (logo.fill.naturalWidth) {
         const { naturalWidth, naturalHeight } = logo.fill;
@@ -34121,11 +34127,25 @@ const createSocialMediaIcons = __webpack_require__(/*! ../SocialMediaIcons/creat
 
 function createNavSlot(props, components = {}) {
   props.iconOpacity = props.inActiveOpacity;
+  const {
+    leftLogoImage,
+    middleLogoImage,
+    leftLogoSearchQuery,
+    middleLogoSearchQuery,
+    dpImage,
+    dpSearchQuery
+  } = props;
 
   const componentMap = {
-    logo: navLogoComponent,
+    logo: () => navLogoComponent({
+      image: props.alignment == "left" ? leftLogoImage : middleLogoImage,
+      searchQuery: props.alignment == "left" ? leftLogoSearchQuery : middleLogoSearchQuery
+    }),
     menu: navMenuComponent,
-    dp: navDpComponent,
+    dp: () => navDpComponent({
+      image: dpImage,
+      searchQuery: dpSearchQuery
+    }),
     socials: (props, icons) => createSocialMediaIcons(_extends({}, props.theme, props.theme.socials, {
       icons
     })),
@@ -34325,13 +34345,15 @@ module.exports = defaultNavbarProps;
 const { getNodeTag, getFernComponentChildByName } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 function getNavbarComponent(navbar, component) {
+    console.log("Navbar component: ", navbar, component);
     const props = getNodeTag(navbar);
 
     if (!props) return null;
 
     const componentChildrenPathMap = {
         "leftSlot": "FernNavLeftSlot",
-        "logo": "FernNavLeftSlot/FernNavSlotContent/FernNavLogo",
+        "leftLogo": "FernNavLeftSlot/FernNavSlotContent/FernNavLogo",
+        "middleLogo": "FernNavMiddleSlot/FernNavSlotContent/FernNavLogo",
         "dp": "FernNavRightSlot/FernNavSlotContent/FernNavDp"
     };
 
@@ -34358,7 +34380,8 @@ const {
   editDom,
   placeInParent,
   tagNode,
-  getAssetsByType
+  getAssetsByType,
+  getNodeTag
 } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
 const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/Navbar/defaultProps.js");
@@ -34370,39 +34393,52 @@ async function Navbar(userProps) {
 
   const [logos, dps] = await Promise.all([getAssetsByType("logo"), getAssetsByType("dp")]);
 
-  let logoImage = logos.logo3;
+  let leftLogoImage = logos.logo4;
+  let middleLogoImage = logos.logo4;
   let dpImage = dps.dp1;
+  let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
   try {
     const oldNavbar = userProps ? selection.items[0] : null;
     if (oldNavbar) {
-      if (props.logo == "custom") {
-        const logoNode = getNavbarComponent(oldNavbar, "logo");
-        logoImage = logoNode && logoNode.fill ? logoNode.fill : logoImage;
+      const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+      if (leftLogoNode) {
+        leftLogoImage = leftLogoNode.fill;
+        const imageProps = getNodeTag(leftLogoNode);
+        leftLogoSearchQuery = imageProps.searchQuery;
       }
-      if (props.dp == "custom") {
-        const dpNode = getNavbarComponent(oldNavbar, "dp");
-        dpImage = dpNode && dpNode.fill ? dpNode.fill : dpImage;
+
+      const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+      if (middleLogoNode) {
+        middleLogoImage = middleLogoNode.fill;
+        const imageProps = getNodeTag(middleLogoNode);
+        middleLogoSearchQuery = imageProps.searchQuery;
+      }
+
+      const dpNode = getNavbarComponent(oldNavbar, "dp");
+      if (dpNode) {
+        dpImage = dpNode.fill;
+        const imageProps = getNodeTag(dpNode);
+        dpSearchQuery = imageProps.searchQuery;
       }
     }
 
     editDom(() => {
       try {
-        const navbar = assembleNavbar(props, _extends({
-          logoImage,
-          dpImage
-        }, logos, dps));
+        const navbar = assembleNavbar(props, {
+          leftLogoImage,
+          middleLogoImage,
+          leftLogoSearchQuery,
+          middleLogoSearchQuery,
+          dpImage,
+          dpSearchQuery
+        });
         navbar.name = "FernNavbar";
 
         tagNode(navbar, _extends({ type: "Navbar" }, props));
 
         placeInParent(navbar, { x: -30, y: 0 });
         if (oldNavbar) oldNavbar.removeFromParent();else viewport.scrollIntoView(navbar);
-
-        // if (oldNavbar) {
-        //   placeInParent(navbar, oldNavbar.topLeftInParent);
-        //   oldNavbar.removeFromParent();
-        // } else placeInParent(navbar, { x: -30, y: 0 });
       } catch (error) {
         console.log("Error creating navbar: ", error);
       }
@@ -35594,7 +35630,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
         },
         React.createElement(IconList, _extends({ onChange: handleChange, iconNames: choices }, meta))
       ),
-      type == "image" && React.createElement(ImageEditorField, null),
+      type == "image" && React.createElement(ImageEditorField, _extends({ key: meta }, meta)),
       !isCustomFieldType && React.createElement(
         "form",
         {
@@ -36014,7 +36050,8 @@ const { useEffect, useState } = __webpack_require__(/*! react */ "./node_modules
 
 
 
-const ImageEditorField = () => {
+const ImageEditorField = ({ queryFn }) => {
+    console.log("Query fn: ", queryFn, typeof queryFn);
     const [preview, setPreview] = useState(null);
     useEffect(() => {
         handleGetImage();
@@ -36022,7 +36059,7 @@ const ImageEditorField = () => {
 
     const handleGetImage = async () => {
         console.log("Get image...");
-        const image = _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
+        const image = queryFn ? queryFn(selection.items[0]) : _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
         if (image) {
             let imagePath = await Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getImageFillFromNode"])(image, { base64: true });
             setPreview(imagePath);
@@ -36031,7 +36068,8 @@ const ImageEditorField = () => {
 
     const handleChangeImage = () => {
         Object(_utils__WEBPACK_IMPORTED_MODULE_1__["editDom"])(selection => {
-            const image = _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
+            const image = queryFn ? queryFn(selection.items[0]) : _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
+
             if (image) selection.items = [image];else console.log("Image not found!");
         });
     };
@@ -36045,7 +36083,7 @@ const ImageEditorField = () => {
             React.createElement(
                 "div",
                 { className: "bg-gray", style: { width: "55px", height: "45px" } },
-                React.createElement("img", { className: "object-cover rounded-xs", src: preview, alt: "", style: { width: "55px", height: "45px" } })
+                React.createElement("img", { className: "object-contain rounded-xs", src: preview, alt: "", style: { width: "55px", height: "45px" } })
             ),
             React.createElement(
                 "span",
@@ -37749,6 +37787,7 @@ module.exports = FernComponent;
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const getFooterComponent = __webpack_require__(/*! ../../../Creators/Footer/getFooterComponent */ "./src/Creators/Footer/getFooterComponent.js");
 // const webflowSectionText = require("./webflowSectionText");
 
 const schema = {
@@ -37756,7 +37795,11 @@ const schema = {
         type: "section",
         children: {
             logo: {
-                type: "radio",
+                // type: "radio",
+                type: "image",
+                meta: {
+                    queryFn: node => getFooterComponent(node, "logo")
+                },
                 choices: [
                 // "custom", 
                 "1", "2", "3", "4", "5"],
@@ -37991,7 +38034,7 @@ const schema = {
 
 function Footer({ value, onClose }) {
     return React.createElement(ComponentPage, {
-        title: "Footer",
+        title: 'Footer',
         onClose: onClose,
         schema: schema,
         data: value
@@ -38503,14 +38546,17 @@ function BcImageSearch({
     function ResultImage({ image }) {
         return React.createElement(
             "div",
-            { className: "p-1" },
+            { className: "p-1", style: image.aspectRatio ? {} : { padding: 0 } },
             React.createElement(
                 "div",
-                { className: "bg-gray-100 rounded-xs overflow-hidden relative",
-                    style: { background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%` },
+                { className: "bg-gray-100 rounded-xs overflow-hidden relative flex center-center",
+                    style: image.aspectRatio ? { background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%` } : { borderRadius: 0, height: "65px", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" },
+                    title: image.name,
                     onClick: () => onChange(image.full, searchQuery)
                 },
-                React.createElement("img", { loading: "lazy", className: "absolute inset-0 h-full w-full object-cover", src: image.preview, alt: "" })
+                React.createElement("img", { loading: "lazy", className: "absolute inset-0 h-full w-full object-cover", src: image.preview, alt: "",
+                    style: image.aspectRatio ? {} : { position: "relative", width: "auto", maxWidth: "60%", height: "auto", maxHeight: "60%", objectFit: "contain" }
+                })
             )
         );
     }
@@ -38592,7 +38638,7 @@ const Loader = __webpack_require__(/*! ../../../components/Loader */ "./src/comp
 const BcImageSearch = __webpack_require__(/*! ./BcImageSearch */ "./src/screens/Elements/Image/BcImageSearch.js");
 
 function Image({ value, onSelect, onClose }) {
-    const searchQuery = value && value.searchQuery && value.searchQuery.length ? value.searchQuery : "office space";
+    const searchQuery = value && value.searchQuery && value.searchQuery.length ? value.searchQuery : value.logo ? "as" : "office space";
     const clientId = "17ef130962858e4304efe9512cf023387ee5d36f0585e4346f0f70b2f9729964";
     const [loading, setLoading] = React.useState(false);
 
@@ -38611,15 +38657,34 @@ function Image({ value, onSelect, onClose }) {
     }
 
     function getLatestPhotos() {
-        // const url = `https://api.unsplash.com/photos?per_page=30&client_id=${clientId}`;
-        // return fetchPhotos(url);
+        if (value.logo) return searchLogos(searchQuery);
+
         return searchUnsplash(searchQuery);
     }
 
     function searchUnsplash(q) {
+        if (value.logo) return searchLogos(q);
+
         const query = q.split(" ").join(",");
         const url = `https://api.unsplash.com/search/photos?query=${query}&per_page=30&client_id=${clientId}`;
         return fetchPhotos(url);
+    }
+
+    async function searchLogos(query = "as") {
+        query = !query.length || query == "office space" || query == "office, space" ? "as" : query;
+        const url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${query}`;
+        const res = await fetch(url);
+        let response = await res.json();
+
+        console.log("Logo response: ", response);
+
+        return response.map(res => {
+            return {
+                preview: res.logo,
+                full: res.logo,
+                name: response.name
+            };
+        });
     }
 
     async function setImage(url, searchQuery) {
@@ -39365,8 +39430,11 @@ module.exports = function (props) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const getNavbarComponent = __webpack_require__(/*! ../../../Creators/Navbar/getNavbarComponent */ "./src/Creators/Navbar/getNavbarComponent.js");
 const webflowNavbar = __webpack_require__(/*! ./webflowNavbar */ "./src/screens/Elements/Navbar/webflowNavbar.js");
 
 const socials = {
@@ -39374,8 +39442,16 @@ const socials = {
   optional: true
 };
 
+const queryLeftLogo = node => getNavbarComponent(node, "leftLogo");
+const queryMiddleLogo = node => getNavbarComponent(node, "rightLogo");
+const queryDp = node => getNavbarComponent(node, "dp");
+
 const logo = {
-  type: "radio",
+  type: "image",
+  meta: {
+    queryFn: queryLeftLogo
+  },
+  // type: "radio",
   choices: [
   // "custom", 
   "1", "2", "3", "4", "5"],
@@ -39422,7 +39498,12 @@ const schema = {
   middleSlot: {
     type: "section",
     children: {
-      logo, menu,
+      logo: _extends({}, logo, {
+        meta: {
+          queryFn: queryMiddleLogo
+        }
+      }),
+      menu,
       search: "boolean"
     }
   },
@@ -39438,10 +39519,12 @@ const schema = {
       socials,
       dp: {
         label: "Profile Picture",
-        type: "radio",
-        choices: [
-        // "custom", 
-        "1", "2", "3", "4", "5", "6"],
+        type: "image",
+        meta: {
+          queryFn: queryDp
+        },
+        // type: "radio",
+        choices: ["1", "2", "3", "4", "5", "6"],
         defaultValue: "1",
         optional: true
       }

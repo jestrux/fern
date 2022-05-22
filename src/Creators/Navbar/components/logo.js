@@ -1,17 +1,17 @@
 const { Rectangle, ImageFill } = require("scenegraph");
-const { insertNode, calculateAspectRatioFit } = require("../../../utils");
+const { insertNode, calculateAspectRatioFit, createRectangle } = require("../../../utils");
 
-function navLogoComponent({logoImage, images}, logoIndex){
-    const logo = new Rectangle();
-    logo.resize(163, 25);
-    logo.name = "FernNavLogo";
-    logo.fill = new ImageFill(images[`logo${logoIndex}`]);
+function navLogoComponent({image, searchQuery = "as"}){
+    const logo = createRectangle(163, 25, {
+        name: "FernNavLogo",
+        richData: {type: "Image", searchQuery, logo: true},
+    });
 
-    // try {
-    //     logo.fill = logoImage;
-    // } catch (error) {
-    //     logo.fill = new ImageFill(logoImage);
-    // }
+    try {
+        logo.fill = image;
+    } catch (error) {
+        logo.fill = new ImageFill(image);
+    }
 
     if(logo.fill.naturalWidth){
         const { naturalWidth, naturalHeight } = logo.fill;

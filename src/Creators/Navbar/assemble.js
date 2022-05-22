@@ -57,7 +57,7 @@ function createNavBackground({
 function assembleNavbar(props = {}, images) {
   props = {
     ...props,
-    images,
+    ...images,
     width: props.theme.width,
     height: 70,
   };
