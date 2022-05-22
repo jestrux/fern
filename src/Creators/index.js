@@ -7,6 +7,7 @@ const FeatureSection = require("./FeatureSection");
 const SectionText = require("./SectionText");
 const MediaSection = require("./MediaSection");
 const Grid = require("./Grid");
+const FAQ = require("./FAQ");
 const CTA = require("./CTA");
 const Footer = require("./Footer");
 const FernComponent = require("./FernComponent");
@@ -21,6 +22,7 @@ class Creators {
     static FeatureSection = FeatureSection
     static Grid = Grid
     static Footer = Footer
+    static FAQ = FAQ
     static CTA = CTA
     static FernComponent = FernComponent
     

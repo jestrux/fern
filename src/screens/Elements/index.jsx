@@ -8,6 +8,7 @@ const Input = require('./Input');
 const Button = require('./Button');
 const Navbar = require('./Navbar');
 const Hero = require('./Hero');
+const FAQ = require('./FAQ');
 const CTA = require('./CTA');
 const Footer = require('./Footer');
 const SectionText = require('./SectionText');
@@ -75,6 +76,7 @@ function Elements({value, subscription, onUpgrade}){
             MediaSection,
             Grid,
             Footer,
+            FAQ,
             CTA,
             FernComponent,
         };

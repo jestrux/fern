@@ -398,7 +398,7 @@ function resizeIcon(icon, size) {
   else icon.resize(size * aspectRatio, size);
 }
 
-function createIcon(pathData, defaultOptions = {}) {
+function createIcon(pathData, userOptions = {}) {
   const { Path, Color } = require("scenegraph");
 
   const options = {
@@ -406,7 +406,8 @@ function createIcon(pathData, defaultOptions = {}) {
     stroke: "none",
     strokeWidth: 2,
     opacity: 1,
-    ...defaultOptions,
+    name: "icon",
+    ...userOptions,
   };
 
   try {
@@ -426,6 +427,7 @@ function createIcon(pathData, defaultOptions = {}) {
     if (options.size)
       resizeIcon(icon, options.size);
 
+    icon.name = options.name;
     return icon;
   } catch (error) {
     console.log("Error with path: ", error);
@@ -506,6 +508,7 @@ function getPadding(top, right, bottom, left) {
 }
 
 function createBorder({
+  name = "border",
   top = 0,
   width = 1920,
   color = "black",
@@ -518,6 +521,7 @@ function createBorder({
   border.stroke = new Color(color);
   border.strokeWidth = thickness;
   border.setStartEnd(0, top, width, top);
+  border.name = name;
 
   return border;
 }
@@ -700,6 +704,84 @@ function createCircle(radius = 50, userProps = {}) {
   return circleNode;
 }
 
+// https://stackoverflow.com/a/46213770
+function parseMarkdownText(str, styling = {}){
+  const { Color } = require("scenegraph");
+
+  const {
+    boldStyle = "Medium", //"Bold",
+    underlineColor = null,
+  } = styling;
+  let bold = false, italics = false;
+  let output = [];
+  let text = str.split('').reduce((a, b) => {
+      if(b == '*'){
+          if(bold){
+              if(a != ''){
+                  if(italics)
+                      output.push({text: a, bold: true, italics:true});
+                  else
+                    output.push({text: a, bold: true});
+              }
+              bold = false;
+          }
+          else{
+              if(italics)
+                  output.push({text: a, italics: true})
+              else
+                  output.push({text: a})
+              bold = true;
+          }
+          return '';
+      }
+      else if(b == '_'){
+          if(italics){
+              if(a != ''){
+                  if(bold)
+                      output.push({text: a, bold: true, italics:true});
+                  else
+                    output.push({text: a, italics: true});
+              }
+              italics = false;
+          }
+          else{
+              if(bold)
+                  output.push({text: a, bold: true})
+              else
+                  output.push({text: a})
+              italics = true;
+          }
+          return '';
+      }
+      else{
+          return a+b;
+      }
+  }, '');
+
+  if(text != '')
+    output.push({text : text});
+    
+  const styleRanges = output.map(({text, bold, italics}) => {
+    const styles = {
+      length: text.length,
+    };
+
+    if(italics) {
+      styles.underline = true;
+      if(underlineColor)
+        styles.fill = new Color(underlineColor);
+    };
+    if(bold) styles.fontStyle = boldStyle;
+
+    return styles;
+  });
+
+  return {
+    styleRanges,
+    text: output.map(({text}) => text).join('')
+  };
+}
+
 function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
   const { Text, Color } = require("scenegraph");
 
@@ -710,6 +792,7 @@ function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
     fontFamily: "Helvetica Neue",
     fontStyle: "Regular",
     align: "left",
+    opacity: 1,
     layoutBox: {
       type: userProps && userProps.width ? Text.AUTO_HEIGHT : Text.POINT,
       ...(userProps || {}),
@@ -729,19 +812,23 @@ function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
 
   if(typeof props.fill == "string"){
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
 
   const textNode = new Text();
-  const splitText = text.split("\\n");
+  const {styleRanges, text: formattedText} = parseMarkdownText(text);
+  if(styleRanges)
+    props.styleRanges = styleRanges;
+
+  const splitText = formattedText.split("\\n");
   let actualText = "";
   splitText.forEach((paragraph, index) => {
     actualText += paragraph;
     if(index != splitText.length -1) actualText += "\n";
   });
+
   textNode.text = actualText;
   Object.assign(textNode, props);
-
   return textNode;
 }
 
@@ -852,6 +939,7 @@ module.exports = {
   getNodeTag,
   getFernComponentChildByName,
   calculateAspectRatioFit,
+  parseMarkdownText,
   createText,
   createRectangle,
   createCircle,

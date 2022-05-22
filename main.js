@@ -29913,6 +29913,449 @@ module.exports = CTASection;
 
 /***/ }),
 
+/***/ "./src/Creators/FAQ/assemble.js":
+/*!**************************************!*\
+  !*** ./src/Creators/FAQ/assemble.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
+const { insertNode, createBorder, createRectangle, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const createFAQs = __webpack_require__(/*! ./createFAQs */ "./src/Creators/FAQ/createFAQs.js");
+
+function createFAQBackground({
+  width,
+  height,
+  backgroundColor,
+  color
+}) {
+  let bg = new createRectangle(width, height, {
+    fill: backgroundColor,
+    name: "BG"
+  });
+  insertNode(bg);
+
+  const container = createRectangle(getContainerWidth(width), height, { name: "Container" });
+  insertNode(container);
+
+  selection.items = [bg, container];
+  commands.alignHorizontalCenter();
+  commands.alignVerticalCenter();
+
+  return [bg, container];
+}
+
+function assembleFAQ(props = {}, images) {
+  props = _extends({}, props, {
+    images,
+    width: props.theme.width,
+    height: 620
+  });
+
+  const [bg, container] = createFAQBackground(_extends({}, props, props.theme));
+  props.container = container;
+
+  const faqs = createFAQs(props);
+  let sectionText;
+  const noText = !props.heading && !props.subHeading;
+
+  if (!noText) {
+    sectionText = createSectionText(_extends({}, props, {
+      theme: _extends({}, props.theme, {
+        backgroundColor: "transparent",
+        verticalPadding: 0
+      })
+    }));
+
+    selection.items = [sectionText, faqs];
+
+    if (props.theme.layout == "center") commands.alignHorizontalCenter();else commands.alignLeft();
+
+    commands.group();
+
+    const faqsAndText = selection.items[0];
+    faqsAndText.layout = {
+      type: SceneNode.LAYOUT_STACK,
+      stack: {
+        orientation: SceneNode.STACK_VERTICAL,
+        spacings: 70
+      }
+    };
+    container.resize(container.localBounds.width, faqsAndText.localBounds.height);
+    selection.items = [container, faqsAndText];
+
+    if (props.theme.layout == "center") commands.alignHorizontalCenter();else commands.alignLeft();
+
+    commands.group();
+  } else {
+    selection.items = [container, faqs];
+    commands.alignLeft();
+    container.resize(container.localBounds.width, faqs.localBounds.height);
+  }
+
+  const content = selection.items[0];
+  selection.items = [bg, content];
+  commands.alignHorizontalCenter();
+  commands.group();
+
+  let faqContent = selection.items[0];
+  const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
+  const verticalPadding = noText ? 0 : props.theme.verticalPadding;
+
+  faqContent.layout = {
+    type: SceneNode.LAYOUT_PADDING,
+    padding: {
+      background: bg,
+      values: {
+        left: horizontalPadding, right: horizontalPadding,
+        top: verticalPadding,
+        bottom: verticalPadding
+      }
+    }
+  };
+
+  faqContent.resize(props.width, faqContent.localBounds.height);
+
+  if (props.theme.border) {
+    const border = {
+      color: "black",
+      thickness: 1.5,
+      opacity: 0.1
+    };
+    const borderNode = createBorder({
+      width: props.theme.width,
+      color: border.color || color,
+      thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    selection.items = [faqContent, borderNode];
+    commands.alignLeft();
+    commands.alignBottom();
+    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
+    commands.group();
+
+    return selection.items[0];
+  } else return faqContent;
+}
+
+module.exports = assembleFAQ;
+
+/***/ }),
+
+/***/ "./src/Creators/FAQ/createFAQs.js":
+/*!****************************************!*\
+  !*** ./src/Creators/FAQ/createFAQs.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+const { selection, Color, Text, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const commands = __webpack_require__(/*! commands */ "commands");
+const { insertNode, createText, createIcon, getGroupChildByName, createCircle, createBorder, placeInParent, parseMarkdownText, resizeIcon } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const icons = __webpack_require__(/*! ../../data/icons */ "./src/data/icons.js");
+
+function createFAQItem({
+    title = "Don't like meetings?",
+    description = "Invite your entire team, so anyone can submit requests and track their progress.",
+    theme
+}) {
+    const border = {
+        color: theme.color,
+        thickness: 1.5,
+        opacity: 0.15
+    };
+    const borderNode = createBorder({
+        width: theme.faqs.width + 50,
+        color: border.color || color,
+        thickness: border.thickness || 1.5
+    });
+    borderNode.opacity = border.opacity || 0.1;
+    insertNode(borderNode);
+
+    const iconName = theme.faqs.expandIcon.type == "plus" ? "add" : "chevron-down";
+    const iconNode = createIcon(icons[iconName], {
+        fill: theme.color,
+        opacity: 0.45,
+        size: 18
+    });
+    insertNode(iconNode);
+
+    const descriptionNode = createText(description, {
+        name: "description",
+        fill: theme.color,
+        fontSize: 20,
+        lineSpacing: 38,
+        width: theme.faqs.width + 50,
+        opacity: 0.9 // 0.8,
+    });
+
+    insertNode(descriptionNode);
+
+    const titleNode = createText(title, {
+        name: "title",
+        fill: theme.color,
+        lineSpacing: 40,
+        width: theme.faqs.width,
+        fontSize: 28, // 32
+        fontStyle: "Medium" // Light
+    });
+
+    insertNode(titleNode);
+
+    selection.items = [titleNode, descriptionNode];
+    commands.group();
+    let textNode = selection.items[0];
+    textNode.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 16
+        }
+    };
+    textNode.name = "text";
+
+    selection.items = [iconNode, textNode];
+    commands.alignTop();
+    commands.alignLeft();
+    iconNode.moveInParentCoordinates(theme.faqs.width + (50 - 18), 6);
+    commands.group();
+
+    const faqItem = selection.items[0];
+    faqItem.name = "content";
+
+    selection.items = [faqItem, borderNode];
+    commands.alignLeft();
+    commands.group();
+
+    const faqItemWithBorder = selection.items[0];
+    faqItemWithBorder.layout = {
+        type: SceneNode.LAYOUT_STACK,
+        stack: {
+            orientation: SceneNode.STACK_VERTICAL,
+            spacings: 36
+        }
+    };
+
+    return faqItemWithBorder;
+}
+
+function createFAQs(_ref = {}) {
+    let props = _objectWithoutProperties(_ref, []);
+
+    const faqs = [{
+        title: "How do I know when I need damage protection vs liability insurance?",
+        description: "Host damage protection covers you if your place or belongings ever get damaged by a guest during a stay. Host liability insurance applies in the rare event that a guest gets hurt during a stay or Experience."
+    }, {
+        title: "I need to get reimbursed for damage. How do I do it?",
+        description: "If a guest has damaged your place or belongings, visit our Resolution Center to submit a reimbursement request. If a guest has been injured, complete the _liability insurance intake form_."
+    }, {
+        title: "How long does it take to get reimbursed for damage?",
+        description: "We always resolve damage reimbursement requests as quickly as possible. It typically takes two weeks from the time you file a request for your payment to be issued."
+    }, {
+        title: "Can I host with someone else?",
+        description: "If you want to host with one other person, make sure their name is mentioned on your experience listing so that guests know who they'll be with. They'll also need to have an *active* and *verified* profile."
+    }, {
+        title: "Do I need a business license?",
+        description: "Depending on activities involved, certain experiences may require a business license. Make sure to check local laws in your area to determine which licenses may be required for your experience, especially if there is food, alcohol, or transportation involved. _Learn more_."
+    }];
+
+    let expandedItems = [];
+    if (props.faqs.expandedQuestions) expandedItems = props.faqs.expandedQuestions.split(",").map(q => q).filter(q => q != undefined);
+
+    const faqItems = [...faqs];
+
+    try {
+        const faqItemNode = createFAQItem(_extends({}, props, faqItems[0]));
+        const faqItemNodes = [faqItemNode];
+        selection.items = [faqItemNode];
+
+        for (let i = 0; i < faqItems.length; i++) {
+            commands.duplicate();
+            const newItem = selection.items[0];
+            selection.items = [faqItemNode];
+            faqItemNodes.push(newItem);
+
+            const isOpen = faqItems[i].open || expandedItems.includes((i + 1).toString());
+
+            getGroupChildByName(newItem, "content", content => {
+                getGroupChildByName(content, "text/title", titleNode => {
+                    titleNode.text = faqItems[i].title;
+                });
+
+                getGroupChildByName(content, "text/description", descriptionNode => {
+                    if (isOpen) {
+                        const { styleRanges, text: formattedText } = parseMarkdownText(faqItems[i].description);
+                        descriptionNode.text = formattedText;
+
+                        if (styleRanges) descriptionNode.styleRanges = styleRanges;
+                    } else descriptionNode.removeFromParent();
+                });
+
+                if (isOpen) {
+                    getGroupChildByName(content, "icon", icon => {
+                        const iconName = props.theme.faqs.expandIcon.type == "plus" ? "remove" : "chevron-up";
+                        icon.pathData = icons[iconName];
+                        resizeIcon(icon, 18);
+
+                        // if(icon.localBounds.x > 0)
+                        //     icon.moveInParentCoordinates(-icon.localBounds.x, 0);
+                    });
+                }
+            });
+        }
+
+        selection.items = faqItemNodes;
+        commands.group();
+
+        faqItemNode.removeFromParent();
+
+        let faqContent = selection.items[0];
+        faqContent.layout = {
+            type: SceneNode.LAYOUT_STACK,
+            stack: {
+                orientation: SceneNode.STACK_VERTICAL,
+                spacings: 36
+            }
+        };
+
+        return faqContent;
+    } catch (error) {
+        console.log("Error creating faqs: ", error);
+    }
+}
+
+module.exports = createFAQs;
+
+/***/ }),
+
+/***/ "./src/Creators/FAQ/defaultProps.js":
+/*!******************************************!*\
+  !*** ./src/Creators/FAQ/defaultProps.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const defaultFAQProps = {
+    heading: "FAQs",
+    subHeading: "Can't find the answer you're looking for below? Visit our *_help center_*.",
+    buttons: "",
+    faqs: {
+        expandedQuestions: "2,4"
+    },
+    theme: {
+        backgroundColor: "white",
+        width: 1600, // 1920
+        layout: "center",
+        color: "black",
+        border: false,
+        verticalPadding: 65,
+        heading: {
+            font: "sans", // "serif", "quirky", "fancy",
+            brazen: false,
+            width: 750, // 530,
+            size: "lg" // "md"
+        },
+        subHeading: {
+            width: 750, //530,
+            size: "md" // "sm"
+        },
+        buttons: {
+            icons: false,
+            iconPlacement: "right",
+            size: "sm",
+            roundness: "sm",
+            reversed: true,
+            mainButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "fill"
+            },
+            secondaryButton: {
+                // color: "black",
+                icon: "chevron-right",
+                style: "outline"
+            }
+        },
+        faqs: {
+            width: 900,
+            expandIcon: {
+                type: "plus"
+            }
+        }
+    }
+};
+
+module.exports = defaultFAQProps;
+
+/***/ }),
+
+/***/ "./src/Creators/FAQ/index.js":
+/*!***********************************!*\
+  !*** ./src/Creators/FAQ/index.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const { PLUGIN_ID } = __webpack_require__(/*! ../../constants */ "./src/constants.js");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const assembleFAQ = __webpack_require__(/*! ./assemble */ "./src/Creators/FAQ/assemble.js");
+const defaultFAQProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/FAQ/defaultProps.js");
+
+async function FAQ(userProps) {
+    const props = _extends({}, defaultFAQProps, userProps || {});
+
+    const bannerImages = await getAssetsByType("banner");
+
+    try {
+        const oldFAQ = userProps ? selection.items[0] : null;
+
+        editDom(async selection => {
+            try {
+                const faq = assembleFAQ(props, bannerImages);
+
+                selection.items = [faq];
+                faq.name = "FernFAQ";
+
+                const data = _extends({
+                    type: "FAQ"
+                }, props ? props : defaultFAQProps);
+
+                faq.sharedPluginData.setItem(PLUGIN_ID, "richData", JSON.stringify(data));
+
+                if (oldFAQ) {
+                    placeInParent(faq, oldFAQ.topLeftInParent);
+                    oldFAQ.removeFromParent();
+                } else {
+                    placeInParent(faq, { x: 0, y: viewport.bounds.y });
+                }
+            } catch (error) {
+                console.log("Error creating faq: ", error);
+            }
+        });
+    } catch (error) {
+        console.log("Error creating faq: ", error);
+    }
+}
+
+module.exports = FAQ;
+
+/***/ }),
+
 /***/ "./src/Creators/FeatureSection/assemble.js":
 /*!*************************************************!*\
   !*** ./src/Creators/FeatureSection/assemble.js ***!
@@ -29925,52 +30368,22 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const { selection, Color, Rectangle, SceneNode } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
 const createSectionText = __webpack_require__(/*! ../SectionText/createSectionText */ "./src/Creators/SectionText/createSectionText.js");
-const { insertNode, createBorder } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { insertNode, createBorder, createRectangle, getContainerWidth } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const createFeatures = __webpack_require__(/*! ./createFeatures */ "./src/Creators/FeatureSection/createFeatures.js");
 
 function createSectionBackground({
   width,
   height,
   backgroundColor,
-  color,
-  border
+  color
 }) {
-  let bg = new Rectangle();
-  bg.resize(width, height);
-  bg.fill = backgroundColor == "transparent" ? new Color("white", 0) : new Color(backgroundColor);
-  bg.strokeEnabled = false;
-  bg.name = "BG";
+  let bg = new createRectangle(width, height, {
+    fill: backgroundColor,
+    name: "BG"
+  });
   insertNode(bg);
 
-  if (border) {
-    const border = {
-      color: "black",
-      thickness: 1.5,
-      opacity: 0.1
-    };
-
-    const borderNode = createBorder({
-      width,
-      color: border.color || color,
-      thickness: border.thickness || 1.5
-    });
-    borderNode.opacity = border.opacity || 0.1;
-    insertNode(borderNode);
-
-    selection.items = [bg, borderNode];
-    commands.alignLeft();
-    commands.alignBottom();
-    borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
-    commands.group();
-    bg = selection.items[0];
-  }
-
-  const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
-  container.resize(Math.min(width, containerWidth), height);
-  container.fill = new Color("white", 0);
-  container.strokeEnabled = false;
-  container.name = "Container";
+  const container = createRectangle(getContainerWidth(width), height, { name: "Container" });
   insertNode(container);
 
   selection.items = [bg, container];
@@ -34471,6 +34884,7 @@ const FeatureSection = __webpack_require__(/*! ./FeatureSection */ "./src/Creato
 const SectionText = __webpack_require__(/*! ./SectionText */ "./src/Creators/SectionText/index.js");
 const MediaSection = __webpack_require__(/*! ./MediaSection */ "./src/Creators/MediaSection/index.js");
 const Grid = __webpack_require__(/*! ./Grid */ "./src/Creators/Grid/index.js");
+const FAQ = __webpack_require__(/*! ./FAQ */ "./src/Creators/FAQ/index.js");
 const CTA = __webpack_require__(/*! ./CTA */ "./src/Creators/CTA/index.js");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/Creators/Footer/index.js");
 const FernComponent = __webpack_require__(/*! ./FernComponent */ "./src/Creators/FernComponent/index.js");
@@ -34573,6 +34987,7 @@ Creators.SectionText = SectionText;
 Creators.FeatureSection = FeatureSection;
 Creators.Grid = Grid;
 Creators.Footer = Footer;
+Creators.FAQ = FAQ;
 Creators.CTA = CTA;
 Creators.FernComponent = FernComponent;
 
@@ -35692,7 +36107,7 @@ module.exports = Toggle;
 module.exports = {
   PLUGIN_ID: "f6e24b19",
   DEFAULT_COLORS: ["#007bff", "#28a745", "#DC3535", "#ffc107", "black", "white"],
-  ELEMENT_TYPES: ["Button", "Input", "SectionText", "card", "Image", "Navbar", "Hero", "MediaSection", "FeatureSection", "Grid", "CTA", "Footer", "FernComponent"]
+  ELEMENT_TYPES: ["Button", "Input", "SectionText", "card", "Image", "Navbar", "Hero", "MediaSection", "FeatureSection", "Grid", "FAQ", "CTA", "Footer", "FernComponent"]
 };
 
 /***/ }),
@@ -35720,7 +36135,10 @@ module.exports = {
     "check": "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z",
     "check-circle": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z",
     "check-all": "M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z",
+    "chevron-left": "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z",
     "chevron-right": "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
+    "chevron-down": "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z",
+    "chevron-up": "M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z",
     "play": "M8 5v14l11-7z",
     "play-circle": "M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M9.5,16.5v-9l7,4.5L9.5,16.5z",
     "play-circle-outline": "M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z",
@@ -36582,7 +37000,7 @@ function ElementList({ onGoToScreen }) {
                 { className: "px-0 text-md text-gray mx-0 mb-2" },
                 "Elements"
             ),
-            ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'CTA', 'Footer'].map((element, index) => React.createElement(
+            ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'FAQ', 'CTA', 'Footer'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
                     onClick: () => Creators[element]()
@@ -36609,6 +37027,422 @@ function ElementList({ onGoToScreen }) {
 }
 
 module.exports = ElementList;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/FAQ/index.jsx":
+/*!********************************************!*\
+  !*** ./src/screens/Elements/FAQ/index.jsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const webflowFAQSection = __webpack_require__(/*! ./webflowFAQSection */ "./src/screens/Elements/FAQ/webflowFAQSection.js");
+
+const schema = {
+  heading: {
+    type: "text",
+    sectionedGroup: "text",
+    defaultValue: "Ready to take part in the safety of future of teenage online shopping?"
+  },
+  subHeading: {
+    type: "text",
+    sectionedGroup: "text",
+    defaultValue: "Join a other early stage investors and employees joining Ecosafe."
+  },
+  buttons: {
+    type: "text",
+    sectionedGroup: "text",
+    defaultValue: "Invest in Cilo, Join Our Team",
+    optional: true
+  },
+  faqs: {
+    type: "section",
+    children: {
+      expandedQuestions: {
+        defaultValue: "2,4",
+        optional: true
+      }
+    }
+  },
+  theme: {
+    type: "section",
+    children: {
+      width: {
+        type: "radio",
+        choices: [1600, 1920]
+      },
+      layout: {
+        type: "radio",
+        choices: ["regular", "center", "horizontal"]
+      },
+      backgroundColor: {
+        label: "Background",
+        type: "color",
+        choices: ["transparent", "black", "white"]
+      },
+      color: {
+        label: "Text Color",
+        type: "color",
+        choices: ["black", "white"]
+      },
+      roundness: {
+        label: "Corner Radius",
+        type: "radio",
+        choices: ["none", "md", "lg"]
+      },
+      border: {
+        type: "section",
+        optional: true,
+        children: {
+          color: {
+            type: "color",
+            defaultValue: "black",
+            choices: ["black", "white"],
+            meta: { small: true }
+          },
+          thickness: {
+            type: "number",
+            defaultValue: 1.5,
+            min: 1.5
+          },
+          opacity: {
+            type: "number",
+            defaultValue: 0.5,
+            min: 0.1,
+            max: 1
+          }
+        }
+      },
+      heading: {
+        type: "section",
+        children: {
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
+          width: {
+            type: "number",
+            min: 550,
+            max: 850
+          },
+          // size: {
+          //   type: "radio",
+          //   choices: ["md", "lg"],
+          // },
+          font: {
+            type: "radio",
+            choices: ["sans", "serif", "quirky", "fancy"]
+          }
+          // brazen: "boolean"
+        }
+      },
+      subHeading: {
+        type: "section",
+        children: {
+          // color: {
+          //   type: "color",
+          //   choices: ["black", "white"],
+          //   optional: true,
+          //   defaultValue: "black"
+          // },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["sm", "md"]
+          }
+        }
+      },
+      buttons: {
+        type: "section",
+        children: {
+          placement: {
+            type: "radio",
+            choices: ["center", "bottom"]
+          },
+          icons: "boolean",
+          reversed: "boolean",
+          themeColor: {
+            type: "color",
+            defaultValue: "#E2406C",
+            choices: ["#E2406C", "#007BFF", "black", "white"],
+            optional: true,
+            meta: { small: true }
+          },
+          // size: {
+          //   type: "radio",
+          //   choices: ["sm", "md"],
+          // },
+          roundness: {
+            label: "Corner Radius",
+            type: "radio",
+            choices: ["none", { label: "Regular", value: "sm" }, "full"]
+          }
+        }
+      },
+      faqs: {
+        type: "section",
+        children: {
+          width: {
+            type: "number",
+            min: 600,
+            max: 1100
+          },
+          expandIcon: {
+            type: "section",
+            children: {
+              type: {
+                label: "",
+                type: "radio",
+                choices: ["plus", "chevron"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+function FAQ({ value, onClose }) {
+  return React.createElement(ComponentPage, {
+    title: "FAQ",
+    onClose: onClose,
+    schema: schema,
+    data: value
+    // webflow={webflowFAQSection}
+  });
+}
+
+module.exports = FAQ;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/FAQ/webflowFAQSection.js":
+/*!*******************************************************!*\
+  !*** ./src/screens/Elements/FAQ/webflowFAQSection.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const buttonSizeMap = __webpack_require__(/*! ../../../Creators/Button/buttonSizeMap */ "./src/Creators/Button/buttonSizeMap.js");
+const { webflowBorder, webflowBorderRadii } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+
+module.exports = function (props) {
+  const { heading, subHeading, buttons, theme } = props;
+  const { backgroundColor, shadow, border } = theme;
+  const [mainButton, secondaryButton] = (buttons || "").split(",");;
+
+  const buttonProps = buttonSizeMap[theme.buttons.size];
+  const [sm, md] = buttonProps.cornerRadius;
+  const borderRadius = { none: 0, sm, md, full: 999 }[theme.buttons.roundness];
+
+  let mainButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.buttons.themeColor || theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: ${theme.buttons.themeColor || theme.color};
+    color: white;
+  `;
+
+  let secondaryButtonStyles = `
+    ${webflowBorder({ width: 1.2, color: theme.color })}
+    ${webflowBorderRadii(borderRadius)}
+    background-color: transparent; 
+    color: ${theme.color};
+  `;
+
+  if (props.theme.buttons.reversed) {
+    let mainButtonStylesClone = JSON.parse(JSON.stringify(mainButtonStyles));
+    mainButtonStyles = secondaryButtonStyles;
+    secondaryButtonStyles = mainButtonStylesClone;
+  }
+
+  return {
+    type: "@webflow/XscpData",
+    payload: {
+      nodes: [{
+        _id: "sectionText",
+        tag: "div",
+        classes: ["sectionTextClassId"],
+        children: ["sectionTextHeadingId", "sectionTextSubHeadingId", ...(!buttons ? [] : ["sectionTextButtonsId"])],
+        type: "Section",
+        data: {
+          grid: {
+            type: "section"
+          },
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextHeadingId",
+        tag: "h1",
+        classes: ["sectionTextHeadingClassId"],
+        children: ["sectionTextHeadingTextId"],
+        type: "Heading",
+        data: {
+          tag: "h1"
+        }
+      }, {
+        _id: "sectionTextHeadingTextId",
+        text: true,
+        v: heading
+      }, {
+        _id: "sectionTextSubHeadingId",
+        tag: "p",
+        classes: ["sectionTextSubheadingClassId"],
+        children: ["sectionTextSubHeadingTextId"],
+        type: "Paragraph"
+      }, {
+        _id: "sectionTextSubHeadingTextId",
+        text: true,
+        v: subHeading
+      }, ...(!buttons ? [] : [{
+        _id: "sectionTextButtonsId",
+        tag: "div",
+        classes: ["sectionTextButtonsClassId"],
+        children: ["sectionTextMainButtonId", ...(secondaryButton ? ["sectionTextSecondaryButtonId"] : [])],
+        type: "Block",
+        data: {
+          tag: "div"
+        }
+      }, {
+        _id: "sectionTextMainButtonId",
+        tag: "a",
+        classes: ["sectionTextMainButtonClassId"],
+        children: ["sectionTextMainButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextMainButtonTextId",
+        text: true,
+        v: mainButton
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonId",
+        tag: "a",
+        classes: ["sectionTextSecondaryButtonClassId"],
+        children: ["sectionTextSecondaryButtonTextId"],
+        type: "Link",
+        data: {
+          button: true,
+          link: {
+            mode: "external",
+            url: "#"
+          },
+          block: ""
+        }
+      }, {
+        _id: "sectionTextSecondaryButtonTextId",
+        text: true,
+        v: secondaryButton
+      }])])],
+      styles: [{
+        _id: "sectionTextClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionText",
+        namespace: "",
+        comb: "",
+        styleLess: `background-color: ${backgroundColor}; padding-top: 70px; padding-bottom: 70px; display: flex; flex-direction: column; align-items: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextHeadingClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextHeading",
+        namespace: "",
+        comb: "",
+        styleLess: `color: ${theme.heading.color || theme.color};margin-top: 0px; margin-bottom: 6px; font-size: 36px; text-align: center;`,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextSubheadingClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextSubheading",
+        namespace: "",
+        comb: "",
+        styleLess: `
+            color: ${theme.subHeading.color || theme.color};
+            max-width: ${theme.subHeading.width}px; 
+            font-size: 16px; text-align: center;
+          `,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!buttons ? [] : [{
+        _id: "sectionTextButtonsClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionButtons",
+        namespace: "",
+        comb: "",
+        styleLess: "display: flex; justify-content: center; grid-column-gap: 10px; grid-row-gap: 10px;",
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, {
+        _id: "sectionTextMainButtonClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextMainButton",
+        namespace: "",
+        comb: "",
+        styleLess: mainButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }, ...(!secondaryButton ? [] : [{
+        _id: "sectionTextSecondaryButtonClassId",
+        fake: false,
+        type: "class",
+        name: "FernSectionTextSecondaryButton",
+        namespace: "",
+        comb: "",
+        styleLess: secondaryButtonStyles,
+        variants: {},
+        children: [],
+        createdBy: "zzzzz19b79c288zzzzzzb301",
+        selector: null
+      }])])],
+      assets: [],
+      ix1: [],
+      ix2: {
+        interactions: [],
+        events: [],
+        actionLists: []
+      }
+    },
+    meta: {
+      unlinkedSymbolCount: 0,
+      droppedLinks: 0,
+      dynBindRemovedCount: 0,
+      dynListBindRemovedCount: 0,
+      paginationRemovedCount: 0
+    }
+  };
+};
 
 /***/ }),
 
@@ -39408,6 +40242,7 @@ const Input = __webpack_require__(/*! ./Input */ "./src/screens/Elements/Input.j
 const Button = __webpack_require__(/*! ./Button */ "./src/screens/Elements/Button/index.jsx");
 const Navbar = __webpack_require__(/*! ./Navbar */ "./src/screens/Elements/Navbar/index.jsx");
 const Hero = __webpack_require__(/*! ./Hero */ "./src/screens/Elements/Hero.jsx");
+const FAQ = __webpack_require__(/*! ./FAQ */ "./src/screens/Elements/FAQ/index.jsx");
 const CTA = __webpack_require__(/*! ./CTA */ "./src/screens/Elements/CTA/index.jsx");
 const Footer = __webpack_require__(/*! ./Footer */ "./src/screens/Elements/Footer/index.jsx");
 const SectionText = __webpack_require__(/*! ./SectionText */ "./src/screens/Elements/SectionText/index.jsx");
@@ -39469,6 +40304,7 @@ function Elements({ value, subscription, onUpgrade }) {
             MediaSection,
             Grid,
             Footer,
+            FAQ,
             CTA,
             FernComponent
         };
@@ -40679,15 +41515,16 @@ function resizeIcon(icon, size) {
   if (width > height) icon.resize(size, size / aspectRatio);else icon.resize(size * aspectRatio, size);
 }
 
-function createIcon(pathData, defaultOptions = {}) {
+function createIcon(pathData, userOptions = {}) {
   const { Path, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
   const options = _extends({
     fill: "#555",
     stroke: "none",
     strokeWidth: 2,
-    opacity: 1
-  }, defaultOptions);
+    opacity: 1,
+    name: "icon"
+  }, userOptions);
 
   try {
     const icon = new Path();
@@ -40704,6 +41541,7 @@ function createIcon(pathData, defaultOptions = {}) {
 
     if (options.size) resizeIcon(icon, options.size);
 
+    icon.name = options.name;
     return icon;
   } catch (error) {
     console.log("Error with path: ", error);
@@ -40774,6 +41612,7 @@ function getPadding(top, right, bottom, left) {
 }
 
 function createBorder({
+  name = "border",
   top = 0,
   width = 1920,
   color = "black",
@@ -40786,6 +41625,7 @@ function createBorder({
   border.stroke = new Color(color);
   border.strokeWidth = thickness;
   border.setStartEnd(0, top, width, top);
+  border.name = name;
 
   return border;
 }
@@ -40948,6 +41788,67 @@ function createCircle(radius = 50, userProps = {}) {
   return circleNode;
 }
 
+// https://stackoverflow.com/a/46213770
+function parseMarkdownText(str, styling = {}) {
+  const { Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
+
+  const {
+    boldStyle = "Medium", //"Bold",
+    underlineColor = null
+  } = styling;
+  let bold = false,
+      italics = false;
+  let output = [];
+  let text = str.split('').reduce((a, b) => {
+    if (b == '*') {
+      if (bold) {
+        if (a != '') {
+          if (italics) output.push({ text: a, bold: true, italics: true });else output.push({ text: a, bold: true });
+        }
+        bold = false;
+      } else {
+        if (italics) output.push({ text: a, italics: true });else output.push({ text: a });
+        bold = true;
+      }
+      return '';
+    } else if (b == '_') {
+      if (italics) {
+        if (a != '') {
+          if (bold) output.push({ text: a, bold: true, italics: true });else output.push({ text: a, italics: true });
+        }
+        italics = false;
+      } else {
+        if (bold) output.push({ text: a, bold: true });else output.push({ text: a });
+        italics = true;
+      }
+      return '';
+    } else {
+      return a + b;
+    }
+  }, '');
+
+  if (text != '') output.push({ text: text });
+
+  const styleRanges = output.map(({ text, bold, italics }) => {
+    const styles = {
+      length: text.length
+    };
+
+    if (italics) {
+      styles.underline = true;
+      if (underlineColor) styles.fill = new Color(underlineColor);
+    };
+    if (bold) styles.fontStyle = boldStyle;
+
+    return styles;
+  });
+
+  return {
+    styleRanges,
+    text: output.map(({ text }) => text).join('')
+  };
+}
+
 function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
   const { Text, Color } = __webpack_require__(/*! scenegraph */ "scenegraph");
 
@@ -40958,6 +41859,7 @@ function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
     fontFamily: "Helvetica Neue",
     fontStyle: "Regular",
     align: "left",
+    opacity: 1,
     layoutBox: _extends({
       type: userProps && userProps.width ? Text.AUTO_HEIGHT : Text.POINT
     }, userProps || {})
@@ -40973,19 +41875,22 @@ function createText(text = "Acacia Grove | The Right Inn..", userProps = {}) {
 
   if (typeof props.fill == "string") {
     const transparent = props.fill == "transparent";
-    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : 1);
+    props.fill = new Color(transparent ? "#FFFFFF" : props.fill, transparent ? 0 : props.opacity);
   }
 
   const textNode = new Text();
-  const splitText = text.split("\\n");
+  const { styleRanges, text: formattedText } = parseMarkdownText(text);
+  if (styleRanges) props.styleRanges = styleRanges;
+
+  const splitText = formattedText.split("\\n");
   let actualText = "";
   splitText.forEach((paragraph, index) => {
     actualText += paragraph;
     if (index != splitText.length - 1) actualText += "\n";
   });
+
   textNode.text = actualText;
   Object.assign(textNode, props);
-
   return textNode;
 }
 
@@ -41088,6 +41993,7 @@ module.exports = {
   getNodeTag,
   getFernComponentChildByName,
   calculateAspectRatioFit,
+  parseMarkdownText,
   createText,
   createRectangle,
   createCircle,

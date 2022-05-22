@@ -2,9 +2,9 @@ const { selection, Color, Rectangle, SceneNode } = require("scenegraph");
 const commands = require("commands");
 const createSectionText = require("../SectionText/createSectionText");
 const { insertNode, createBorder, createRectangle, getContainerWidth } = require("../../utils");
-const createFeatures = require("./createFeatures");
+const createFAQs = require("./createFAQs");
 
-function createSectionBackground({
+function createFAQBackground({
   width,
   height,
   backgroundColor,
@@ -29,7 +29,7 @@ function createSectionBackground({
   return [bg, container];
 }
 
-function assembleFeatureSection(props = {}, images) {
+function assembleFAQ(props = {}, images) {
   props = {
     ...props,
     images,
@@ -37,10 +37,10 @@ function assembleFeatureSection(props = {}, images) {
     height: 620,
   };
 
-  const [bg, container] = createSectionBackground({ ...props, ...props.theme });
+  const [bg, container] = createFAQBackground({ ...props, ...props.theme });
   props.container = container;
 
-  const features = createFeatures(props);
+  const faqs = createFAQs(props);
   let sectionText;
   const noText = !props.heading && !props.subHeading;
 
@@ -54,30 +54,33 @@ function assembleFeatureSection(props = {}, images) {
       }
     });
 
-    selection.items = [sectionText, features];
+    selection.items = [sectionText, faqs];
     
     if(props.theme.layout == "center") commands.alignHorizontalCenter();
     else commands.alignLeft();
 
     commands.group();
 
-    const featuresAndText = selection.items[0];
-    featuresAndText.layout = {
+    const faqsAndText = selection.items[0];
+    faqsAndText.layout = {
       type: SceneNode.LAYOUT_STACK,
       stack: {
         orientation: SceneNode.STACK_VERTICAL,
-        spacings: 55
+        spacings: 70
       },
     };
-    container.resize(container.localBounds.width,  featuresAndText.localBounds.height);
-    selection.items = [container, featuresAndText];
-    commands.alignLeft();
+    container.resize(container.localBounds.width,  faqsAndText.localBounds.height);
+    selection.items = [container, faqsAndText];
+
+    if(props.theme.layout == "center") commands.alignHorizontalCenter();
+    else commands.alignLeft();
+    
     commands.group();
   }
   else{
-    selection.items = [container, features];
+    selection.items = [container, faqs];
     commands.alignLeft();
-    container.resize(container.localBounds.width, features.localBounds.height);
+    container.resize(container.localBounds.width, faqs.localBounds.height);
   }
   
   
@@ -86,11 +89,11 @@ function assembleFeatureSection(props = {}, images) {
   commands.alignHorizontalCenter();
   commands.group();
 
-  let featureSectionContent = selection.items[0];
+  let faqContent = selection.items[0];
   const horizontalPadding = (props.theme.width - container.localBounds.width) / 2;
   const verticalPadding = noText ? 0 : props.theme.verticalPadding;
 
-  featureSectionContent.layout = {
+  faqContent.layout = {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: bg,
@@ -102,7 +105,7 @@ function assembleFeatureSection(props = {}, images) {
     },
   }
 
-  featureSectionContent.resize(props.width, featureSectionContent.localBounds.height);
+  faqContent.resize(props.width, faqContent.localBounds.height);
 
   if (props.theme.border) {
     const border = {
@@ -118,7 +121,7 @@ function assembleFeatureSection(props = {}, images) {
     borderNode.opacity = border.opacity || 0.1;
     insertNode(borderNode);
 
-    selection.items = [featureSectionContent, borderNode];
+    selection.items = [faqContent, borderNode];
     commands.alignLeft();
     commands.alignBottom();
     borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
@@ -127,7 +130,7 @@ function assembleFeatureSection(props = {}, images) {
     return selection.items[0];
   }
   else
-    return featureSectionContent;
+    return faqContent;
 }
 
-module.exports = assembleFeatureSection;
+module.exports = assembleFAQ;

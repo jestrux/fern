@@ -12,6 +12,7 @@ module.exports = {
     "MediaSection",
     "FeatureSection",
     "Grid",
+    "FAQ",
     "CTA",
     "Footer",
     "FernComponent",
