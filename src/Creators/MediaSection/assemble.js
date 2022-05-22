@@ -187,6 +187,7 @@ function assembleMediaSection(props = {}, images) {
   commands.group();
 
   const content = selection.items[0];
+  content.name = "content";
   selection.items = [bg, content];
   commands.alignHorizontalCenter();
   commands.group();
@@ -229,7 +230,10 @@ function assembleMediaSection(props = {}, images) {
     borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
     commands.group();
     
-    return selection.items[0];
+    const contentWithBorder = selection.items[0];
+    contentWithBorder.name = "contentWithBorder";
+    
+    return contentWithBorder;
   }
   else
     return mediaSectionContent;

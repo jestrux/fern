@@ -62,7 +62,7 @@ function BcImageSearch({
             <div className="p-1">
                 <div className="bg-gray-100 rounded-xs overflow-hidden relative"
                     style={{background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%`}}
-                    onClick={() => onChange(image.full)}
+                    onClick={() => onChange(image.full, searchQuery)}
                 >
                     <img loading="lazy" className="absolute inset-0 h-full w-full object-cover" src={image.preview} alt="" />
                 </div>

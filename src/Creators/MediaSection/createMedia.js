@@ -72,8 +72,15 @@ function createMedia({
     lg: 20,
   };
 
-  console.log("Media height: ", height);
-  const imageNode = createRectangle(width, height);
+  const searchQuery = {
+    "4": "office, space",
+    "5": "mother",
+  }[image || "5"]
+  const imageNode = createRectangle(width, height, {
+    name: "image",
+    richData: {type: "Image", searchQuery},
+  });
+  
   imageNode.fill = new ImageFill(images[`banner${image}`]);
   imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
@@ -129,8 +136,12 @@ function createMedia({
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
     commands.group();
-    return selection.items[0];
-  } else if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
+    const imageNodeWithScrim = selection.items[0];
+    imageNodeWithScrim.name = "imageWithScrim";
+  }
+  else if (!overlay && !fullWidthImage && shadow) {
+    imageNode.shadow = getShadow(shadow);
+  }
 
   return imageNode;
 }

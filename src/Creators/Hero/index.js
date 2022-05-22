@@ -3,7 +3,7 @@ const { selection } = require("scenegraph");
 const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
 const assembleMediaSection = require("../MediaSection/assemble");
 const defaultMediaSectionProps = require("../MediaSection/defaultProps");
-const getMediaImages = require("../MediaSection/getMediaImages");
+const getMediaImage = require("../MediaSection/getMediaImage");
 
 async function Hero(userProps){
     const props = {
@@ -48,11 +48,10 @@ async function Hero(userProps){
     try {
         const oldHero = userProps ? selection.items[0] : null;
         if(oldHero){
-            if (props.image == "custom") {
-                const mediaImageNodes = getMediaImages(oldHero);
-                if(mediaImageNodes)
-                    imageFills = mediaImageNodes.map(image => image ? image.fill : null);
-            }
+            const mediaImageNode = getMediaImage(oldHero);
+            console.log("Media image: ", mediaImageNode);
+            // if(mediaImageNode)
+            //     imageFills = mediaImageNodes.map(image => image ? image.fill : null);
         }
         
         editDom(async (selection) => {

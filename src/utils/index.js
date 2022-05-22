@@ -640,6 +640,9 @@ function createRectangle(width = 200, height, userProps = {}) {
   Object.assign(rectangleNode, props);
   rectangleNode.setAllCornerRadii(radius);
 
+  if(props.richData)
+    tagNode(rectangleNode, props.richData);
+
   return rectangleNode;
 }
 
@@ -887,6 +890,35 @@ function getContainerWidth(width = 1600){
   return width == 1920 ? 1600 : 1400;
 }
 
+async function getImageFillFromNode(node, {base64 = false}){
+  const storage = require("uxp").storage;
+  const fs = storage.localFileSystem;
+  const { selection, ImageFill } = require("scenegraph");
+  const application = require("application");
+
+  if(!node) node = selection.items[0];
+
+  const tempFolder = await fs.getTemporaryFolder();
+  const file = await tempFolder.createFile("fern-temp-rendition.png", { overwrite: true });
+
+  const renditionOptions = [{
+      node: node,
+      outputFile: file,
+      type: application.RenditionType.PNG,
+      scale: 2
+  }];
+
+  const results = await application.createRenditions(renditionOptions);
+
+  if(base64){
+    const fileContents = await results[0].outputFile.read({format: storage.formats.binary});
+    const image = await base64ArrayBuffer(fileContents);
+    return `data:image/png;base64,${image}`;
+  }
+
+  return new ImageFill(results[0].outputFile);
+}
+
 function webflowBorder({width = 1.25, color = "black", bottomOnly = false}){
   const restWidth = bottomOnly ? 0 : width;
 
@@ -951,6 +983,7 @@ module.exports = {
   openUrl,
   randomUuid,
   getContainerWidth,
+  getImageFillFromNode,
   webflowBorder,
   webflowBorderRadii
 };

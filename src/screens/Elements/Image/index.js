@@ -1,5 +1,5 @@
 const React = require("react");
-const { downloadImage, editDom, getDimensions } = require("../../../utils");
+const { downloadImage, editDom, getDimensions, tagNode } = require("../../../utils");
 const errorDialog = require("../../../utils/CustomDialogs/Error");
 const Loader = require("../../../components/Loader");
 const BcImageSearch = require("./BcImageSearch");
@@ -36,7 +36,7 @@ function Image({value, onSelect, onClose}){
         return fetchPhotos(url);
     }
 
-    async function setImage(url){
+    async function setImage(url, searchQuery){
         try {
             setLoading(true);
             // try {
@@ -65,7 +65,8 @@ function Image({value, onSelect, onClose}){
                 const { ImageFill } = require("scenegraph");
                 editDom(async (selection) => {
                     const node = selection.items[0];
-                    node.fill = new ImageFill(tempFile);;
+                    node.fill = new ImageFill(tempFile);
+                    tagNode(node, {...(value || {}), searchQuery});
                     setLoading(false);
                 });
             }

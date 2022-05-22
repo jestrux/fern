@@ -32464,7 +32464,7 @@ const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleMediaSection = __webpack_require__(/*! ../MediaSection/assemble */ "./src/Creators/MediaSection/assemble.js");
 const defaultMediaSectionProps = __webpack_require__(/*! ../MediaSection/defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
-const getMediaImages = __webpack_require__(/*! ../MediaSection/getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
+const getMediaImage = __webpack_require__(/*! ../MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
 
 async function Hero(userProps) {
     const props = _extends({}, defaultMediaSectionProps, {
@@ -32502,10 +32502,10 @@ async function Hero(userProps) {
     try {
         const oldHero = userProps ? selection.items[0] : null;
         if (oldHero) {
-            if (props.image == "custom") {
-                const mediaImageNodes = getMediaImages(oldHero);
-                if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
-            }
+            const mediaImageNode = getMediaImage(oldHero);
+            console.log("Media image: ", mediaImageNode);
+            // if(mediaImageNode)
+            //     imageFills = mediaImageNodes.map(image => image ? image.fill : null);
         }
 
         editDom(async selection => {
@@ -33075,6 +33075,7 @@ function assembleMediaSection(props = {}, images) {
   commands.group();
 
   const content = selection.items[0];
+  content.name = "content";
   selection.items = [bg, content];
   commands.alignHorizontalCenter();
   commands.group();
@@ -33117,7 +33118,10 @@ function assembleMediaSection(props = {}, images) {
     borderNode.moveInParentCoordinates(0, border.thickness / 2 - 0.5);
     commands.group();
 
-    return selection.items[0];
+    const contentWithBorder = selection.items[0];
+    contentWithBorder.name = "contentWithBorder";
+
+    return contentWithBorder;
   } else return mediaSectionContent;
 }
 
@@ -33361,8 +33365,15 @@ function createMedia({
     lg: 20
   };
 
-  console.log("Media height: ", height);
-  const imageNode = createRectangle(width, height);
+  const searchQuery = {
+    "4": "office, space",
+    "5": "mother"
+  }[image || "5"];
+  const imageNode = createRectangle(width, height, {
+    name: "image",
+    richData: { type: "Image", searchQuery }
+  });
+
   imageNode.fill = new ImageFill(images[`banner${image}`]);
   imageNode.setAllCornerRadii(roundnessMap[roundness || "sm"]);
 
@@ -33418,8 +33429,11 @@ function createMedia({
     commands.alignHorizontalCenter();
     commands.alignVerticalCenter();
     commands.group();
-    return selection.items[0];
-  } else if (!overlay && !fullWidthImage && shadow) imageNode.shadow = getShadow(shadow);
+    const imageNodeWithScrim = selection.items[0];
+    imageNodeWithScrim.name = "imageWithScrim";
+  } else if (!overlay && !fullWidthImage && shadow) {
+    imageNode.shadow = getShadow(shadow);
+  }
 
   return imageNode;
 }
@@ -33513,48 +33527,34 @@ module.exports = defaultMediaSectionProps;
 
 /***/ }),
 
-/***/ "./src/Creators/MediaSection/getMediaImages.js":
-/*!*****************************************************!*\
-  !*** ./src/Creators/MediaSection/getMediaImages.js ***!
-  \*****************************************************/
+/***/ "./src/Creators/MediaSection/getMediaImage.js":
+/*!****************************************************!*\
+  !*** ./src/Creators/MediaSection/getMediaImage.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const { getGroupChildByName, getNodeTag } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
-function getMediaImages(media) {
+function getMediaImage(media) {
     const props = getNodeTag(media);
 
     if (!props) return null;
 
-    let mainImage, bottomImage;
+    const { playButton, theme } = props;
+    let imagePath = props.theme.border ? "contentWithBorder/content" : "content";
+    imagePath += theme.layout == "overlay" || playButton ? "/imageWithScrim/image" : "/image";
 
-    if (props.style == "overlay") {
-        getGroupChildByName(media, "Overlay", overlay => {
-            if (props.video) {
-                getGroupChildByName(overlay, "BG", bg => {
-                    mainImage = bg;
-                });
-            } else mainImage = overlay;
-        });
+    console.log("Image path: ", imagePath);
+    let image;
+    getGroupChildByName(media, imagePath, node => {
+        image = node;
+    });
 
-        getGroupChildByName(media, "Underlay", underlay => {
-            if (props.video) {
-                getGroupChildByName(underlay, "BG", bg => {
-                    bottomImage = bg;
-                });
-            } else bottomImage = overlay;
-        });
-    } else if (props.video) {
-        getGroupChildByName(media, "BG", bg => {
-            mainImage = bg;
-        });
-    } else mainImage = media;
-
-    return [mainImage, bottomImage];
+    return image;
 }
 
-module.exports = getMediaImages;
+module.exports = getMediaImage;
 
 /***/ }),
 
@@ -33573,7 +33573,7 @@ const viewport = __webpack_require__(/*! viewport */ "viewport");
 const { editDom, placeInParent, getAssetsByType } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const assembleMediaSection = __webpack_require__(/*! ./assemble */ "./src/Creators/MediaSection/assemble.js");
 const defaultMediaSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
-const getMediaImages = __webpack_require__(/*! ./getMediaImages */ "./src/Creators/MediaSection/getMediaImages.js");
+const getMediaImage = __webpack_require__(/*! ./getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
 
 async function MediaSection(userProps) {
     const props = _extends({}, defaultMediaSectionProps, userProps || {});
@@ -33585,7 +33585,7 @@ async function MediaSection(userProps) {
         const oldMediaSection = userProps ? selection.items[0] : null;
         if (oldMediaSection) {
             if (props.image == "custom") {
-                const mediaImageNodes = getMediaImages(oldMediaSection);
+                const mediaImageNodes = getMediaImage(oldMediaSection);
                 if (mediaImageNodes) imageFills = mediaImageNodes.map(image => image ? image.fill : null);
             }
         }
@@ -35383,10 +35383,12 @@ module.exports = ColorList;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { camelCaseToSentenceCase } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+const getMediaImage = __webpack_require__(/*! ../Creators/MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
+const { camelCaseToSentenceCase, editDom } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ "./src/components/ButtonGroup.jsx");
 const ColorList = __webpack_require__(/*! ./ColorList */ "./src/components/ColorList.jsx");
 const IconList = __webpack_require__(/*! ./IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
+const { default: ImageEditorField } = __webpack_require__(/*! ./ImageEditorField */ "./src/components/ImageEditorField.jsx");
 const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
 
 function ListEditor({ links, activeLink, onChange, onChangeActiveLink }) {
@@ -35547,7 +35549,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     onChange(__id, newValue);
   }
 
-  const isCustomFieldType = ["boolean", "color", "icon", "radio"].includes(type);
+  const isCustomFieldType = ["boolean", "color", "icon", "radio", "image"].includes(type);
 
   return React.createElement(
     "div",
@@ -35584,6 +35586,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
         },
         React.createElement(IconList, _extends({ onChange: handleChange, iconNames: choices }, meta))
       ),
+      type == "image" && React.createElement(ImageEditorField, null),
       !isCustomFieldType && React.createElement(
         "form",
         {
@@ -35981,6 +35984,74 @@ const IconList = ({
 };
 
 module.exports = IconList;
+
+/***/ }),
+
+/***/ "./src/components/ImageEditorField.jsx":
+/*!*********************************************!*\
+  !*** ./src/components/ImageEditorField.jsx ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Creators/MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
+/* harmony import */ var _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_1__);
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const { useEffect, useState } = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+
+
+const ImageEditorField = () => {
+    const [preview, setPreview] = useState(null);
+    useEffect(() => {
+        handleGetImage();
+    }, []);
+
+    const handleGetImage = async () => {
+        console.log("Get image...");
+        const image = _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
+        if (image) {
+            console.log("Image: ", image.fill);
+            let imagePath = await Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getImageFillFromNode"])(image, { base64: true });
+            setPreview(imagePath);
+        } else console.log("No image");
+    };
+
+    const handleChangeImage = () => {
+        Object(_utils__WEBPACK_IMPORTED_MODULE_1__["editDom"])(selection => {
+            const image = _Creators_MediaSection_getMediaImage__WEBPACK_IMPORTED_MODULE_0___default()(selection.items[0]);
+            if (image) selection.items = [image];else console.log("Image not found!");
+        });
+    };
+
+    return React.createElement(
+        "div",
+        { className: "-mx-12px" },
+        React.createElement(
+            "div",
+            { className: "bg-white py-2 px-12px border-b border-light-gray rounded-xs flex items-center justify-between" },
+            React.createElement(
+                "div",
+                { className: "bg-gray", style: { width: "55px", height: "45px" } },
+                React.createElement("img", { className: "object-cover rounded-xs", src: preview, alt: "", style: { width: "55px", height: "45px" } })
+            ),
+            React.createElement(
+                "span",
+                { className: "mr-2 text-sm border-b border-current text-blue cursor-pointer",
+                    onClick: handleChangeImage
+                },
+                "CHANGE"
+            )
+        )
+    );
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (ImageEditorField);
 
 /***/ }),
 
@@ -38430,7 +38501,7 @@ function BcImageSearch({
                 "div",
                 { className: "bg-gray-100 rounded-xs overflow-hidden relative",
                     style: { background: `${image.color}`, paddingBottom: `${image.aspectRatio * 100}%` },
-                    onClick: () => onChange(image.full)
+                    onClick: () => onChange(image.full, searchQuery)
                 },
                 React.createElement("img", { loading: "lazy", className: "absolute inset-0 h-full w-full object-cover", src: image.preview, alt: "" })
             )
@@ -38505,8 +38576,10 @@ module.exports = BcImageSearch;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const { downloadImage, editDom, getDimensions } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
+const { downloadImage, editDom, getDimensions, tagNode } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 const errorDialog = __webpack_require__(/*! ../../../utils/CustomDialogs/Error */ "./src/utils/CustomDialogs/Error.js");
 const Loader = __webpack_require__(/*! ../../../components/Loader */ "./src/components/Loader.jsx");
 const BcImageSearch = __webpack_require__(/*! ./BcImageSearch */ "./src/screens/Elements/Image/BcImageSearch.js");
@@ -38542,7 +38615,7 @@ function Image({ value, onSelect, onClose }) {
         return fetchPhotos(url);
     }
 
-    async function setImage(url) {
+    async function setImage(url, searchQuery) {
         try {
             setLoading(true);
             // try {
@@ -38569,7 +38642,8 @@ function Image({ value, onSelect, onClose }) {
                 const { ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
                 editDom(async selection => {
                     const node = selection.items[0];
-                    node.fill = new ImageFill(tempFile);;
+                    node.fill = new ImageFill(tempFile);
+                    tagNode(node, _extends({}, value || {}, { searchQuery }));
                     setLoading(false);
                 });
             }
@@ -38758,8 +38832,8 @@ const mediaSectionSchema = {
     sectionedGroup: "text"
   },
   image: {
-    type: "radio",
-    choices: ["1", "2", "3", "4", "5", "6", "7", "8"],
+    type: "image",
+    label: "",
     sectionedGroup: "media"
   },
   playButton: {
@@ -41732,6 +41806,8 @@ function createRectangle(width = 200, height, userProps = {}) {
   Object.assign(rectangleNode, props);
   rectangleNode.setAllCornerRadii(radius);
 
+  if (props.richData) tagNode(rectangleNode, props.richData);
+
   return rectangleNode;
 }
 
@@ -41941,6 +42017,35 @@ function getContainerWidth(width = 1600) {
   return width == 1920 ? 1600 : 1400;
 }
 
+async function getImageFillFromNode(node, { base64 = false }) {
+  const storage = __webpack_require__(/*! uxp */ "uxp").storage;
+  const fs = storage.localFileSystem;
+  const { selection, ImageFill } = __webpack_require__(/*! scenegraph */ "scenegraph");
+  const application = __webpack_require__(/*! application */ "application");
+
+  if (!node) node = selection.items[0];
+
+  const tempFolder = await fs.getTemporaryFolder();
+  const file = await tempFolder.createFile("fern-temp-rendition.png", { overwrite: true });
+
+  const renditionOptions = [{
+    node: node,
+    outputFile: file,
+    type: application.RenditionType.PNG,
+    scale: 2
+  }];
+
+  const results = await application.createRenditions(renditionOptions);
+
+  if (base64) {
+    const fileContents = await results[0].outputFile.read({ format: storage.formats.binary });
+    const image = await base64ArrayBuffer(fileContents);
+    return `data:image/png;base64,${image}`;
+  }
+
+  return new ImageFill(results[0].outputFile);
+}
+
 function webflowBorder({ width = 1.25, color = "black", bottomOnly = false }) {
   const restWidth = bottomOnly ? 0 : width;
 
@@ -42005,6 +42110,7 @@ module.exports = {
   openUrl,
   randomUuid,
   getContainerWidth,
+  getImageFillFromNode,
   webflowBorder,
   webflowBorderRadii
 };

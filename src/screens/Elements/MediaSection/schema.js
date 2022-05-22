@@ -22,8 +22,8 @@ const mediaSectionSchema = {
     sectionedGroup: "text",
   },
   image: {
-    type: "radio",
-    choices: ["1", "2", "3", "4", "5", "6", "7", "8"],
+    type: "image",
+    label: "",
     sectionedGroup: "media",
   },
   playButton: {

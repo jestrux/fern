@@ -4,7 +4,7 @@ const viewport = require("viewport");
 const { editDom, placeInParent, getAssetsByType, } = require("../../utils");
 const assembleMediaSection = require("./assemble");
 const defaultMediaSectionProps = require("./defaultProps");
-const getMediaImages = require("./getMediaImages");
+const getMediaImage = require("./getMediaImage");
 
 async function MediaSection(userProps){
     const props = {
@@ -19,7 +19,7 @@ async function MediaSection(userProps){
         const oldMediaSection = userProps ? selection.items[0] : null;
         if(oldMediaSection){
             if (props.image == "custom") {
-                const mediaImageNodes = getMediaImages(oldMediaSection);
+                const mediaImageNodes = getMediaImage(oldMediaSection);
                 if(mediaImageNodes)
                     imageFills = mediaImageNodes.map(image => image ? image.fill : null);
             }
