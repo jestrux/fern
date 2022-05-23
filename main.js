@@ -99,7 +99,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\n.InternalSection:last-child{\n    border-bottom: 1px solid white !important;\n}\n\n.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{\n    border-top: 0px solid transparent !important;\n}\n\nlabel {\n    color: #737373;\n    font-weight: 500;\n}\n\nlabel:not(.text-sm) {\n    font-size: 0.75rem !important;\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: white;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: white;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-gray{\n    border-color: #e8e8e8;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.5;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
+exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\n.InternalSection:last-child{\n    border-bottom: 1px solid white !important;\n}\n\n.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{\n    border-top: 0px solid transparent !important;\n}\n\nlabel {\n    color: #737373;\n    font-weight: 500;\n}\n\nlabel:not(.text-sm) {\n    font-size: 0.75rem !important;\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: white;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: white;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-black90{\n    background: rgba(0, 0, 0, 0.75);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-90{\n    opacity: 0.9;\n}\n\n.opacity-80{\n    opacity: 0.8;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.opacity-40{\n    opacity: 0.40;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-gray{\n    border-color: #e8e8e8;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.55 !important;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
 
 // exports
 
@@ -29395,8 +29395,8 @@ class App extends React.Component {
                             { key: `fragment${index}` },
                             React.createElement(
                                 'h1',
-                                { key: `name${index}`, className: `text-md cursor-pointer px-0 text-md text-gray mx-0 mr-3
-                                            ${currentSection != section && "opacity-50"}
+                                { key: `name${index}`, className: `text-md px-0 text-md text-gray mx-0 mr-3
+                                            ${currentSection != section ? "cursor-pointer hoverable opacity-40" : "opacity-75"}
                                         `,
                                     onClick: () => this.handleSectionChanged(section)
                                 },
@@ -29798,7 +29798,7 @@ function assembleCTASection(props = {}, images) {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: container,
-      values: getPadding(57, 57, 73, 57)
+      values: props.theme.verticalSpacing == "loose" ? getPadding(77, 57, 93, 57) : getPadding(57, 57, 73, 57)
     }
   };
 
@@ -29899,11 +29899,11 @@ const { editDom, placeInParent } = __webpack_require__(/*! ../../utils */ "./src
 const assembleCTASection = __webpack_require__(/*! ./assemble */ "./src/Creators/CTA/assemble.js");
 const defaultCTASectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/CTA/defaultProps.js");
 
-async function CTASection(userProps) {
+async function CTASection(userProps, { fromPreset = false } = {}) {
     const props = _extends({}, defaultCTASectionProps, userProps || {});
 
     try {
-        const oldCTASection = userProps ? selection.items[0] : null;
+        const oldCTASection = userProps && !fromPreset ? selection.items[0] : null;
 
         editDom(async selection => {
             try {
@@ -34614,7 +34614,7 @@ function createSectionText(userProps) {
     buttons,
     theme
   } = props;
-  const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : theme.heading.size == "lg" ? 20 : 16;
+  const headingSubHeadingSpacing = theme.layout == "horizontal" ? userProps.headingSubHeadingSpacing || 12 : theme.heading.size == "lg" ? theme.subHeading.size == "lg" ? 24 : 20 : theme.subHeading.size == "lg" ? 24 : 16;
   const centerContent = theme.layout == "center";
   let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
 
@@ -34637,12 +34637,18 @@ function createSectionText(userProps) {
   if (checklist) checklistNode = createChecklist(props);
 
   if (subHeading) {
+    const [fontSize, lineSpacing] = {
+      "sm": [16, 28],
+      "md": [22, 36],
+      "lg": [31, 44]
+    }[theme.subHeading.size || "sm"];
+
     subHeadingNode = createText(subHeading, {
       align: centerContent ? "center" : "left",
       width: theme.subHeading.width,
       fill: new Color(theme.subHeading.color || theme.color),
-      fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-      lineSpacing: theme.subHeading.size == "sm" ? 28 : 36,
+      fontSize,
+      lineSpacing,
       fontStyle: "Regular"
     });
 
@@ -35891,8 +35897,9 @@ const Creators = __webpack_require__(/*! ../Creators */ "./src/Creators/index.js
 const { editDom, tagNode, openUrl } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ComponentFields = __webpack_require__(/*! ./ComponentFields */ "./src/components/ComponentFields.jsx");
 const SectionTitles = __webpack_require__(/*! ./SectionTitles */ "./src/components/SectionTitles.jsx");
+const PresetGrid = __webpack_require__(/*! ./PresetGrid */ "./src/components/PresetGrid.jsx");
 
-const ComponentPage = function ({ title, onClose, schema, data, webflow, presets: Presets, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, presets, children }) {
   const section = data.editorSection || "Content";
   const _ref = schema || { theme: {}, content: {} },
         { theme } = _ref,
@@ -35911,7 +35918,8 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
   function updateField(field, newValue) {
     const updatedProps = typeof field == "string" ? { [field]: newValue } : field;
     if (section == "Styles") Creators[title](_extends({}, data, {
-      theme: _extends({}, data.theme, updatedProps) }));else Creators[title](_extends({}, data, updatedProps));
+      theme: _extends({}, data.theme, updatedProps)
+    }));else Creators[title](_extends({}, data, updatedProps));
   }
 
   function handleExportToWebflow() {
@@ -35985,12 +35993,10 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
           onChange: updateField
         })
       ),
-      section == "Presets" && Presets && React.createElement(
+      section == "Presets" && presets && React.createElement(
         "div",
         { className: "-mx-12px" },
-        " ",
-        React.createElement(Presets, null),
-        " "
+        React.createElement(PresetGrid, { component: title, presets: presets })
       ),
       children
     )
@@ -36171,6 +36177,72 @@ const Loader = ({ absolute, onCancel }) => {
 };
 
 module.exports = Loader;
+
+/***/ }),
+
+/***/ "./src/components/PresetGrid.jsx":
+/*!***************************************!*\
+  !*** ./src/components/PresetGrid.jsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../Creators */ "./src/Creators/index.js");
+
+const PresetGrid = ({
+    component,
+    presets,
+    onPresetScreen
+}) => {
+    function handlePresetClicked(name) {
+        Creators[component](presets[name].props, { fromPreset: onPresetScreen });
+    }
+
+    return React.createElement(
+        'div',
+        { className: 'flex flex-wrap' },
+        Object.entries(presets).map(([name, value], index) => {
+            const _presets$name = presets[name],
+                  { props } = _presets$name,
+                  styles = _objectWithoutProperties(_presets$name, ['props']);
+            const { height = 30, noContainer, fullWidth, floatingLabel = true } = styles || {};
+            const image = `images/presets/${component.toLowerCase()}/${name}.png`;
+
+            return React.createElement(
+                'div',
+                { key: index, className: `
+                        parent relative py-3 flex-shrink-0 font-bold text-center bg-gray-100 overflow-hidden relative flex flex-col center-center
+                        ${!floatingLabel ? "hoverable" : "cursor-pointer"}
+                    `,
+                    style: { width: fullWidth ? "100%" : "50%", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" },
+                    onClick: () => handlePresetClicked(name)
+                },
+                React.createElement(
+                    'div',
+                    { className: 'flex center-center', style: { height: "55px" } },
+                    React.createElement('img', { loading: 'lazy', className: 'object-contain object-center w-full',
+                        src: image, alt: '',
+                        style: { maxWidth: "85%", maxHeight: `${height}px` }
+                    })
+                ),
+                floatingLabel ? React.createElement(
+                    'span',
+                    { className: 'show-on-parent-hover absolute inset-x-0 bottom-0 mb-1 font-normal block text-center text-sm' },
+                    name.replaceAll("-", " ")
+                ) : React.createElement(
+                    'span',
+                    { className: 'font-normal block text-center mt-1 text-sm' },
+                    name.replaceAll("-", " ")
+                )
+            );
+        })
+    );
+};
+
+module.exports = PresetGrid;
 
 /***/ }),
 
@@ -36371,101 +36443,6 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./src/screens/Elements/Button/Presets/index.jsx":
-/*!*******************************************************!*\
-  !*** ./src/screens/Elements/Button/Presets/index.jsx ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../../../Creators */ "./src/Creators/index.js");
-const buttonPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/Button/Presets/presets.js");
-
-function ButtonPresets({ onPresetScreen }) {
-    function handlePresetClicked(name) {
-        Creators.Button(buttonPresets[name].props, { fromPreset: onPresetScreen });
-    }
-
-    return React.createElement(
-        "div",
-        { className: "flex flex-wrap" },
-        Object.entries(buttonPresets).map(([name, value], index) => {
-            const _buttonPresets$name = buttonPresets[name],
-                  { props } = _buttonPresets$name,
-                  styles = _objectWithoutProperties(_buttonPresets$name, ["props"]);
-            const { height = 30, fullWidth } = styles || {};
-
-            return React.createElement(
-                "div",
-                { key: index, className: "hoverable py-3 flex-shrink-0 font-bold text-center bg-gray-100 overflow-hidden relative flex flex-col center-center",
-                    style: { width: fullWidth ? "100%" : "50%", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" },
-                    onClick: () => handlePresetClicked(name)
-                },
-                React.createElement(
-                    "div",
-                    { className: "flex center-center", style: { height: "50px" } },
-                    React.createElement("img", { loading: "lazy", className: "object-contain",
-                        src: `images/presets/button/${name}.png`, alt: "",
-                        style: { maxWidth: "85%", maxHeight: `${height}px` }
-                    })
-                ),
-                React.createElement(
-                    "span",
-                    { className: "font-light block text-center mt-2 text-sm tracking-wide" },
-                    name.replaceAll("-", " ").toUpperCase()
-                )
-            );
-        })
-    );
-}
-
-module.exports = ButtonPresets;
-
-/***/ }),
-
-/***/ "./src/screens/Elements/Button/Presets/presets.js":
-/*!********************************************************!*\
-  !*** ./src/screens/Elements/Button/Presets/presets.js ***!
-  \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-const buttonPresets = {
-    "rounded-search": {
-        props: { "icon": "search", "text": "Find houses ", "theme": { "iconPlacement": "left", "size": "sm", "color": "black", "shadow": false, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 35,
-        fullWidth: true
-    },
-    "flat-play": {
-        props: { "icon": "play", "text": "Watch intro video", "theme": { "iconPlacement": "left", "size": "sm", "color": "#f44663", "shadow": false, "style": "outline", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 35,
-        fullWidth: true
-    },
-    "link": {
-        props: { "icon": "chevron-right", "text": "Learn more", "theme": { "iconPlacement": "right", "size": "sm", "color": "#007bff", "shadow": false, "style": "flat", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 40
-    },
-    "shadow-send": {
-        props: { "icon": "send", "text": "Send", "theme": { "iconPlacement": "right", "size": "xs", "color": "white", "shadow": true, "style": "fill", "roundness": "md" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 60
-    },
-    "fab": {
-        props: { "icon": "add", "text": "", "theme": { "iconPlacement": "right", "size": "lg", "color": "#ffc107", "shadow": true, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 55
-    },
-    "outline-chevy": {
-        props: { "icon": "chevron-right", "text": "", "theme": { "iconPlacement": "right", "size": "lg", "color": "black", "shadow": true, "style": "outline", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
-        height: 40
-    }
-};
-
-module.exports = buttonPresets;
-
-/***/ }),
-
 /***/ "./src/screens/Elements/Button/index.jsx":
 /*!***********************************************!*\
   !*** ./src/screens/Elements/Button/index.jsx ***!
@@ -36476,7 +36453,7 @@ module.exports = buttonPresets;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 const webflowButton = __webpack_require__(/*! ./webflowButton */ "./src/screens/Elements/Button/webflowButton.js");
-const ButtonPresets = __webpack_require__(/*! ./Presets */ "./src/screens/Elements/Button/Presets/index.jsx");
+const buttonPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/Button/presets.js");
 
 const schema = {
   icon: {
@@ -36524,11 +36501,51 @@ function Button({ value, onClose }) {
     schema: schema,
     data: value,
     webflow: webflowButton,
-    presets: ButtonPresets
+    presets: buttonPresets
   });
 }
 
 module.exports = Button;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Button/presets.js":
+/*!************************************************!*\
+  !*** ./src/screens/Elements/Button/presets.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const buttonPresets = {
+    "rounded-search": {
+        props: { "icon": "search", "text": "Find houses ", "theme": { "iconPlacement": "left", "size": "sm", "color": "black", "shadow": false, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 35,
+        fullWidth: true
+    },
+    "flat-play": {
+        props: { "icon": "play", "text": "Watch intro video", "theme": { "iconPlacement": "left", "size": "sm", "color": "#f44663", "shadow": false, "style": "outline", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 35,
+        fullWidth: true
+    },
+    "link": {
+        props: { "icon": "chevron-right", "text": "Learn more", "theme": { "iconPlacement": "right", "size": "sm", "color": "#007bff", "shadow": false, "style": "flat", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 40
+    },
+    "shadow-send": {
+        props: { "icon": "send", "text": "Send", "theme": { "iconPlacement": "right", "size": "xs", "color": "white", "shadow": true, "style": "fill", "roundness": "md" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 50
+    },
+    "fab": {
+        props: { "icon": "add", "text": "", "theme": { "iconPlacement": "right", "size": "lg", "color": "#ffc107", "shadow": true, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 55
+    },
+    "outline-chevy": {
+        props: { "icon": "chevron-right", "text": "", "theme": { "iconPlacement": "right", "size": "lg", "color": "black", "shadow": true, "style": "outline", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+        height: 40
+    }
+};
+
+module.exports = buttonPresets;
 
 /***/ }),
 
@@ -36614,6 +36631,7 @@ module.exports = function (props) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const ctaPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/CTA/presets.js");
 const webflowCTASection = __webpack_require__(/*! ./webflowCTASection */ "./src/screens/Elements/CTA/webflowCTASection.js");
 
 const schema = {
@@ -36655,6 +36673,10 @@ const schema = {
         label: "Corner Radius",
         type: "radio",
         choices: ["none", "md", "lg"]
+      },
+      verticalSpacing: {
+        type: "radio",
+        choices: ["loose", "snug"]
       },
       border: {
         type: "section",
@@ -36707,21 +36729,21 @@ const schema = {
       subHeading: {
         type: "section",
         children: {
-          // color: {
-          //   type: "color",
-          //   choices: ["black", "white"],
-          //   optional: true,
-          //   defaultValue: "black"
-          // },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
-          // size: {
-          //   type: "radio",
-          //   choices: ["sm", "md"],
-          // },
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500
+          },
+          size: {
+            type: "radio",
+            choices: ["md", "lg"]
+          }
         }
       },
       buttons: {
@@ -36760,12 +36782,39 @@ function CTA({ value, onClose }) {
     title: "CTA",
     onClose: onClose,
     schema: schema,
-    data: value
+    data: value,
+    presets: ctaPresets
     // webflow={webflowCTASection}
   });
 }
 
 module.exports = CTA;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/CTA/presets.js":
+/*!*********************************************!*\
+  !*** ./src/screens/Elements/CTA/presets.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const ctaPresets = {
+    "vibrant": {
+        props: { "heading": "Ready to embark on your unique writing journey, tell your story and inspire the masses?", "subHeading": "Join many other early stage investors and employees.", "buttons": "Get started now", "theme": { "center": false, "width": 1600, "backgroundColor": "#435cb0", "color": "white", "roundness": "sm", "verticalPadding": 65, "border": null, "heading": { "font": "sans", "brazen": false, "width": 850, "size": "md" }, "subHeading": { "width": 750, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" }, "themeColor": "#ffd26c" }, "thickness": 2, "opacity": 0.5, "layout": "horizontal", "verticalSpacing": "loose" }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    },
+    "quote": {
+        props: { "heading": "\"The amount of luxury even in their most affordable\\npackages is amazing, I was very satisfied and I can not begin to possibly recommend it enough for you to review\"", "subHeading": "Toby Flanderson, Dunder Mifflin", "buttons": "", "theme": { "layout": "center", "width": 1600, "backgroundColor": "transparent", "color": "black", "roundness": "md", "verticalPadding": 65, "border": { "color": "black", "thickness": 2, "opacity": 0.8 }, "heading": { "font": "serif", "brazen": false, "width": 600, "size": "md" }, "subHeading": { "width": 700, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "placement": "center", "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" } } }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    }
+};
+
+module.exports = ctaPresets;
 
 /***/ }),
 
@@ -40644,18 +40693,35 @@ module.exports = Elements;
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
-const ButtonPresets = __webpack_require__(/*! ../Elements/Button/Presets */ "./src/screens/Elements/Button/Presets/index.jsx");
+const PresetGrid = __webpack_require__(/*! ../../components/PresetGrid */ "./src/components/PresetGrid.jsx");
+const buttonPresets = __webpack_require__(/*! ../Elements/Button/presets */ "./src/screens/Elements/Button/presets.js");
+const ctaPresets = __webpack_require__(/*! ../Elements/CTA/presets */ "./src/screens/Elements/CTA/presets.js");
+const componentPresets = {
+    "Button": buttonPresets,
+    "CTA": ctaPresets
+};
 
 function PresetList({ onGoToScreen }) {
     return React.createElement(
         'div',
-        { className: '-mx-12px' },
-        React.createElement(
-            'div',
-            { className: 'mb-1 cursor-pointer flex items-center bg-white border-b border-t border-gray' },
-            React.createElement(ButtonPresets, { onPresetScreen: true })
-        )
+        { className: '-mx-12px mt-1' },
+        ["Button", "CTA"].map((component, index) => {
+            return React.createElement(
+                'div',
+                { key: index, className: 'mb-2 bg-white border-b border-t border-gray' },
+                React.createElement(
+                    'span',
+                    { className: 'block text-centers p-2 bg-black26' },
+                    '~ ',
+                    component.toUpperCase()
+                ),
+                React.createElement(PresetGrid, {
+                    component: component,
+                    presets: componentPresets[component],
+                    onPresetScreen: true
+                })
+            );
+        })
     );
 }
 

@@ -60,7 +60,7 @@ function assembleCTASection(props = {}, images) {
     type: SceneNode.LAYOUT_PADDING,
     padding: {
       background: container,
-      values: getPadding(57, 57, 73, 57),
+      values: props.theme.verticalSpacing == "loose" ? getPadding(77, 57, 93, 57) : getPadding(57, 57, 73, 57),
     },
   }
 

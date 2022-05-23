@@ -15,7 +15,7 @@ const buttonPresets = {
     },
     "shadow-send": {
         props: {"icon":"send","text":"Send","theme":{"iconPlacement":"right","size":"xs","color":"white","shadow":true,"style":"fill","roundness":"md"},"name":"FernButton","editorSection":"Content","type":"Button"},
-        height: 60
+        height: 50
     },
     "fab": {
         props: {"icon":"add","text":"","theme":{"iconPlacement":"right","size":"lg","color":"#ffc107","shadow":true,"style":"fill","roundness":"full"},"name":"FernButton","editorSection":"Content","type":"Button"},

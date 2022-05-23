@@ -16,7 +16,9 @@ const createChecklist = require("../MediaSection/createChecklist");
     } = props;
     const headingSubHeadingSpacing = theme.layout == "horizontal" 
       ? userProps.headingSubHeadingSpacing || 12 
-      : theme.heading.size == "lg" ? 20 : 16;
+      : theme.heading.size == "lg" 
+        ? theme.subHeading.size == "lg" ? 24 : 20
+        : theme.subHeading.size == "lg" ? 24 : 16;
     const centerContent = theme.layout == "center";
     let buttonsNode, checklistNode, subHeadingNode, headingNode, headingAndSubHeading;
   
@@ -43,12 +45,18 @@ const createChecklist = require("../MediaSection/createChecklist");
       checklistNode = createChecklist(props);
 
     if(subHeading){
+      const [fontSize, lineSpacing] = {
+        "sm": [16, 28],
+        "md": [22, 36],
+        "lg": [31, 44],
+      }[theme.subHeading.size || "sm"];
+
       subHeadingNode = createText(subHeading, {
         align: centerContent ? "center" : "left",
         width: theme.subHeading.width,
         fill: new Color(theme.subHeading.color || theme.color),
-        fontSize: theme.subHeading.size == "sm" ? 16 : 22,
-        lineSpacing: theme.subHeading.size == "sm" ? 28 : 36,
+        fontSize,
+        lineSpacing,
         fontStyle: "Regular",
       });
     

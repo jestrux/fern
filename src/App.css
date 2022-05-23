@@ -118,6 +118,9 @@ input, button{
 .bg-black70{
     background: rgba(0, 0, 0, 0.5);
 }
+.bg-black90{
+    background: rgba(0, 0, 0, 0.75);
+}
 .bg-light-gray{
     background: #f0f0f0;
 }
@@ -489,6 +492,14 @@ input, button{
     opacity: 1;
 }
 
+.opacity-90{
+    opacity: 0.9;
+}
+
+.opacity-80{
+    opacity: 0.8;
+}
+
 .opacity-75{
     opacity: 0.75;
 }
@@ -497,6 +508,9 @@ input, button{
 }
 .opacity-50{
     opacity: 0.50;
+}
+.opacity-40{
+    opacity: 0.40;
 }
 .border,
 .border-2,
@@ -649,7 +663,7 @@ hr{
 }
 
 .hoverable:hover{
-    opacity: 0.5;
+    opacity: 0.55 !important;
     cursor: pointer !important;
 }
 

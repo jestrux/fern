@@ -66,8 +66,8 @@ class App extends React.Component {
                         <div className="flex items-center px-12px mb-1">
                             {["Elements", "Presets"].map((section, index) => (
                                 <React.Fragment key={`fragment${index}`}>
-                                    <h1 key={`name${index}`} className={`text-md cursor-pointer px-0 text-md text-gray mx-0 mr-3
-                                            ${currentSection != section && "opacity-50"}
+                                    <h1 key={`name${index}`} className={`text-md px-0 text-md text-gray mx-0 mr-3
+                                            ${currentSection != section ? "cursor-pointer hoverable opacity-40" : "opacity-75"}
                                         `}
                                         onClick={() => this.handleSectionChanged(section)}
                                     >

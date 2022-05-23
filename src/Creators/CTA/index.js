@@ -5,14 +5,14 @@ const { editDom, placeInParent, } = require("../../utils");
 const assembleCTASection = require("./assemble");
 const defaultCTASectionProps = require("./defaultProps");
 
-async function CTASection(userProps){
+async function CTASection(userProps, {fromPreset = false} = {}){
     const props = {
         ...defaultCTASectionProps,
         ...(userProps || {}),
     };
     
     try {
-        const oldCTASection = userProps ? selection.items[0] : null;
+        const oldCTASection = userProps && !fromPreset ? selection.items[0] : null;
         
         editDom(async (selection) => {
             try {

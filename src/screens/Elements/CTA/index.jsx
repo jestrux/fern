@@ -1,5 +1,6 @@
 const React = require("react");
 const ComponentPage = require("../../../components/ComponentPage");
+const ctaPresets = require("./presets");
 const webflowCTASection = require("./webflowCTASection");
 
 const schema = {
@@ -41,6 +42,10 @@ const schema = {
         label: "Corner Radius",
         type: "radio",
         choices: ["none", "md", "lg"],
+      },
+      verticalSpacing: {
+        type: "radio",
+        choices: ["loose", "snug"],
       },
       border: {
         type: "section",
@@ -93,21 +98,21 @@ const schema = {
       subHeading: {
         type: "section",
         children: {
-          // color: {
-          //   type: "color",
-          //   choices: ["black", "white"],
-          //   optional: true,
-          //   defaultValue: "black"
-          // },
-          // width: {
-          //   type: "number",
-          //   min: 400,
-          //   max: 1500,
-          // },
-          // size: {
-          //   type: "radio",
-          //   choices: ["sm", "md"],
-          // },
+          color: {
+            type: "color",
+            choices: ["black", "white"],
+            optional: true,
+            defaultValue: "black"
+          },
+          width: {
+            type: "number",
+            min: 400,
+            max: 1500,
+          },
+          size: {
+            type: "radio",
+            choices: ["md", "lg"],
+          },
         },
       },
       buttons: {
@@ -148,6 +153,7 @@ function CTA({ value, onClose }) {
       onClose={onClose}
       schema={schema}
       data={value}
+      presets={ctaPresets}
       // webflow={webflowCTASection}
     />
   );

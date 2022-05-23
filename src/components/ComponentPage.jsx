@@ -5,10 +5,11 @@ const Creators = require("../Creators");
 const { editDom, tagNode, openUrl } = require("../utils");
 const ComponentFields = require("./ComponentFields");
 const SectionTitles = require("./SectionTitles");
+const PresetGrid = require("./PresetGrid");
 
-const ComponentPage = function ({ title, onClose, schema, data, webflow, presets: Presets, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, presets, children }) {
   const section = data.editorSection || "Content";
-  const { theme, ...content } = schema || {theme: {}, content: {}};
+  const { theme, ...content } = schema || { theme: {}, content: {} };
 
   const setSection = (editorSection) => {
     editDom(() => {
@@ -19,34 +20,35 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
       }
     });
   }
-  
+
   function updateField(field, newValue) {
     const updatedProps = typeof field == "string" ? { [field]: newValue } : field;
-    if(section == "Styles")
-      Creators[title]({ 
+    if (section == "Styles")
+      Creators[title]({
         ...data,
         theme: {
           ...data.theme,
           ...updatedProps
-      }});
+        }
+      });
     else
       Creators[title]({ ...data, ...updatedProps });
   }
 
-  function handleExportToWebflow(){
+  function handleExportToWebflow() {
     const webflowData = webflow(data);
     const clipboard = require("clipboard");
     clipboard.copyText(JSON.stringify(webflowData));
     openUrl("https://jestrux.github.io/webflow-copy");
   }
 
-  function copyProps(){
+  function copyProps() {
     const clipboard = require("clipboard");
     clipboard.copyText(JSON.stringify(data));
   }
 
   return (
-    <div style={{ margin: "0 -12px"}}>
+    <div style={{ margin: "0 -12px" }}>
       <div className="bg-white">
         <div className="flex items-center px-1 py-2">
           <span className="cursor-pointer opacity-65" onClick={onClose}>
@@ -62,12 +64,12 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
 
           <div className="ml-auto flex items-center">
             <button className="mr-2s" uxp-quiet="true"
-                onClick={copyProps}
-              >
+              onClick={copyProps}
+            >
               Copy
             </button>
 
-            { webflow && 
+            {webflow &&
               <button className="" uxp-quiet="true"
                 onClick={handleExportToWebflow}
               >
@@ -91,7 +93,11 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
           </div>
         )}
 
-        {section == "Presets" && Presets && <div className="-mx-12px"> <Presets /> </div> }
+        {section == "Presets" && presets && (
+          <div className="-mx-12px">
+            <PresetGrid component={title} presets={presets} />
+          </div>
+        )}
 
         {children}
       </div>
