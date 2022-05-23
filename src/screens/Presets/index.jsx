@@ -6,7 +6,7 @@ function PresetList({onGoToScreen}){
     return (
         <div className="-mx-12px">
             <div className="mb-1 cursor-pointer flex items-center bg-white border-b border-t border-gray">
-                <ButtonPresets />
+                <ButtonPresets onPresetScreen />
             </div>
         </div>
     );

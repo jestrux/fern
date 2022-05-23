@@ -65,17 +65,16 @@ class App extends React.Component {
                     >
                         <div className="flex items-center px-12px mb-1">
                             {["Elements", "Presets"].map((section, index) => (
-                                <React.Fragment>
-                                    <h1 key={index} className={`text-md cursor-pointer px-0 text-md text-gray mx-0 mr-3
+                                <React.Fragment key={`fragment${index}`}>
+                                    <h1 key={`name${index}`} className={`text-md cursor-pointer px-0 text-md text-gray mx-0 mr-3
                                             ${currentSection != section && "opacity-50"}
                                         `}
                                         onClick={() => this.handleSectionChanged(section)}
                                     >
                                         {section}
-                                        {/* {section.toUpperCase()} */}
                                     </h1>
 
-                                    { index == 0 && <div className="rounded-full bg-dark-gray mr-3" style={{ width: "5px", height: "5px" }}></div> }
+                                    { index == 0 && <div key={`dot${index}`} className="rounded-full bg-dark-gray mr-3" style={{ width: "5px", height: "5px" }}></div> }
                                 </React.Fragment>
                             ))}
                         </div>

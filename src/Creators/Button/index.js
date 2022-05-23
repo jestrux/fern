@@ -3,7 +3,7 @@ const { editDom, placeInParent, tagNode } = require("../../utils");
 const defaultProps = require("./defaultButtonProps");
 const createButton = require("./createButton");
 
-async function Button(userProps, {fromPreset = false}){
+async function Button(userProps, {fromPreset = false} = {}){
     const props = {
         ...defaultProps,
         ...(userProps || {})
