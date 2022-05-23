@@ -31589,20 +31589,26 @@ async function Footer(userProps, { fromPreset = false } = {}) {
   let props = _extends({}, defaultFooterProps, userProps || {});
 
   const logos = await getAssetsByType("logo");
-  const logoIndex = props.aboutSection && props.aboutSection.logo ? props.aboutSection.logo : 4;
+  const logoIndex = props.aboutSection && props.aboutSection.logo && props.aboutSection.logo != "custom" ? props.aboutSection.logo : 4;
   let logoImage = logos['logo' + logoIndex];
   let logoSearchQuery;
 
   try {
     const oldFooter = userProps && !fromPreset ? selection.items[0] : null;
-    // if (oldFooter) {
-    //   const logoNode = getFooterComponent(oldFooter, "logo");
-    //   if(logoNode){
-    //     logoImage = logoNode.fill;
-    //     const imageProps = getNodeTag(logoNode);
-    //     logoSearchQuery = imageProps.searchQuery;
-    //   }
-    // }
+    if (props.aboutSection && props.aboutSection.logo) {
+      if (oldFooter) {
+        if (props.aboutSection.logo == "custom") {
+          const logoNode = getFooterComponent(oldFooter, "logo");
+          if (logoNode) {
+            logoImage = logoNode.fill;
+            // const imageProps = getNodeTag(logoNode);
+            // logoSearchQuery = imageProps.searchQuery;
+          }
+        }
+      }
+
+      props.aboutSection.logo = "custom";
+    }
 
     editDom(() => {
       try {
@@ -33910,8 +33916,8 @@ const { insertNode, calculateAspectRatioFit, createRectangle } = __webpack_requi
 
 function navLogoComponent({ image, searchQuery = "as" }) {
     const logo = createRectangle(163, 25, {
-        name: "FernNavLogo",
-        richData: { type: "Image", searchQuery, logo: true }
+        name: "FernNavLogo"
+        // richData: {type: "Image", searchQuery, logo: true},
     });
 
     try {
@@ -34286,7 +34292,7 @@ module.exports = createNavSlot;
 /***/ (function(module, exports) {
 
 const defaultNavbarProps = {
-  leftSlot: { logo: "1" },
+  leftSlot: { logo: "4" },
   middleSlot: {},
   rightSlot: {
     menu: {
@@ -34417,10 +34423,10 @@ async function Navbar(userProps, { fromPreset = false } = {}) {
 
   const [logos, dps] = await Promise.all([getAssetsByType("logo"), getAssetsByType("dp")]);
 
-  const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
+  const leftSlotLogoIndex = props.leftSlot.logo && props.leftSlot.logo != "custom" ? props.leftSlot.logo : 4;
   let leftLogoImage = logos['logo' + leftSlotLogoIndex];
 
-  const middleSlotLogoIndex = props.middleSlot.logo ? props.middleSlot.logo : 4;
+  const middleSlotLogoIndex = props.middleSlot.logo && props.middleSlot.logo != "custom" ? props.middleSlot.logo : 4;
   let middleLogoImage = logos['logo' + middleSlotLogoIndex];
   // let middleLogoImage = logos.logo4;
 
@@ -34430,19 +34436,23 @@ async function Navbar(userProps, { fromPreset = false } = {}) {
   try {
     const oldNavbar = userProps && !fromPreset ? selection.items[0] : null;
     if (oldNavbar) {
-      // const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
-      // if(leftLogoNode){
-      //   leftLogoImage = leftLogoNode.fill;
-      //   const imageProps = getNodeTag(leftLogoNode);
-      //   leftLogoSearchQuery = imageProps.searchQuery;
-      // }
+      if (props.leftSlot.logo == "custom") {
+        const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+        if (leftLogoNode) {
+          leftLogoImage = leftLogoNode.fill;
+          // const imageProps = getNodeTag(leftLogoNode);
+          // leftLogoSearchQuery = imageProps.searchQuery;
+        }
+      }
 
-      // const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
-      // if(middleLogoNode) {
-      //   middleLogoImage = middleLogoNode.fill;
-      //   const imageProps = getNodeTag(middleLogoNode);
-      //   middleLogoSearchQuery = imageProps.searchQuery;
-      // }
+      if (props.middleSlot.logo == "custom") {
+        const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+        if (middleLogoNode) {
+          middleLogoImage = middleLogoNode.fill;
+          // const imageProps = getNodeTag(middleLogoNode);
+          // middleLogoSearchQuery = imageProps.searchQuery;
+        }
+      }
 
       const dpNode = getNavbarComponent(oldNavbar, "dp");
       if (dpNode) {
@@ -34451,6 +34461,10 @@ async function Navbar(userProps, { fromPreset = false } = {}) {
         dpSearchQuery = imageProps.searchQuery;
       }
     }
+
+    if (props.leftSlot.logo) props.leftSlot.logo = "custom";
+
+    if (props.middleSlot.logo) props.middleSlot.logo = "custom";
 
     editDom(() => {
       try {
@@ -35462,12 +35476,12 @@ module.exports = ColorList;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const getMediaImage = __webpack_require__(/*! ../Creators/MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
 const { camelCaseToSentenceCase, editDom } = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
 const ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ "./src/components/ButtonGroup.jsx");
 const ColorList = __webpack_require__(/*! ./ColorList */ "./src/components/ColorList.jsx");
 const IconList = __webpack_require__(/*! ./IconPicker/IconList */ "./src/components/IconPicker/IconList.jsx");
 const { default: ImageEditorField } = __webpack_require__(/*! ./ImageEditorField */ "./src/components/ImageEditorField.jsx");
+const LogoEditorField = __webpack_require__(/*! ./LogoEditorField */ "./src/components/LogoEditorField.jsx");
 const Toggle = __webpack_require__(/*! ./Toggle */ "./src/components/Toggle.jsx");
 
 function ListEditor({ links, activeLink, onChange, onChangeActiveLink }) {
@@ -35628,7 +35642,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     onChange(__id, newValue);
   }
 
-  const isCustomFieldType = ["boolean", "color", "icon", "radio", "image"].includes(type);
+  const isCustomFieldType = ["boolean", "color", "icon", "radio", "image", "logo"].includes(type);
 
   return React.createElement(
     "div",
@@ -35665,6 +35679,9 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
         },
         React.createElement(IconList, _extends({ onChange: handleChange, iconNames: choices }, meta))
       ),
+      type == "logo" && React.createElement(LogoEditorField, _extends({}, meta, {
+        onChange: handleChange
+      })),
       type == "image" && React.createElement(ImageEditorField, _extends({ key: meta }, meta)),
       !isCustomFieldType && React.createElement(
         "form",
@@ -36183,6 +36200,46 @@ const Loader = ({ absolute, onCancel }) => {
 };
 
 module.exports = Loader;
+
+/***/ }),
+
+/***/ "./src/components/LogoEditorField.jsx":
+/*!********************************************!*\
+  !*** ./src/components/LogoEditorField.jsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const logoList = Array(5).fill('fa').map((_, i) => `images/logos/${i + 1}.png`);
+
+const LogoEditorField = ({
+    onChange
+}) => {
+    return React.createElement(
+        'div',
+        { className: 'flex flex-wrap -mx-12px bg-light-gray' },
+        logoList.map((logo, index) => {
+            return React.createElement(
+                'div',
+                { key: index, className: 'cursor-pointer parent relative flex-shrink-0 font-bold text-center bg-gray-100 overflow-hidden relative flex flex-col center-center',
+                    style: { width: "50%", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" },
+                    onClick: () => onChange(index + 1)
+                },
+                React.createElement(
+                    'div',
+                    { className: 'flex center-center', style: { height: "45px" } },
+                    React.createElement('img', { loading: 'lazy', className: 'object-contain object-center w-full',
+                        src: logo, alt: '',
+                        style: { maxWidth: "80%", maxHeight: "35px" }
+                    })
+                )
+            );
+        })
+    );
+};
+
+module.exports = LogoEditorField;
 
 /***/ }),
 
@@ -37987,7 +38044,7 @@ const schema = {
         type: "section",
         children: {
             logo: {
-                type: "radio",
+                type: "logo",
                 // type: "image",
                 // meta: {
                 //     queryFn: (node) => getFooterComponent(node, "logo"),
@@ -39687,11 +39744,12 @@ const logo = {
   // meta: {
   //   queryFn: queryLeftLogo,
   // },
-  type: "radio",
+  type: "logo",
+  // type: "radio",
   choices: [
   // "custom", 
   "1", "2", "3", "4", "5"],
-  defaultValue: "2",
+  defaultValue: "4",
   offValue: "",
   optional: true
 };

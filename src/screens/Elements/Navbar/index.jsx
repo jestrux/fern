@@ -18,12 +18,13 @@ const logo = {
   // meta: {
   //   queryFn: queryLeftLogo,
   // },
-  type: "radio",
+  type: "logo",
+  // type: "radio",
   choices: [
     // "custom", 
     "1", "2", "3", "4", "5",
   ],
-  defaultValue: "2",
+  defaultValue: "4",
   offValue: "",
   optional: true,
 };

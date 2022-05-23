@@ -19,20 +19,26 @@ async function Footer(userProps, {fromPreset = false} = {}) {
   };
 
   const logos = await getAssetsByType("logo");
-  const logoIndex = props.aboutSection && props.aboutSection.logo ? props.aboutSection.logo : 4;
+  const logoIndex = props.aboutSection && props.aboutSection.logo && props.aboutSection.logo != "custom" ? props.aboutSection.logo : 4;
   let logoImage = logos['logo' + logoIndex];
   let logoSearchQuery;
 
   try {
     const oldFooter = userProps && !fromPreset ? selection.items[0] : null;
-    // if (oldFooter) {
-    //   const logoNode = getFooterComponent(oldFooter, "logo");
-    //   if(logoNode){
-    //     logoImage = logoNode.fill;
-    //     const imageProps = getNodeTag(logoNode);
-    //     logoSearchQuery = imageProps.searchQuery;
-    //   }
-    // }
+    if(props.aboutSection && props.aboutSection.logo) {
+      if (oldFooter) {
+        if(props.aboutSection.logo == "custom") {
+          const logoNode = getFooterComponent(oldFooter, "logo");
+          if(logoNode){
+            logoImage = logoNode.fill;
+            // const imageProps = getNodeTag(logoNode);
+            // logoSearchQuery = imageProps.searchQuery;
+          }
+        }
+      }
+      
+      props.aboutSection.logo = "custom";
+    }
 
     editDom(() => {
       try {

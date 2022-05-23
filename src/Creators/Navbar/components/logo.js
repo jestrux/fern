@@ -4,7 +4,7 @@ const { insertNode, calculateAspectRatioFit, createRectangle } = require("../../
 function navLogoComponent({image, searchQuery = "as"}){
     const logo = createRectangle(163, 25, {
         name: "FernNavLogo",
-        richData: {type: "Image", searchQuery, logo: true},
+        // richData: {type: "Image", searchQuery, logo: true},
     });
 
     try {

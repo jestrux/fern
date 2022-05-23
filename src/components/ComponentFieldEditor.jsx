@@ -1,10 +1,10 @@
 const React = require("react");
-const getMediaImage = require("../Creators/MediaSection/getMediaImage");
 const { camelCaseToSentenceCase, editDom } = require("../utils");
 const ButtonGroup = require("./ButtonGroup");
 const ColorList = require("./ColorList");
 const IconList = require("./IconPicker/IconList");
 const { default: ImageEditorField } = require("./ImageEditorField");
+const LogoEditorField = require("./LogoEditorField");
 const Toggle = require("./Toggle");
 
 function ListEditor({ links, activeLink, onChange, onChangeActiveLink }) {
@@ -167,7 +167,7 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
     onChange(__id, newValue);
   }
 
-  const isCustomFieldType = ["boolean", "color", "icon", "radio", "image"].includes(type);
+  const isCustomFieldType = ["boolean", "color", "icon", "radio", "image", "logo"].includes(type);
 
   return (
     <div className="ComponentFieldEditor">
@@ -213,6 +213,13 @@ const ComponentFieldEditor = function ({ field = {}, onChange }) {
             >
               <IconList onChange={handleChange} iconNames={choices} {...meta} />
             </div>
+          )}
+
+          {type == "logo" && (
+            <LogoEditorField 
+              {...meta}
+              onChange={handleChange}
+            />
           )}
 
           {type == "image" && (

@@ -1,5 +1,5 @@
 const defaultNavbarProps = {
-  leftSlot: { logo: "1" },
+  leftSlot: { logo: "4" },
   middleSlot: {},
   rightSlot: {
     menu: {

@@ -24,10 +24,10 @@ async function Navbar(userProps, {fromPreset = false} = {}) {
     getAssetsByType("dp"),
   ]);
 
-  const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
+  const leftSlotLogoIndex = props.leftSlot.logo && props.leftSlot.logo != "custom" ? props.leftSlot.logo : 4;
   let leftLogoImage = logos['logo' + leftSlotLogoIndex];
   
-  const middleSlotLogoIndex = props.middleSlot.logo ? props.middleSlot.logo : 4;
+  const middleSlotLogoIndex = props.middleSlot.logo && props.middleSlot.logo != "custom" ? props.middleSlot.logo : 4;
   let middleLogoImage = logos['logo' + middleSlotLogoIndex];
   // let middleLogoImage = logos.logo4;
 
@@ -37,19 +37,23 @@ async function Navbar(userProps, {fromPreset = false} = {}) {
   try {
     const oldNavbar = userProps && !fromPreset ? selection.items[0] : null;
     if (oldNavbar) {
-      // const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
-      // if(leftLogoNode){
-      //   leftLogoImage = leftLogoNode.fill;
-      //   const imageProps = getNodeTag(leftLogoNode);
-      //   leftLogoSearchQuery = imageProps.searchQuery;
-      // }
+      if(props.leftSlot.logo == "custom"){
+        const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+        if(leftLogoNode){
+          leftLogoImage = leftLogoNode.fill;
+          // const imageProps = getNodeTag(leftLogoNode);
+          // leftLogoSearchQuery = imageProps.searchQuery;
+        }
+      }
 
-      // const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
-      // if(middleLogoNode) {
-      //   middleLogoImage = middleLogoNode.fill;
-      //   const imageProps = getNodeTag(middleLogoNode);
-      //   middleLogoSearchQuery = imageProps.searchQuery;
-      // }
+      if(props.middleSlot.logo == "custom") {
+        const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+        if(middleLogoNode) {
+          middleLogoImage = middleLogoNode.fill;
+          // const imageProps = getNodeTag(middleLogoNode);
+          // middleLogoSearchQuery = imageProps.searchQuery;
+        }
+      }
 
       const dpNode = getNavbarComponent(oldNavbar, "dp");
       if(dpNode) {
@@ -58,6 +62,12 @@ async function Navbar(userProps, {fromPreset = false} = {}) {
         dpSearchQuery = imageProps.searchQuery;
       }
     }
+
+    if(props.leftSlot.logo)
+      props.leftSlot.logo = "custom";
+
+    if(props.middleSlot.logo)
+      props.middleSlot.logo = "custom";
 
     editDom(() => {
       try {

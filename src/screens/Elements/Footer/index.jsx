@@ -9,7 +9,7 @@ const schema = {
         type: "section",
         children: {
             logo: {
-                type: "radio",
+                type: "logo",
                 // type: "image",
                 // meta: {
                 //     queryFn: (node) => getFooterComponent(node, "logo"),
