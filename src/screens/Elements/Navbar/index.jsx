@@ -1,6 +1,7 @@
 const React = require("react");
 const ComponentPage = require("../../../components/ComponentPage");
 const getNavbarComponent = require("../../../Creators/Navbar/getNavbarComponent");
+const navbarPresets = require("./presets");
 const webflowNavbar = require("./webflowNavbar");
 
 const socials = {
@@ -13,11 +14,11 @@ const queryMiddleLogo = (node) => getNavbarComponent(node, "rightLogo");
 const queryDp = (node) => getNavbarComponent(node, "dp");
 
 const logo = {
-  type: "image",
-  meta: {
-    queryFn: queryLeftLogo,
-  },
-  // type: "radio",
+  // type: "image",
+  // meta: {
+  //   queryFn: queryLeftLogo,
+  // },
+  type: "radio",
   choices: [
     // "custom", 
     "1", "2", "3", "4", "5",
@@ -269,6 +270,7 @@ function Navbar({ value, onClose }) {
       schema={schema}
       data={value}
       webflow={webflowNavbar}
+      presets={navbarPresets}
     />
   );
 }

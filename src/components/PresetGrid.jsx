@@ -25,10 +25,10 @@ const PresetGrid = ({
                         style={{ width: fullWidth ? "100%" : "50%", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" }}
                         onClick={() => handlePresetClicked(name)}
                     >
-                        <div className="flex center-center" style={{ height: "55px" }}>
+                        <div className="flex center-center" style={{ height: height && height > 55 ? height + "px" : "55px" }}>
                             <img loading="lazy" className="object-contain object-center w-full"
                                 src={image} alt=""
-                                style={{ maxWidth: "85%",  maxHeight: `${height}px` }}
+                                style={{ maxWidth: "95%",  maxHeight: `${height}px` }}
                             />
                         </div>
 

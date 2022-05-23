@@ -1,6 +1,7 @@
 const React = require('react');
 const ComponentPage = require("../../../components/ComponentPage");
 const getFooterComponent = require('../../../Creators/Footer/getFooterComponent');
+const footerPresets = require('./presets');
 // const webflowSectionText = require("./webflowSectionText");
 
 const schema = {
@@ -8,11 +9,11 @@ const schema = {
         type: "section",
         children: {
             logo: {
-                // type: "radio",
-                type: "image",
-                meta: {
-                    queryFn: (node) => getFooterComponent(node, "logo"),
-                },
+                type: "radio",
+                // type: "image",
+                // meta: {
+                //     queryFn: (node) => getFooterComponent(node, "logo"),
+                // },
                 choices: [
                     // "custom", 
                     "1", "2", "3", "4", "5",
@@ -253,6 +254,7 @@ function Footer({ value, onClose }) {
             onClose={onClose}
             schema={schema}
             data={value}
+            presets={footerPresets}
         //   webflow={webflowFooter}
         />
     );

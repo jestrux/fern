@@ -5,7 +5,7 @@ const assembleMediaSection = require("../MediaSection/assemble");
 const defaultMediaSectionProps = require("../MediaSection/defaultProps");
 const getMediaImage = require("../MediaSection/getMediaImage");
 
-async function Hero(userProps){
+async function Hero(userProps, {fromPreset = false} = {}){
     const props = {
         ...defaultMediaSectionProps,
         heading: "Supporting all county mothers in need",
@@ -47,7 +47,7 @@ async function Hero(userProps){
     let searchQuery;
     
     try {
-        const oldHero = userProps ? selection.items[0] : null;
+        const oldHero = userProps && !fromPreset ? selection.items[0] : null;
         if(oldHero){
             const mediaImageNode = getMediaImage(oldHero)
             if(mediaImageNode) {

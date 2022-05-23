@@ -13,7 +13,7 @@ const defaultNavbarProps = require("./defaultProps");
 const assembleNavbar = require("./assemble");
 const getNavbarComponent = require("./getNavbarComponent");
 
-async function Navbar(userProps) {
+async function Navbar(userProps, {fromPreset = false} = {}) {
   let props = {
     ...defaultNavbarProps,
     ...(userProps || {}),
@@ -24,20 +24,21 @@ async function Navbar(userProps) {
     getAssetsByType("dp"),
   ]);
 
-  let leftLogoImage = logos.logo4;
+  const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
+  let leftLogoImage = logos['logo' + leftSlotLogoIndex];
   let middleLogoImage = logos.logo4;
   let dpImage = dps.dp1;
   let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
   try {
-    const oldNavbar = userProps ? selection.items[0] : null;
+    const oldNavbar = userProps && !fromPreset ? selection.items[0] : null;
     if (oldNavbar) {
-      const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
-      if(leftLogoNode){
-        leftLogoImage = leftLogoNode.fill;
-        const imageProps = getNodeTag(leftLogoNode);
-        leftLogoSearchQuery = imageProps.searchQuery;
-      }
+      // const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+      // if(leftLogoNode){
+      //   leftLogoImage = leftLogoNode.fill;
+      //   const imageProps = getNodeTag(leftLogoNode);
+      //   leftLogoSearchQuery = imageProps.searchQuery;
+      // }
 
       const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
       if(middleLogoNode) {

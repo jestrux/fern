@@ -31585,23 +31585,24 @@ const defaultFooterProps = __webpack_require__(/*! ./defaultProps */ "./src/Crea
 const assembleFooter = __webpack_require__(/*! ./assemble */ "./src/Creators/Footer/assemble.js");
 const getFooterComponent = __webpack_require__(/*! ./getFooterComponent */ "./src/Creators/Footer/getFooterComponent.js");
 
-async function Footer(userProps) {
+async function Footer(userProps, { fromPreset = false } = {}) {
   let props = _extends({}, defaultFooterProps, userProps || {});
 
   const logos = await getAssetsByType("logo");
-  let logoImage = logos.logo4;
+  const logoIndex = props.aboutSection && props.aboutSection.logo ? props.aboutSection.logo : 4;
+  let logoImage = logos['logo' + logoIndex];
   let logoSearchQuery;
 
   try {
-    const oldFooter = userProps ? selection.items[0] : null;
-    if (oldFooter) {
-      const logoNode = getFooterComponent(oldFooter, "logo");
-      if (logoNode) {
-        logoImage = logoNode.fill;
-        const imageProps = getNodeTag(logoNode);
-        logoSearchQuery = imageProps.searchQuery;
-      }
-    }
+    const oldFooter = userProps && !fromPreset ? selection.items[0] : null;
+    // if (oldFooter) {
+    //   const logoNode = getFooterComponent(oldFooter, "logo");
+    //   if(logoNode){
+    //     logoImage = logoNode.fill;
+    //     const imageProps = getNodeTag(logoNode);
+    //     logoSearchQuery = imageProps.searchQuery;
+    //   }
+    // }
 
     editDom(() => {
       try {
@@ -32497,7 +32498,7 @@ const assembleMediaSection = __webpack_require__(/*! ../MediaSection/assemble */
 const defaultMediaSectionProps = __webpack_require__(/*! ../MediaSection/defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
 const getMediaImage = __webpack_require__(/*! ../MediaSection/getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
 
-async function Hero(userProps) {
+async function Hero(userProps, { fromPreset = false } = {}) {
     const props = _extends({}, defaultMediaSectionProps, {
         heading: "Supporting all county mothers in need",
         subHeading: "Our mission is to make sure we keep track of all mothers who are unable to fend for themselves and give them the support they need.",
@@ -32532,7 +32533,7 @@ async function Hero(userProps) {
     let searchQuery;
 
     try {
-        const oldHero = userProps ? selection.items[0] : null;
+        const oldHero = userProps && !fromPreset ? selection.items[0] : null;
         if (oldHero) {
             const mediaImageNode = getMediaImage(oldHero);
             if (mediaImageNode) {
@@ -33611,7 +33612,7 @@ const assembleMediaSection = __webpack_require__(/*! ./assemble */ "./src/Creato
 const defaultMediaSectionProps = __webpack_require__(/*! ./defaultProps */ "./src/Creators/MediaSection/defaultProps.js");
 const getMediaImage = __webpack_require__(/*! ./getMediaImage */ "./src/Creators/MediaSection/getMediaImage.js");
 
-async function MediaSection(userProps) {
+async function MediaSection(userProps, { fromPreset = false } = {}) {
     const props = _extends({}, defaultMediaSectionProps, userProps || {});
 
     const bannerImages = await getAssetsByType("banner");
@@ -33619,7 +33620,7 @@ async function MediaSection(userProps) {
     let searchQuery;
 
     try {
-        const oldMediaSection = userProps ? selection.items[0] : null;
+        const oldMediaSection = userProps && !fromPreset ? selection.items[0] : null;
         if (oldMediaSection) {
             const mediaImageNode = getMediaImage(oldMediaSection);
             if (mediaImageNode) {
@@ -34161,8 +34162,8 @@ function createNavSlot(props, components = {}) {
 
   const componentMap = {
     logo: () => navLogoComponent({
-      image: props.alignment == "left" ? leftLogoImage : middleLogoImage,
-      searchQuery: props.alignment == "left" ? leftLogoSearchQuery : middleLogoSearchQuery
+      image: props.alignment == "center" ? middleLogoImage : leftLogoImage,
+      searchQuery: props.alignment == "center" ? middleLogoSearchQuery : leftLogoSearchQuery
     }),
     menu: navMenuComponent,
     dp: () => navDpComponent({
@@ -34285,7 +34286,7 @@ module.exports = createNavSlot;
 /***/ (function(module, exports) {
 
 const defaultNavbarProps = {
-  leftSlot: { logo: "4" },
+  leftSlot: { logo: "1" },
   middleSlot: {},
   rightSlot: {
     menu: {
@@ -34411,25 +34412,26 @@ const defaultNavbarProps = __webpack_require__(/*! ./defaultProps */ "./src/Crea
 const assembleNavbar = __webpack_require__(/*! ./assemble */ "./src/Creators/Navbar/assemble.js");
 const getNavbarComponent = __webpack_require__(/*! ./getNavbarComponent */ "./src/Creators/Navbar/getNavbarComponent.js");
 
-async function Navbar(userProps) {
+async function Navbar(userProps, { fromPreset = false } = {}) {
   let props = _extends({}, defaultNavbarProps, userProps || {});
 
   const [logos, dps] = await Promise.all([getAssetsByType("logo"), getAssetsByType("dp")]);
 
-  let leftLogoImage = logos.logo4;
+  const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
+  let leftLogoImage = logos['logo' + leftSlotLogoIndex];
   let middleLogoImage = logos.logo4;
   let dpImage = dps.dp1;
   let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
   try {
-    const oldNavbar = userProps ? selection.items[0] : null;
+    const oldNavbar = userProps && !fromPreset ? selection.items[0] : null;
     if (oldNavbar) {
-      const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
-      if (leftLogoNode) {
-        leftLogoImage = leftLogoNode.fill;
-        const imageProps = getNodeTag(leftLogoNode);
-        leftLogoSearchQuery = imageProps.searchQuery;
-      }
+      // const leftLogoNode = getNavbarComponent(oldNavbar, "leftLogo");
+      // if(leftLogoNode){
+      //   leftLogoImage = leftLogoNode.fill;
+      //   const imageProps = getNodeTag(leftLogoNode);
+      //   leftLogoSearchQuery = imageProps.searchQuery;
+      // }
 
       const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
       if (middleLogoNode) {
@@ -36222,10 +36224,10 @@ const PresetGrid = ({
                 },
                 React.createElement(
                     'div',
-                    { className: 'flex center-center', style: { height: "55px" } },
+                    { className: 'flex center-center', style: { height: height && height > 55 ? height + "px" : "55px" } },
                     React.createElement('img', { loading: 'lazy', className: 'object-contain object-center w-full',
                         src: image, alt: '',
-                        style: { maxWidth: "85%", maxHeight: `${height}px` }
+                        style: { maxWidth: "95%", maxHeight: `${height}px` }
                     })
                 ),
                 floatingLabel ? React.createElement(
@@ -37973,6 +37975,7 @@ module.exports = FernComponent;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 const getFooterComponent = __webpack_require__(/*! ../../../Creators/Footer/getFooterComponent */ "./src/Creators/Footer/getFooterComponent.js");
+const footerPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/Footer/presets.js");
 // const webflowSectionText = require("./webflowSectionText");
 
 const schema = {
@@ -37980,11 +37983,11 @@ const schema = {
         type: "section",
         children: {
             logo: {
-                // type: "radio",
-                type: "image",
-                meta: {
-                    queryFn: node => getFooterComponent(node, "logo")
-                },
+                type: "radio",
+                // type: "image",
+                // meta: {
+                //     queryFn: (node) => getFooterComponent(node, "logo"),
+                // },
                 choices: [
                 // "custom", 
                 "1", "2", "3", "4", "5"],
@@ -38222,12 +38225,33 @@ function Footer({ value, onClose }) {
         title: 'Footer',
         onClose: onClose,
         schema: schema,
-        data: value
+        data: value,
+        presets: footerPresets
         //   webflow={webflowFooter}
     });
 }
 
 module.exports = Footer;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Footer/presets.js":
+/*!************************************************!*\
+  !*** ./src/screens/Elements/Footer/presets.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const footerPresets = {
+    "bluey": {
+        props: { "aboutSection": { "logo": "2", "about": "Making the world a better place by making very elegant visual hierarchies." }, "menu1": { "title": "Company", "links": "Careers, Newsroom, Privacy Policy" }, "menu2": { "title": "About Us", "links": "Services, Our Values, Founding Team" }, "menu3": null, "menu4": null, "menu5": { "title": "Contact Us", "links": "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co" }, "subscribeSection": { "socials": "facebook, twitter, instagram", "subscribe": { "message": "Subscribe to newsletter to get premium content.", "placeholder": "e.g. apwbd@hogwarts.com", "action": "Join" } }, "theme": { "backgroundColor": "#033969", "color": "white", "shadow": true, "border": true, "about": { "width": 310 }, "menu": { "showTitles": false, "title": { "opacity": 0.45 } }, "subscribe": { "width": 360, "roundness": "md", "color": "black" }, "socials": { "opacity": 1 } }, "name": "FernFooter", "title": "Product", "links": "Features, Pricing, Changelog", "editorSection": "Content", "type": "Footer" },
+        height: 50,
+        fullWidth: true,
+        floatingLabel: false
+    }
+};
+
+module.exports = footerPresets;
 
 /***/ }),
 
@@ -39042,6 +39066,7 @@ module.exports = Input;
 
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
+const mediaSectionPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/MediaSection/presets.js");
 const mediaSectionSchema = __webpack_require__(/*! ./schema */ "./src/screens/Elements/MediaSection/schema.js");
 const webflowMediaSection = __webpack_require__(/*! ./webflowMediaSection */ "./src/screens/Elements/MediaSection/webflowMediaSection.js");
 
@@ -39051,11 +39076,32 @@ function MediaSection({ value, onClose }) {
     onClose: onClose,
     schema: mediaSectionSchema,
     data: value,
-    webflow: webflowMediaSection
+    webflow: webflowMediaSection,
+    presets: mediaSectionPresets
   });
 }
 
 module.exports = MediaSection;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/MediaSection/presets.js":
+/*!******************************************************!*\
+  !*** ./src/screens/Elements/MediaSection/presets.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const mediaSectionPresets = {
+    "checklist": {
+        props: { "heading": "The 6 week curriculum", "subHeading": "Learn at your own pace and get help is close by when you get stuck on an issue for too long.", "buttons": "", "image": "4", "playButton": false, "theme": { "backgroundColor": "#F8F7F7", "width": 1600, "color": "black", "border": false, "layout": "normal", "verticalPadding": 65, "textNegativeMargin": 16, "heading": { "font": "sans", "brazen": false, "width": 530, "size": "md" }, "subHeading": { "width": 600, "size": "md" }, "checklist": { "width": 600, "iconColor": "#435cb0", "bgOpacity": 0.28 }, "buttons": { "icons": false, "iconPlacement": "right", "size": "md", "roundness": "sm", "reversed": true, "mainButton": { "icon": "", "style": "fill" }, "secondaryButton": { "icon": "", "style": "outline" } }, "image": { "aspectRatio": "portrait", "width": 680, "height": 400, "roundness": "sm" }, "overlay": { "opacity": 0.3, "color": "black" }, "playButton": { "color": "black", "invertColors": false, "smoothCorners": true } }, "name": "FernMedia", "editorSection": "Content", "checklist": true, "type": "MediaSection" },
+        height: 100,
+        fullWidth: true,
+        floatingLabel: false
+    }
+};
+
+module.exports = mediaSectionPresets;
 
 /***/ }),
 
@@ -39620,6 +39666,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 const getNavbarComponent = __webpack_require__(/*! ../../../Creators/Navbar/getNavbarComponent */ "./src/Creators/Navbar/getNavbarComponent.js");
+const navbarPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/Navbar/presets.js");
 const webflowNavbar = __webpack_require__(/*! ./webflowNavbar */ "./src/screens/Elements/Navbar/webflowNavbar.js");
 
 const socials = {
@@ -39632,11 +39679,11 @@ const queryMiddleLogo = node => getNavbarComponent(node, "rightLogo");
 const queryDp = node => getNavbarComponent(node, "dp");
 
 const logo = {
-  type: "image",
-  meta: {
-    queryFn: queryLeftLogo
-  },
-  // type: "radio",
+  // type: "image",
+  // meta: {
+  //   queryFn: queryLeftLogo,
+  // },
+  type: "radio",
   choices: [
   // "custom", 
   "1", "2", "3", "4", "5"],
@@ -39881,11 +39928,44 @@ function Navbar({ value, onClose }) {
     onClose: onClose,
     schema: schema,
     data: value,
-    webflow: webflowNavbar
+    webflow: webflowNavbar,
+    presets: navbarPresets
   });
 }
 
 module.exports = Navbar;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Navbar/presets.js":
+/*!************************************************!*\
+  !*** ./src/screens/Elements/Navbar/presets.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const navbarPresets = {
+    "center-menu-dp": {
+        props: { "leftSlot": { "logo": "2" }, "middleSlot": { "menu": { "links": "Home, About Us, Events, Contact Us", "activeLink": "Home" } }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "dp": "1" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#033969", "color": "#BAC9D6", "shadow": null, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 }, "themeColor": "#44ED95" }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    },
+    "search-social": {
+        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": true }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "facebook, twitter, instagram" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "white", "color": "black", "shadow": true, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    },
+    "loud": {
+        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": false, "menu": { "links": "HOME, ABOUT US, EVENTS, CONTACT US", "activeLink": "HOME" } }, "rightSlot": { "menu": null, "buttons": "OPEN SESAME", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#ffc107", "color": "#775A03", "shadow": null, "border": { "color": "black", "thickness": 4, "opacity": 1 }, "persona": "loud", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Condensed Black", "textTransform": "uppercase", "letterSpacing": 50, "fontSize": 22 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "themeColor": "#0083f6" }, "socials": { "opacity": 0.5 }, "themeColor": "#0083F6", "activeIndicator": false }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    }
+};
+
+module.exports = navbarPresets;
 
 /***/ }),
 
@@ -40695,17 +40775,24 @@ module.exports = Elements;
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const PresetGrid = __webpack_require__(/*! ../../components/PresetGrid */ "./src/components/PresetGrid.jsx");
 const buttonPresets = __webpack_require__(/*! ../Elements/Button/presets */ "./src/screens/Elements/Button/presets.js");
+const navbarPresets = __webpack_require__(/*! ../Elements/Navbar/presets */ "./src/screens/Elements/Navbar/presets.js");
 const ctaPresets = __webpack_require__(/*! ../Elements/CTA/presets */ "./src/screens/Elements/CTA/presets.js");
+const mediaSectionPresets = __webpack_require__(/*! ../Elements/MediaSection/presets */ "./src/screens/Elements/MediaSection/presets.js");
+const footerPresets = __webpack_require__(/*! ../Elements/Footer/presets */ "./src/screens/Elements/Footer/presets.js");
+
 const componentPresets = {
     "Button": buttonPresets,
-    "CTA": ctaPresets
+    "Navbar": navbarPresets,
+    "CTA": ctaPresets,
+    "MediaSection": mediaSectionPresets,
+    "Footer": footerPresets
 };
 
 function PresetList({ onGoToScreen }) {
     return React.createElement(
         'div',
         { className: '-mx-12px mt-1' },
-        ["Button", "CTA"].map((component, index) => {
+        Object.keys(componentPresets).map((component, index) => {
             return React.createElement(
                 'div',
                 { key: index, className: 'mb-2 bg-white border-b border-t border-gray' },

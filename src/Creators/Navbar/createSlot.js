@@ -21,8 +21,8 @@ function createNavSlot(props, components = {}) {
 
   const componentMap = {
     logo: () => navLogoComponent({
-      image: props.alignment == "left" ? leftLogoImage : middleLogoImage,
-      searchQuery: props.alignment == "left" ? leftLogoSearchQuery : middleLogoSearchQuery,
+      image: props.alignment == "center" ? middleLogoImage : leftLogoImage,
+      searchQuery: props.alignment == "center" ? middleLogoSearchQuery : leftLogoSearchQuery,
     }),
     menu: navMenuComponent,
     dp: () => navDpComponent({

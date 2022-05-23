@@ -12,26 +12,27 @@ const defaultFooterProps = require("./defaultProps");
 const assembleFooter = require("./assemble");
 const getFooterComponent = require("./getFooterComponent");
 
-async function Footer(userProps) {
+async function Footer(userProps, {fromPreset = false} = {}) {
   let props = {
     ...defaultFooterProps,
     ...(userProps || {}),
   };
 
   const logos = await getAssetsByType("logo");
-  let logoImage = logos.logo4;
+  const logoIndex = props.aboutSection && props.aboutSection.logo ? props.aboutSection.logo : 4;
+  let logoImage = logos['logo' + logoIndex];
   let logoSearchQuery;
 
   try {
-    const oldFooter = userProps ? selection.items[0] : null;
-    if (oldFooter) {
-      const logoNode = getFooterComponent(oldFooter, "logo");
-      if(logoNode){
-        logoImage = logoNode.fill;
-        const imageProps = getNodeTag(logoNode);
-        logoSearchQuery = imageProps.searchQuery;
-      }
-    }
+    const oldFooter = userProps && !fromPreset ? selection.items[0] : null;
+    // if (oldFooter) {
+    //   const logoNode = getFooterComponent(oldFooter, "logo");
+    //   if(logoNode){
+    //     logoImage = logoNode.fill;
+    //     const imageProps = getNodeTag(logoNode);
+    //     logoSearchQuery = imageProps.searchQuery;
+    //   }
+    // }
 
     editDom(() => {
       try {

@@ -6,7 +6,7 @@ const assembleMediaSection = require("./assemble");
 const defaultMediaSectionProps = require("./defaultProps");
 const getMediaImage = require("./getMediaImage");
 
-async function MediaSection(userProps){
+async function MediaSection(userProps, {fromPreset = false} = {}){
     const props = {
         ...defaultMediaSectionProps,
         ...(userProps || {}),
@@ -17,7 +17,7 @@ async function MediaSection(userProps){
     let searchQuery;
     
     try {
-        const oldMediaSection = userProps ? selection.items[0] : null;
+        const oldMediaSection = userProps && !fromPreset ? selection.items[0] : null;
         if(oldMediaSection){
             const mediaImageNode = getMediaImage(oldMediaSection)
             if(mediaImageNode) {
