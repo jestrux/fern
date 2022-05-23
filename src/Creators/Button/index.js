@@ -3,7 +3,7 @@ const { editDom, placeInParent, tagNode } = require("../../utils");
 const defaultProps = require("./defaultButtonProps");
 const createButton = require("./createButton");
 
-async function Button(userProps){
+async function Button(userProps, {fromPreset = false}){
     const props = {
         ...defaultProps,
         ...(userProps || {})
@@ -11,7 +11,7 @@ async function Button(userProps){
 
     try {
         editDom(async (selection) => {
-            const oldButton = userProps ? selection.items[0] : null;
+            const oldButton = userProps && !fromPreset ? selection.items[0] : null;
 
             try {
                 const button = createButton(props);
@@ -24,7 +24,7 @@ async function Button(userProps){
                     oldButton.removeFromParent();
                 }
                 else {
-                    placeInParent(button, {x: 0, y: viewport.bounds.y});
+                    placeInParent(button, {x: 120, y: viewport.bounds.y});
                 }
             } catch (error) {
                 console.log("Error creating button: ", error);

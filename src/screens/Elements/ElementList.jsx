@@ -4,10 +4,10 @@ const Creators = require("../../Creators");
 function ElementList({onGoToScreen}){
     return (
         <div className="-mx-12px px-2">
-            <div className="mt-2">
-                <h1 className="px-0 text-md text-gray mx-0 mb-2">
+            <div className="mt-2s">
+                {/* <h1 className="px-0 text-md text-gray mx-0 mb-2">
                     Elements
-                </h1>
+                </h1> */}
 
                 {
                     ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'FAQ', 'CTA', 'Footer', ].map((element, index) => (

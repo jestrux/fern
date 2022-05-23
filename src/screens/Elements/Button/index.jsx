@@ -1,6 +1,7 @@
 const React = require("react");
 const ComponentPage = require("../../../components/ComponentPage");
 const webflowButton = require("./webflowButton");
+const ButtonPresets = require("./Presets");
 
 const schema = {
   icon: {
@@ -49,6 +50,7 @@ function Button({ value, onClose }) {
       schema={schema}
       data={value}
       webflow={webflowButton}
+      presets={ButtonPresets}
     />
   );
 }

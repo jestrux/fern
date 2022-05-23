@@ -6,7 +6,7 @@ const { editDom, tagNode, openUrl } = require("../utils");
 const ComponentFields = require("./ComponentFields");
 const SectionTitles = require("./SectionTitles");
 
-const ComponentPage = function ({ title, onClose, schema, data, webflow, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, presets: Presets, children }) {
   const section = data.editorSection || "Content";
   const { theme, ...content } = schema || {theme: {}, content: {}};
 
@@ -40,7 +40,10 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
     openUrl("https://jestrux.github.io/webflow-copy");
   }
 
-  console.log("Theme: ", theme, content);
+  function copyProps(){
+    const clipboard = require("clipboard");
+    clipboard.copyText(JSON.stringify(data));
+  }
 
   return (
     <div style={{ margin: "0 -12px"}}>
@@ -57,20 +60,28 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
 
           <h2 className="px-0 text-md ml-1">{title}</h2>
 
-          { webflow && 
-            <button className="ml-auto" uxp-quiet="true"
-              onClick={handleExportToWebflow}
-            >
-              Export
+          <div className="ml-auto flex items-center">
+            <button className="mr-2s" uxp-quiet="true"
+                onClick={copyProps}
+              >
+              Copy
             </button>
-          }
+
+            { webflow && 
+              <button className="" uxp-quiet="true"
+                onClick={handleExportToWebflow}
+              >
+                Export
+              </button>
+            }
+          </div>
         </div>
 
         <SectionTitles currentSection={section} onChange={setSection} />
       </div>
 
       <div className="px-3">
-        {schema && (
+        {section != "Presets" && schema && (
           <div className="mt-3">
             <ComponentFields
               schema={section == "Styles" ? theme.children : content}
@@ -79,6 +90,9 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
             />
           </div>
         )}
+
+        {section == "Presets" && Presets && <div className="-mx-12px"> <Presets /> </div> }
+
         {children}
       </div>
     </div>

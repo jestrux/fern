@@ -29322,7 +29322,10 @@ const SelectionContext = __webpack_require__(/*! ./SelectionContext */ "./src/Se
 __webpack_require__(/*! ./App.css */ "./src/App.css");
 
 const Elements = __webpack_require__(/*! ./screens/Elements */ "./src/screens/Elements/index.jsx");
+const PresetList = __webpack_require__(/*! ./screens/Presets */ "./src/screens/Presets/index.jsx");
+
 const { getNodeTag } = __webpack_require__(/*! ./utils */ "./src/utils/index.js");
+const SectionTitles = __webpack_require__(/*! ./components/SectionTitles */ "./src/components/SectionTitles.jsx");
 
 class App extends React.Component {
     constructor(props) {
@@ -29368,6 +29371,7 @@ class App extends React.Component {
 
     render() {
         const {
+            currentSection,
             selectedItems,
             presetElement
         } = this.state;
@@ -29385,10 +29389,29 @@ class App extends React.Component {
                     },
                     React.createElement(
                         'div',
+                        { className: 'flex items-center px-12px mb-1' },
+                        ["Elements", "Presets"].map((section, index) => React.createElement(
+                            React.Fragment,
+                            null,
+                            React.createElement(
+                                'h1',
+                                { key: index, className: `text-md cursor-pointer px-0 text-md text-gray mx-0 mr-3
+                                            ${currentSection != section && "opacity-50"}
+                                        `,
+                                    onClick: () => this.handleSectionChanged(section)
+                                },
+                                section
+                            ),
+                            index == 0 && React.createElement('div', { className: 'rounded-full bg-dark-gray mr-3', style: { width: "5px", height: "5px" } })
+                        ))
+                    ),
+                    React.createElement(
+                        'div',
                         { className: 'flex-1',
                             style: { padding: "0 12px", paddingBottom: "20px", overflowY: "scroll" }
                         },
-                        React.createElement(Elements, { value: presetElement })
+                        currentSection == "Elements" && React.createElement(Elements, { value: presetElement }),
+                        currentSection == "Presets" && React.createElement(PresetList, null)
                     )
                 )
             )
@@ -29675,12 +29698,12 @@ const { editDom, placeInParent, tagNode } = __webpack_require__(/*! ../../utils 
 const defaultProps = __webpack_require__(/*! ./defaultButtonProps */ "./src/Creators/Button/defaultButtonProps.js");
 const createButton = __webpack_require__(/*! ./createButton */ "./src/Creators/Button/createButton.js");
 
-async function Button(userProps) {
+async function Button(userProps, { fromPreset = false }) {
     const props = _extends({}, defaultProps, userProps || {});
 
     try {
         editDom(async selection => {
-            const oldButton = userProps ? selection.items[0] : null;
+            const oldButton = userProps && !fromPreset ? selection.items[0] : null;
 
             try {
                 const button = createButton(props);
@@ -29692,7 +29715,7 @@ async function Button(userProps) {
                     placeInParent(button, oldButton.topLeftInParent);
                     oldButton.removeFromParent();
                 } else {
-                    placeInParent(button, { x: 0, y: viewport.bounds.y });
+                    placeInParent(button, { x: 120, y: viewport.bounds.y });
                 }
             } catch (error) {
                 console.log("Error creating button: ", error);
@@ -35869,7 +35892,7 @@ const { editDom, tagNode, openUrl } = __webpack_require__(/*! ../utils */ "./src
 const ComponentFields = __webpack_require__(/*! ./ComponentFields */ "./src/components/ComponentFields.jsx");
 const SectionTitles = __webpack_require__(/*! ./SectionTitles */ "./src/components/SectionTitles.jsx");
 
-const ComponentPage = function ({ title, onClose, schema, data, webflow, children }) {
+const ComponentPage = function ({ title, onClose, schema, data, webflow, presets: Presets, children }) {
   const section = data.editorSection || "Content";
   const _ref = schema || { theme: {}, content: {} },
         { theme } = _ref,
@@ -35898,7 +35921,10 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
     openUrl("https://jestrux.github.io/webflow-copy");
   }
 
-  console.log("Theme: ", theme, content);
+  function copyProps() {
+    const clipboard = __webpack_require__(/*! clipboard */ "clipboard");
+    clipboard.copyText(JSON.stringify(data));
+  }
 
   return React.createElement(
     "div",
@@ -35926,12 +35952,23 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
           { className: "px-0 text-md ml-1" },
           title
         ),
-        webflow && React.createElement(
-          "button",
-          { className: "ml-auto", "uxp-quiet": "true",
-            onClick: handleExportToWebflow
-          },
-          "Export"
+        React.createElement(
+          "div",
+          { className: "ml-auto flex items-center" },
+          React.createElement(
+            "button",
+            { className: "mr-2s", "uxp-quiet": "true",
+              onClick: copyProps
+            },
+            "Copy"
+          ),
+          webflow && React.createElement(
+            "button",
+            { className: "", "uxp-quiet": "true",
+              onClick: handleExportToWebflow
+            },
+            "Export"
+          )
         )
       ),
       React.createElement(SectionTitles, { currentSection: section, onChange: setSection })
@@ -35939,7 +35976,7 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
     React.createElement(
       "div",
       { className: "px-3" },
-      schema && React.createElement(
+      section != "Presets" && schema && React.createElement(
         "div",
         { className: "mt-3" },
         React.createElement(ComponentFields, {
@@ -35947,6 +35984,13 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, childre
           data: section == "Styles" ? data.theme : data,
           onChange: updateField
         })
+      ),
+      section == "Presets" && Presets && React.createElement(
+        "div",
+        { className: "-mx-12px" },
+        " ",
+        React.createElement(Presets, null),
+        " "
       ),
       children
     )
@@ -36327,6 +36371,63 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./src/screens/Elements/Button/Presets/index.jsx":
+/*!*******************************************************!*\
+  !*** ./src/screens/Elements/Button/Presets/index.jsx ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../../../Creators */ "./src/Creators/index.js");
+const buttonPresets = __webpack_require__(/*! ./presets */ "./src/screens/Elements/Button/Presets/presets.js");
+
+function ButtonPresets() {
+    function handlePresetClicked(name) {
+        Creators.Button(buttonPresets[name], { fromPreset: true });
+    }
+
+    return React.createElement(
+        "div",
+        { className: "flex flex-wrap overflow-y-auto",
+            style: { maxHeight: "70vh" }
+        },
+        Object.entries(buttonPresets).map(([name, value], index) => {
+            return React.createElement(
+                "div",
+                { key: index, className: "hoverable flex-shrink-0 font-bold text-center bg-gray-100 overflow-hidden relative flex center-center",
+                    style: { width: "50%", height: "65px", border: "solid #e5e5e5", borderWidth: "0 1px 1px 0" },
+                    onClick: () => handlePresetClicked(name)
+                },
+                name.toUpperCase()
+            );
+        })
+    );
+}
+
+module.exports = ButtonPresets;
+
+/***/ }),
+
+/***/ "./src/screens/Elements/Button/Presets/presets.js":
+/*!********************************************************!*\
+  !*** ./src/screens/Elements/Button/Presets/presets.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+const buttonPresets = {
+    "rounded-search": { "icon": "search", "text": "Find houses ", "theme": { "iconPlacement": "left", "size": "sm", "color": "black", "shadow": false, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+    "flat-play": { "icon": "play", "text": "Watch intro video", "theme": { "iconPlacement": "left", "size": "sm", "color": "#f44663", "shadow": false, "style": "outline", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+    "link": { "icon": "chevron-right", "text": "Learn more", "theme": { "iconPlacement": "right", "size": "sm", "color": "#007bff", "shadow": false, "style": "flat", "roundness": "none" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+    "shadow-send": { "icon": "send", "text": "Send", "theme": { "iconPlacement": "right", "size": "xs", "color": "white", "shadow": true, "style": "fill", "roundness": "md" }, "name": "FernButton", "editorSection": "Content", "type": "Button" },
+    "fab": { "icon": "add", "text": "", "theme": { "iconPlacement": "right", "size": "lg", "color": "#ffc107", "shadow": true, "style": "fill", "roundness": "full" }, "name": "FernButton", "editorSection": "Content", "type": "Button" }
+};
+
+module.exports = buttonPresets;
+
+/***/ }),
+
 /***/ "./src/screens/Elements/Button/index.jsx":
 /*!***********************************************!*\
   !*** ./src/screens/Elements/Button/index.jsx ***!
@@ -36337,6 +36438,7 @@ module.exports = {
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ComponentPage = __webpack_require__(/*! ../../../components/ComponentPage */ "./src/components/ComponentPage.jsx");
 const webflowButton = __webpack_require__(/*! ./webflowButton */ "./src/screens/Elements/Button/webflowButton.js");
+const ButtonPresets = __webpack_require__(/*! ./Presets */ "./src/screens/Elements/Button/Presets/index.jsx");
 
 const schema = {
   icon: {
@@ -36383,7 +36485,8 @@ function Button({ value, onClose }) {
     onClose: onClose,
     schema: schema,
     data: value,
-    webflow: webflowButton
+    webflow: webflowButton,
+    presets: ButtonPresets
   });
 }
 
@@ -37110,12 +37213,7 @@ function ElementList({ onGoToScreen }) {
         { className: "-mx-12px px-2" },
         React.createElement(
             "div",
-            { className: "mt-2" },
-            React.createElement(
-                "h1",
-                { className: "px-0 text-md text-gray mx-0 mb-2" },
-                "Elements"
-            ),
+            { className: "mt-2s" },
             ['Button', 'Input', 'SectionText', 'Navbar', 'Hero', 'FeatureSection', 'MediaSection', 'Grid', 'FAQ', 'CTA', 'Footer'].map((element, index) => React.createElement(
                 "div",
                 { key: index, className: "mb-1 cursor-pointer flex items-center bg-white border-2 border-gray rounded-sm p-1 spy-1 text-base",
@@ -40497,6 +40595,33 @@ function Elements({ value, subscription, onUpgrade }) {
 }
 
 module.exports = Elements;
+
+/***/ }),
+
+/***/ "./src/screens/Presets/index.jsx":
+/*!***************************************!*\
+  !*** ./src/screens/Presets/index.jsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
+const ButtonPresets = __webpack_require__(/*! ../Elements/Button/Presets */ "./src/screens/Elements/Button/Presets/index.jsx");
+
+function PresetList({ onGoToScreen }) {
+    return React.createElement(
+        'div',
+        { className: '-mx-12px' },
+        React.createElement(
+            'div',
+            { className: 'mb-1 cursor-pointer flex items-center bg-white border-b border-t border-gray' },
+            React.createElement(ButtonPresets, null)
+        )
+    );
+}
+
+module.exports = PresetList;
 
 /***/ }),
 
