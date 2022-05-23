@@ -26,7 +26,11 @@ async function Navbar(userProps, {fromPreset = false} = {}) {
 
   const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
   let leftLogoImage = logos['logo' + leftSlotLogoIndex];
-  let middleLogoImage = logos.logo4;
+  
+  const middleSlotLogoIndex = props.middleSlot.logo ? props.middleSlot.logo : 4;
+  let middleLogoImage = logos['logo' + middleSlotLogoIndex];
+  // let middleLogoImage = logos.logo4;
+
   let dpImage = dps.dp1;
   let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
@@ -40,12 +44,12 @@ async function Navbar(userProps, {fromPreset = false} = {}) {
       //   leftLogoSearchQuery = imageProps.searchQuery;
       // }
 
-      const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
-      if(middleLogoNode) {
-        middleLogoImage = middleLogoNode.fill;
-        const imageProps = getNodeTag(middleLogoNode);
-        middleLogoSearchQuery = imageProps.searchQuery;
-      }
+      // const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+      // if(middleLogoNode) {
+      //   middleLogoImage = middleLogoNode.fill;
+      //   const imageProps = getNodeTag(middleLogoNode);
+      //   middleLogoSearchQuery = imageProps.searchQuery;
+      // }
 
       const dpNode = getNavbarComponent(oldNavbar, "dp");
       if(dpNode) {

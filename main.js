@@ -34419,7 +34419,11 @@ async function Navbar(userProps, { fromPreset = false } = {}) {
 
   const leftSlotLogoIndex = props.leftSlot.logo ? props.leftSlot.logo : 4;
   let leftLogoImage = logos['logo' + leftSlotLogoIndex];
-  let middleLogoImage = logos.logo4;
+
+  const middleSlotLogoIndex = props.middleSlot.logo ? props.middleSlot.logo : 4;
+  let middleLogoImage = logos['logo' + middleSlotLogoIndex];
+  // let middleLogoImage = logos.logo4;
+
   let dpImage = dps.dp1;
   let leftLogoSearchQuery, middleLogoSearchQuery, dpSearchQuery;
 
@@ -34433,12 +34437,12 @@ async function Navbar(userProps, { fromPreset = false } = {}) {
       //   leftLogoSearchQuery = imageProps.searchQuery;
       // }
 
-      const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
-      if (middleLogoNode) {
-        middleLogoImage = middleLogoNode.fill;
-        const imageProps = getNodeTag(middleLogoNode);
-        middleLogoSearchQuery = imageProps.searchQuery;
-      }
+      // const middleLogoNode = getNavbarComponent(oldNavbar, "middleLogo");
+      // if(middleLogoNode) {
+      //   middleLogoImage = middleLogoNode.fill;
+      //   const imageProps = getNodeTag(middleLogoNode);
+      //   middleLogoSearchQuery = imageProps.searchQuery;
+      // }
 
       const dpNode = getNavbarComponent(oldNavbar, "dp");
       if (dpNode) {
@@ -39953,6 +39957,12 @@ const navbarPresets = {
     },
     "search-social": {
         props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": true }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "facebook, twitter, instagram" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "white", "color": "black", "shadow": true, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        height: 80,
+        fullWidth: true,
+        floatingLabel: false
+    },
+    "minimal": {
+        props: { "leftSlot": { "logo": null, "menu": { "links": "Contribute", "activeLink": "Home" } }, "middleSlot": { "search": false, "logo": "5" }, "rightSlot": { "menu": null, "buttons": "Get Help", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#efeae8", "color": "black", "shadow": false, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "reversed": true }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
