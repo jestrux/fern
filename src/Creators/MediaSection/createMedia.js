@@ -123,7 +123,8 @@ function createMedia({
 
       if(theme.overlay.blur){
         const blurMap = {
-          "sm": [8, -9, 10],
+          "xs": [3, -11, 0.1],
+          "sm": [8, -9, 1],
           "md": [15, -20, 0.4],
         };
         const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;

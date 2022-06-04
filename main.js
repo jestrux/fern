@@ -99,7 +99,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\n.InternalSection:last-child{\n    border-bottom: 1px solid white !important;\n}\n\n.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{\n    border-top: 0px solid transparent !important;\n}\n\nlabel {\n    color: #737373;\n    font-weight: 500;\n}\n\nlabel:not(.text-sm) {\n    font-size: 0.75rem !important;\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: white;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: white;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-black90{\n    background: rgba(0, 0, 0, 0.75);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-90{\n    opacity: 0.9;\n}\n\n.opacity-80{\n    opacity: 0.8;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.opacity-40{\n    opacity: 0.40;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-gray{\n    border-color: #e8e8e8;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.55 !important;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
+exports.push([module.i, "*{\n    font-family: 'San Francisco', 'Segoe UI', sans-serif;\n    /* color: #ebf5f2; */\n    /* color: #1b659f; */\n    /* color: #c9dbe8; */\n    /* color: #2b475d; */\n    /* color: #f48634; */\n    /* color: #6e490e; */\n}\n\n.InternalSection:last-child{\n    border-bottom: 1px solid white !important;\n}\n\n.border-t-2.border-b-2.mb-3 + .border-t-2.border-b-2.mb-3{\n    border-top: 0px solid transparent !important;\n}\n\nlabel {\n    color: #737373;\n    font-weight: 500;\n}\n\nlabel:not(.text-sm) {\n    font-size: 0.75rem !important;\n}\n\nh1{\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\nh2{\n    font-size: 1.05rem;\n    font-weight: 600;\n    color: #3F3F3F;\n    margin: 0;\n    letter-spacing: -0.02em;\n}\ninput, button{\n    margin: 0;\n}\n.w-1\\/3{\n    width: 33.333%;\n}\n.w-full{\n    width: 100%;\n}\n.w-auto{\n    width: auto;\n}\n.h-full{\n    height: 100%;\n}\n.h-screen{\n    height: 100vh;\n}\n.min-h-full{\n    height: 100%;\n}\n.block{\n    display: block;\n}\n\n.button{\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 24px;\n}\n.button[uxp-variant=\"action\"]{\n    width: 24px;\n    border-radius: 50%;\n    background: #1473E6;\n}\n.button[uxp-variant=\"action\"] svg path{\n    fill: white;\n    width: 20px;\n    height: 20px;\n}\n.button[uxp-variant=\"cta\"]{\n    width: 100%;\n    height: 28px;\n    line-height: 28px;\n    font-weight: 600;\n    font-size: 13px;\n    background: #1473E6;\n    color: white;\n    border-radius: 14px;\n    margin: 0;\n}\n.button[uxp-variant=\"cta\"].large{\n    font-size: 15px;\n    height: 36px;\n    line-height: 18px;\n    border-radius: 20px;\n}\n.bg-current{\n    background: currentColor;\n}\n.bg-white{\n    background: white;\n}\n.bg-blue{\n    background-color: #1473E6;\n}\n.bg-black{\n    background: black;\n}\n.bg-black12{\n    background: rgba(0, 0, 0, 0.02);\n}\n.bg-black26{\n    background: rgba(0, 0, 0, 0.05);\n}\n.bg-black54{\n    background: rgba(0, 0, 0, 0.1);\n}\n.bg-black70{\n    background: rgba(0, 0, 0, 0.5);\n}\n.bg-black90{\n    background: rgba(0, 0, 0, 0.75);\n}\n.bg-light-gray{\n    background: #f0f0f0;\n}\n.bg-gray{\n    background: #e8e8e8;\n}\n.bg-dark-gray{\n    background: #888;\n}\n.text-blue{\n    color: #1473E6;\n}\n.text-white{\n    color: white;\n}\n.text-black{\n    color: black;\n}\n.text-light-gray{\n    color: #f0f0f0;\n}\n.text-gray{\n    /* color: #e8e8e8; */\n}\n.text-dark-gray{\n    color: #888;\n}\n\n.text-xs{\n    font-size: 0.55rem;\n}\n\n.text-sm{\n    font-size: 0.65rem;\n    line-height: 1.5;\n}\n.text-md{\n    font-size: 0.85rem;\n    line-height: 1.5;\n}\n.text-lg{\n    font-size: 1rem;\n}\n.text-xl{\n    font-size: 1.25rem;\n}\n.text-2xl{\n    font-size: 1.7rem;\n}\n.text-center {\n    text-align: center;\n}\n.font-light{\n    font-weight: 300;\n}\n.font-normal{\n    font-weight: 500;\n}\n.font-medium{\n    font-weight: 600;\n}\n.font-semibold{\n    font-weight: 700;\n}\n.font-bold{\n    font-weight: 800;\n}\n.uppercase {\n    text-transform: uppercase;\n}\n.capitalize {\n    text-transform: capitalize;\n}\n\n.tracking-wide{\n    letter-spacing: 0.025em;\n}\n.tracking-wider{\n    letter-spacing: 0.05em;\n}\n.tracking-widest{\n    letter-spacing: 0.1em;\n}\n\n.leading-0{\n    line-height: 0;\n}\n\n.leading-none{\n    line-height: 1;\n}\n\n.leading-tight{\n    line-height: 1.25;\n}\n.leading-snug{\n    line-height: 1.375;\n}\n\n.leading-relaxed{\n    line-height: 1.625;\n}\n\n.leading-loose{\n    line-height: 2;\n}\n\n.flex{\n    display: flex;\n}\n.inline-flex{\n    display: inline-flex;\n}\n.flex-col{\n    flex-direction: column;\n}\n.center-center,\n.items-center{\n    align-items: center;\n}\n.center-center,\n.justify-center{\n    justify-content: center;\n}\n.justify-between{\n    justify-content: space-between;\n}\n.justify-start{\n    justify-content: flex-start;\n}\n.items-start{\n    align-items: flex-start;\n}\n.justify-end{\n    justify-content: flex-end;\n}\n.items-end{\n    align-items: flex-end;\n}\n.flex-1{\n    flex: 1;\n}\n.flex-wrap{\n    flex-wrap: wrap;\n}\n.flex-shrink-0{\n    flex-shrink: 0;\n}\n.relative{\n    position: relative;\n}\n.absolute{\n    position: absolute;\n}\n.fixed{\n    position: fixed;\n}\n\n.inset-0,\n.inset-x-0,\n.left-0\n{\n    left: 0;\n}\n\n.inset-0,\n.inset-x-0,\n.right-0\n{\n    right: 0;\n}\n\n.inset-0,\n.top-0\n{\n    top: 0;\n}\n\n.inset-0,\n.bottom-0\n{\n    bottom: 0;\n}\n\n.z-10{\n    z-index: 10;\n}\n.z-20{\n    z-index: 20;\n}\n.p-0{\n    padding: 0;\n}\n.p-1{\n    padding: 0.25rem;\n}\n.p-2{\n    padding: 0.5rem;\n}\n.p-3{\n    padding: 0.75rem;\n}\n.px-12px{\n    padding-left: 12px;\n    padding-right: 12px;\n}\n.px-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n\n.px-1,\n.pl-1{\n    padding-left: 0.25rem;\n}\n.px-1,\n.pr-1{\n    padding-right: 0.25rem;\n}\n.px-2,\n.pl-2{\n    padding-left: 0.5rem;\n}\n.px-2,\n.pr-2{\n    padding-right: 0.5rem;\n}\n.px-3,\n.pl-3{\n    padding-left: 0.75rem;\n}\n.px-3,\n.pr-3{\n    padding-right: 0.75rem;\n}\n\n.py-0{\n    padding-left: 0;\n    padding-right: 0;\n}\n.py-1,\n.pt-1{\n    padding-top: 0.25rem;\n}\n.py-1,\n.pb-1{\n    padding-bottom: 0.25rem;\n}\n.py-2,\n.pt-2{\n    padding-top: 0.5rem;\n}\n.py-2,\n.pb-2{\n    padding-bottom: 0.5rem;\n}\n.py-3,\n.pt-3{\n    padding-top: 0.75rem;\n}\n.py-3,\n.pb-3{\n    padding-bottom: 0.75rem;\n}\n\n.-mx-12px{\n    margin-left: -12px;\n    margin-right: -12px;\n}\n\n.m-auto{\n    margin: auto;\n}\n\n.mx-auto,\n.ml-auto{\n    margin-left: auto;\n}\n\n.mx-auto,\n.mr-auto{\n    margin-right: auto;\n}\n.m-0{\n    margin: 0;\n}\n\n.m-05{\n    margin: 1px;\n}\n\n.mx-0{\n    margin-left: 0;\n    margin-right: 0;\n}\n.mx-1{\n    margin-left: 0.25rem;\n    margin-right: 0.25rem;\n}\n.mx-2{\n    margin-left: 0.5rem;\n    margin-right: 0.5rem;\n}\n.mx-3{\n    margin-left: 0.75rem;\n    margin-right: 0.75rem;\n}\n.ml-1{\n    margin-left: 0.25rem;\n}\n.ml-2{\n    margin-left: 0.5rem;\n}\n.ml-3{\n    margin-left: 0.75rem;\n}\n.mr-1{\n    margin-right: 0.25rem;\n}\n.mr-2{\n    margin-right: 0.5rem;\n}\n.mr-3{\n    margin-right: 0.75rem;\n}\n.my-0{\n    margin-top: 0;\n    margin-bottom: 0;\n}\n.my-1{\n    margin-top: 0.25rem;\n    margin-bottom: 0.25rem;\n}\n.my-2{\n    margin-top: 0.5rem;\n    margin-bottom: 0.5rem;\n}\n.my-3{\n    margin-top: 0.75rem;\n    margin-bottom: 0.75rem;\n}\n.mt-0{\n    margin-top: 0;\n}\n.mt-1{\n    margin-top: 0.25rem;\n}\n.mt-2{\n    margin-top: 0.5rem;\n}\n.mt-3{\n    margin-top: 0.75rem;\n}\n.mb-1{\n    margin-bottom: 0.25rem;\n}\n.mb-2{\n    margin-bottom: 0.5rem;\n}\n.mb-3{\n    margin-bottom: 0.75rem;\n}\n\n.opacity-0{\n    opacity: 0;\n}\n\n.opacity-100{\n    opacity: 1;\n}\n\n.opacity-90{\n    opacity: 0.9;\n}\n\n.opacity-80{\n    opacity: 0.8;\n}\n\n.opacity-75{\n    opacity: 0.75;\n}\n.opacity-65{\n    opacity: 0.65;\n}\n.opacity-50{\n    opacity: 0.50;\n}\n.opacity-40{\n    opacity: 0.40;\n}\n.border,\n.border-2,\n.border-3,\n.border-4,\n.border-y,\n.border-y-2,\n.border-y-3,\n.border-t,\n.border-t-2,\n.border-t-3,\n.border-b,\n.border-b-2,\n.border-b-3,\n.border-r,\n.border-l{\n    border: 0px solid #ddd;\n}\n.border{\n    border-width: 1px;\n}\n.border-2{\n    border-width: 2px;\n}\n.border-3{\n    border-width: 3px;\n}\n.border-4{\n    border-width: 4px;\n}\n.border-t,\n.border-y{\n    border-top-width: 1px;\n}\n.border-b,\n.border-y{\n    border-bottom-width: 1px;\n}\n.border-t-2,\n.border-y-2{\n    border-top-width: 2px;\n}\n.border-b-2,\n.border-y-2{\n    border-bottom-width: 2px;\n}\n.border-t-3,\n.border-y-3{\n    border-top-width: 3px;\n}\n.border-b-3,\n.border-y-3{\n    border-bottom-width: 3px;\n}\n.border-r{\n    border-right-width: 1px;\n}\n.border-l{\n    border-left-width: 1px;\n}\n\n.border-transparent{\n    border-color: transparent;\n}\n.border-blue{\n    border-color: #1473E6;\n}\n.border-black{\n    border-color: black;\n}\n.border-black12{\n    border-color: rgba(0, 0, 0, 0.08);\n}\n.border-white{\n    border-color: white;\n}\n.border-light-gray{\n    border-color: #f0f0f0;\n}\n.border-gray{\n    border-color: #e8e8e8;\n}\n.border-dark-gray{\n    border-color: #888;\n}\n.rounded-full{\n    border-radius: 50%;\n}\n.rounded{\n    border-radius: 12px;\n}\n.rounded-lg{\n    border-radius: 16px;\n}\n.rounded-md{\n    border-radius: 10px;\n}\n.rounded-sm{\n    border-radius: 6px;\n}\n.rounded-xs{\n    border-radius: 3px;\n}\n.object-cover{\n    object-fit: cover;\n}\n.object-contain{\n    object-fit: contain;\n}\n.object-top{\n    object-position: top;\n}\n.object-bottom{\n    object-position: bottom;\n}\n.object-left{\n    object-position: left;\n}\n.object-right{\n    object-position: right;\n}\n.overflow-hidden{\n    overflow: hidden;\n}\n.overflow-x-hidden{\n    overflow-x: hidden;\n}\n.overflow-y-hidden{\n    overflow-y: hidden;\n}\n.overflow-auto{\n    overflow: auto;\n}\n.overflow-y-auto{\n    overflow-y: auto;\n}\n.overflow-x-auto{\n    overflow-y: auto;\n}\n.cursor-pointer{\n    cursor: pointer;\n}\n\nhr{\n    background-color: #cfcfcf;\n}\n\n.mix-screen{\n    mix-blend-mode: screen;\n}\n\n.hoverable:hover{\n    opacity: 0.55 !important;\n    cursor: pointer !important;\n}\n\n.parent:not(:hover) .show-on-parent-hover{\n    display: none !important;\n}\n\n.parent:not(:hover) .visible-on-parent-hover{\n    opacity: 0 !important;\n}", ""]);
 
 // exports
 
@@ -30458,7 +30458,9 @@ function assembleFeatureSection(props = {}, images) {
     commands.group();
   } else {
     selection.items = [container, features];
+    commands.alignTop();
     commands.alignLeft();
+    commands.group();
     container.resize(container.localBounds.width, features.localBounds.height);
   }
 
@@ -31862,7 +31864,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const { SceneNode, selection, Color, LinearGradient, ImageFill, Rectangle, Shadow, Text } = __webpack_require__(/*! scenegraph */ "scenegraph");
 const commands = __webpack_require__(/*! commands */ "commands");
-const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
+const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode, createRectangle } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 const gridRatingComponent = __webpack_require__(/*! ./components/rating */ "./src/Creators/Grid/components/rating/index.js");
 const updateRating = __webpack_require__(/*! ./components/rating/updateRating */ "./src/Creators/Grid/components/rating/updateRating.js");
 
@@ -31880,7 +31882,7 @@ function getGradient({ aspectRatio, imageHeight }) {
 }
 
 function getCornerRadius({ cornerRadius, shadow, border }, forImage) {
-    const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+    const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16, 'full': 9999 };
     let radius = radiusMap[cornerRadius];
     if (forImage && (shadow || border)) radius *= 0.65;
 
@@ -31905,12 +31907,14 @@ function getShadow(shadow) {
 
 function createCard(props) {
     let {
+        cornerRadius,
         aspectRatio = 'landscape',
         width = 450,
         padding,
         border,
         shadow,
         overlay,
+        contentPlacement,
         showRating,
         showPrice,
         showTitle,
@@ -31918,6 +31922,9 @@ function createCard(props) {
         spaceAroundImage,
         data
     } = props;
+
+    const centerContent = ["center", "bottomCenter"].includes(contentPlacement);
+    const imageIsCircle = cornerRadius == "full" && aspectRatio == "sqr";
 
     const {
         image, title, description, price, rating
@@ -31930,8 +31937,9 @@ function createCard(props) {
     let imageHeight = width * 0.65;
     if (aspectRatio == 'por') imageHeight = width / 0.75;else if (aspectRatio == 'sqr') imageHeight = width * 1;
 
-    const cardImage = new Rectangle();
-    cardImage.resize(width, imageHeight);
+    const cardImage = createRectangle(width, imageHeight, {
+        border: true
+    });
 
     try {
         cardImage.fill = image;
@@ -31975,6 +31983,7 @@ function createCard(props) {
     if (showTitle) {
         cardTitle = createText(title, {
             name: "Title",
+            align: centerContent ? "center" : "left",
             fill: overlay ? new Color("white", 0.8) : new Color("#000"),
             width: width - (!overlay && spaceAroundImage ? 0 : padding * 2),
             height: showDescription || showPrice ? 21 : null,
@@ -31989,6 +31998,7 @@ function createCard(props) {
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
+            align: centerContent ? "center" : "left",
             fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"),
             fontSize: baseTextSize,
             fontStyle: "Regular", lineSpacing: 22,
@@ -32015,7 +32025,7 @@ function createCard(props) {
 
     if (textNodes.length) {
         selection.items = textNodes;
-        commands.alignLeft();
+        if (centerContent) commands.alignHorizontalCenter();else commands.alignLeft();
         commands.group();
 
         cardText = selection.items[0];
@@ -32075,12 +32085,13 @@ function createCard(props) {
             commands.bringToFront();
 
             let bottomPadding = padding;
-            if (!showDescription && !showPrice) bottomPadding = cardText.localBounds.height;
+            // if(!showDescription && !showPrice) 
+            //     bottomPadding = cardText.localBounds.height;
 
-            cardText.moveInParentCoordinates(padding, -bottomPadding);
+            cardText.moveInParentCoordinates(padding, -bottomPadding * (imageIsCircle ? 2 : 1));
         } else {
             selection.items = [cardImage, cardText];
-            commands.alignLeft();
+            if (centerContent) commands.alignHorizontalCenter();else commands.alignLeft();
             commands.group();
 
             cardContent = selection.items[0];
@@ -32276,8 +32287,11 @@ module.exports = createGridCards;
 /***/ (function(module, exports) {
 
 const defaultGridProps = {
+    data: null,
+    dataType: "articles",
     aspectRatio: "land",
     overlay: false,
+    contentPlacement: "bottomLeft",
     showImage: true,
     showRating: false,
     rating: {
@@ -32297,8 +32311,7 @@ const defaultGridProps = {
     numberOfRecords: 7,
     columns: 4,
     columnSpacing: 20,
-    rowSpacing: 30,
-    data: null
+    rowSpacing: 30
 };
 
 module.exports = defaultGridProps;
@@ -32312,7 +32325,7 @@ module.exports = defaultGridProps;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ["Geoffrey Bunting", "tatiana", "Jack Shepherd", "James Surowiecki", "Todd Sattersten", "Stephen Moore", "Kerala Taylor", "Matt Higginson", "Niklas Göke", "Carvell Wallace", "Catherine Kapphahn", "Ryan Fan", "ScottCDunn", "Jessie Waddell", "Barack Obama", "ScottCDunn", "Misty L. Heggeness", "Nick Licata", "Tim Denning", "Jessica Wildfire", "Rosie Alderson, PhD", "Carvell Wallace", "Rhiannin Bunney", "Clive Thompson", "Nabil Alouani", "Eric Weiner", "Betsy Hart", "John DeVore", "Ellis Brooks", "Gwen Frisbie-Fulton", "Linda Castrilli", "Ellie Reaves", "Irma McClaurin", "John DeVore", "Paul Greenberg", "Eve Peyser", "Cai Emmons", "Barack Obama", "ScottCDunn", "Kelly Eden", "Jessica Martin", "Alsie Gray", "Justine L", "Alex Mell-Taylor", "Eve Peyser", "Kate Green Tripp", "Philosophy as a Way of Life", "Klipsun Magazine", "Sarah Stankorb", "Amber the Alchemist"];
+module.exports = ["Geoffrey Bunting", "Jack Shepherd", "James Surowiecki", "Todd Sattersten", "Stephen Moore", "Kerala Taylor", "Matt Higginson", "Niklas Göke", "Carvell Wallace", "Catherine Kapphahn", "Ryan Fan", "ScottCDunn", "Jessie Waddell", "James H. Chase", "ScottCDunn", "Misty L. Heggeness", "Nick Licata", "Tim Denning", "Jessica Wildfire", "Rosie Alderson, PhD", "Carvell Wallace", "Rhiannin Bunney", "Clive Thompson", "Nabil Alouani", "Eric Weiner", "Betsy Hart", "John DeVore", "Ellis Brooks", "Gwen Frisbie-Fulton", "Linda Castrilli", "Ellie Reaves", "Irma McClaurin", "John DeVore", "Paul Greenberg", "Eve Peyser", "Cai Emmons", "Barack Obama", "ScottCDunn", "Kelly Eden", "Jessica Martin", "Alsie Gray", "Justine L", "Alex Mell-Taylor", "Eve Peyser", "Kate Green Tripp", "Philosophy as a Way of Life", "Klipsun Magazine", "Sarah Stankorb", "Amber the Alchemist"];
 
 /***/ }),
 
@@ -32338,23 +32351,65 @@ const titles = __webpack_require__(/*! ./titles */ "./src/Creators/Grid/generate
 const authors = __webpack_require__(/*! ./authors */ "./src/Creators/Grid/generateData/authors.js");
 const descriptions = __webpack_require__(/*! ./descriptions */ "./src/Creators/Grid/generateData/descriptions.js");
 const metas = __webpack_require__(/*! ./metas */ "./src/Creators/Grid/generateData/metas.js");
+const positions = __webpack_require__(/*! ./positions */ "./src/Creators/Grid/generateData/positions.js");
 const { shuffle, randomBetween } = __webpack_require__(/*! ../../../utils */ "./src/utils/index.js");
 
-function generateData(entries) {
+function teamData(imageNames) {
+    const data = Array(imageNames ? imageNames.length : 50).fill("").map((_, i) => {
+        const randomPrice = Math.floor(randomBetween(95, 2000));
+        const randomRating = randomBetween(1, 5).toFixed(1);
+
+        return {
+            title: imageNames ? imageNames[i] : authors[i],
+            description: positions[i],
+            price: randomPrice.toLocaleString(),
+            rating: randomRating
+        };
+    });
+
+    return imageNames ? data : shuffle(data);
+}
+
+function shopData(imageNames) {
+    const data = Array(imageNames ? imageNames.length : 50).fill("").map((_, i) => {
+        const randomPrice = Math.floor(randomBetween(230, 2750));
+        const randomRating = randomBetween(1, 5).toFixed(1);
+
+        return {
+            title: imageNames ? imageNames[i] : titles[i],
+            description: descriptions[i],
+            price: randomPrice.toLocaleString(),
+            rating: randomRating
+        };
+    });
+
+    return imageNames ? data : shuffle(data);
+}
+
+function articleData() {
     const data = Array(50).fill("").map((_, i) => {
         const randomPrice = Math.floor(randomBetween(95, 2000));
         const randomRating = randomBetween(1, 5).toFixed(1);
 
         return {
             title: titles[i],
-            // description: descriptions[i],
-            description: authors[i],
+            description: descriptions[i],
             price: randomPrice.toLocaleString(),
             rating: randomRating
         };
     });
 
-    return shuffle(data).slice(0, entries);
+    return shuffle(data);
+}
+
+function generateData(entries, type = "team", imageNames) {
+    const generator = {
+        "articles": articleData,
+        "team": teamData,
+        "shop": shopData
+    }[type];
+
+    return generator(imageNames).slice(0, entries);
 }
 
 module.exports = generateData;
@@ -32369,6 +32424,17 @@ module.exports = generateData;
 /***/ (function(module, exports) {
 
 module.exports = [["Dec 30", "13 min read", "Life"], ["Dec 30", "5 min read", "The Great Resignation"], ["Dec 29", "15 min read", "Books"], ["Dec 30", "4 min read", "Covid 19"], ["Dec 21", "6 min read", "Diversity"], ["Dec 30", "3 min read", "Business"], ["Dec 29", "7 min read", "Family"], ["Dec 29", "3 min read", "Harry Reid"], ["Dec 30", "6 min read", "New Year"], ["Dec 29", "10 min read", "Writing"], ["Dec 23", "8 min read", "Motherhood"], ["Dec 24", "6 min read", "Work"], ["Dec 25", "5 min read", "Debt"], ["Dec 27", "5 min read", "Personal Essay"], ["Dec 26", "1 min read", "Science"], ["Dec 24", "4 min read", "Christmas"], ["Dec 22", "4 min read", "Women"], ["Dec 24", "5 min read", "Politics"], ["Dec 23", "5 min read", "Work"], ["Dec 20", "6 min read", "Society"], ["Dec 22", "5 min read", "Science"], ["Dec 22", "6 min read", "Christmas"], ["Dec 17", "10 min read", "Parenting"], ["Dec 22", "6 min read", "History"], ["Dec 22", "8 min read", "Science"], ["Dec 20", "5 min read", "Thoreau"], ["Dec 14", "8 min read", "Dna Test"], ["Dec 21", "76 min read", "Covid 19"], ["Dec 18", "15 min read", "Art"], ["Dec 19", "4 min read", "Politics"], ["Dec 16", "6 min read", "Life Lessons"], ["Nov 20", "4 min read", "Teaching"], ["Dec 16", "2 min read", "Bell Hooks"], ["Dec 16", "5 min read", "Friendship"], ["Dec 17", "4 min read", "Climate Change"], ["Dec 18", "7 min read", "New Years Resolutions"], ["Dec 16", "4 min read", "2021"], ["Dec 17", "3 min read"], ["Dec 16", "5 min read", "Addiction"], ["Dec 17", "3 min read", "Self"], ["Dec 17", "5 min read", "Pandemic Diaries"], ["Dec 17", "5 min read", "Mental Health"], ["Dec 15", "4 min read", "Remote Working"], ["Dec 10", "10 min read", "Kurzgesagt"], ["Dec 11", "6 min read", "Books"], ["Dec 13", "3 min read", "Reflections"], ["Dec 16", "9 min read", "Philosophy"], ["Dec 16", "5 min read", "Joy"], ["Dec 16", "6 min read", "One Tree Hill"], ["Dec 17", "8 min read", "Mindfulness"]];
+
+/***/ }),
+
+/***/ "./src/Creators/Grid/generateData/positions.js":
+/*!*****************************************************!*\
+  !*** ./src/Creators/Grid/generateData/positions.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ["Marketing Specialist", "Marketing Manager", "Marketing Director", "Graphic Designer", "Marketing Research Analyst", "Marketing Communications Manager", "Marketing Consultant", "Product Manager", "Public Relations", "Social Media Assistant", "Brand Manager", "SEO Manager", "Content Marketing Manager", "Copywriter", "Media Buyer", "Digital Marketing Manager", "eCommerce Marketing Specialist", "Brand Strategist", "Vice President of Marketing", "Media Relations Coordinator", "Administrative Assistant", "Receptionist", "Office Manager", "Auditing Clerk", "Bookkeeper", "Account Executive", "Branch Manager", "Business Manager", "Quality Control Coordinator", "Administrative Manager", "Chief Executive Officer", "Business Analyst", "Risk Manager", "Human Resources", "Office Assistant", "Secretary", "Office Clerk", "File Clerk", "Account Collector", "Administrative Specialist", "Executive Assistant", "Program Administrator", "Program Manager", "Administrative Analyst", "Data Entry", "Chief Executive Officer", "Chief Operating Officer", "Chief Financial Officer", "Chief Information Officer", "Chief Technology Officer", "Chief Marketing Officer", "Chief Human Resources Officer", "Chief Data Officer", "Chief Product Officer", "Chief Customer Officer", "Team Leader", "Manager", "Assistant Manager", "Executive", "Director", "Coordinator", "Administrator", "Controller", "Officer", "Organizer", "Supervisor", "Superintendent", "Head", "Overseer", "Chief", "Foreman", "Controller", "Principal", "President", "Lead", "Computer Scientist", "IT Professional", "UX Designer & UI Developer", "SQL Developer", "Web Designer", "Web Developer", "Help Desk Worker/Desktop Support", "Software Engineer", "Data Entry", "DevOps Engineer", "Computer Programmer", "Network Administrator", "Information Security Analyst", "Artificial Intelligence Engineer", "Cloud Architect", "IT Manager", "Technical Specialist", "Application Developer", "Sales Associate", "Sales Representative", "Sales Manager", "Retail Worker", "Store Manager", "Sales Representative", "Sales Manager", "Real Estate Broker", "Sales Associate", "Cashier", "Store Manager", "Account Executive", "Account Manager", "Area Sales Manager", "Direct Salesperson", "Director of Inside Sales", "Outside Sales Manager", "Sales Analyst", "Market Development Manager", "B2B Sales Specialist", "Sales Engineer", "Merchandising Associate", "Construction Worker", "Taper", "Plumber", "Heavy Equipment Operator", "Vehicle or Equipment Cleaner", "Carpenter", "Electrician", "Painter", "Welder", "Handyman", "Boilermaker", "Crane Operator", "Building Inspector", "Pipefitter", "Sheet Metal Worker", "Iron Worker", "Mason", "Roofer", "Solar Photovoltaic Installer", "Well Driller", "CEO", "Proprietor", "Principal", "Owner", "President", "Founder", "Administrator", "Director", "Managing Partner", "Managing Member", "Board of Directors", "C-Level or C-Suite.", "Shareholders", "Managers", "Supervisors", "Front-Line Employees", "Quality Control", "Human Resources", "Accounting Staff", "Marketing Staff", "Purchasing Staff", "Shipping and Receiving Staff", "Office Manager", "Receptionist", "Virtual Assistant", "Customer Service", "Customer Support", "Concierge", "Help Desk", "Customer Service Manager", "Technical Support Specialist", "Account Representative", "Client Service Specialist", "Customer Care Associate", "Operations Manager", "Operations Assistant", "Operations Coordinator", "Operations Analyst", "Operations Director", "Vice President of Operations", "Operations Professional", "Scrum Master", "Continuous Improvement Lead", "Continuous Improvement Consultant", "Credit Authorizer", "Benefits Manager", "Credit Counselor", "Accountant", "Bookkeeper", "Accounting Analyst", "Accounting Director", "Accounts Payable/Receivable Clerk", "Auditor", "Budget Analyst", "Controller", "Financial Analyst", "Finance Manager", "Economist", "Payroll Manager", "Payroll Clerk", "Financial Planner", "Financial Services Representative", "Finance Director", "Commercial Loan Officer", "Engineer", "Mechanical Engineer", "Civil Engineer", "Electrical Engineer", "Assistant Engineer", "Chemical Engineer", "Chief Engineer", "Drafter", "Engineering Technician", "Geological Engineer", "Biological Engineer", "Maintenance Engineer", "Mining Engineer", "Nuclear Engineer", "Petroleum Engineer", "Plant Engineer", "Production Engineer", "Quality Engineer", "Safety Engineer", "Sales Engineer", "Chief People Officer", "VP of Miscellaneous Stuff", "Chief Robot Whisperer", "Director of First Impressions", "Culture Operations Manager", "Director of Ethical Hacking", "Software Ninjaneer", "Director of Bean Counting", "Digital Overlord", "Director of Storytelling", "Researcher", "Research Assistant", "Data Analyst", "Business Analyst", "Financial Analyst", "Biostatistician", "Title Researcher", "Market Researcher", "Title Analyst", "Medical Researcher", "Mentor", "Tutor/Online Tutor", "Teacher", "Teaching Assistant", "Substitute Teacher", "Preschool Teacher", "Test Scorer", "Online ESL Instructor", "Professor", "Assistant Professor", "Graphic Designer", "Artist", "Interior Designer", "Video Editor", "Video or Film Producer", "Playwright", "Musician", "Novelist/Writer", "Computer Animator", "Photographer", "Camera Operator", "Sound Engineer", "Motion Picture Director", "Actor", "Music Producer", "Director of Photography", "Nurse", "Travel Nurse", "Nurse Practitioner", "Doctor", "Caregiver", "CNA", "Physical Therapist", "Pharmacist", "Pharmacy Assistant", "Medical Administrator", "Medical Laboratory Tech", "Physical Therapy Assistant", "Massage Therapy", "Dental Hygienist", "Orderly", "Personal Trainer", "Massage Therapy", "Medical Laboratory Tech", "Phlebotomist", "Medical Transcriptionist", "Telework Nurse/Doctor", "Reiki Practitioner", "Housekeeper", "Flight Attendant", "Travel Agent", "Hotel Front Door Greeter", "Bellhop", "Cruise Director", "Entertainment Specialist", "Hotel Manager", "Front Desk Associate", "Front Desk Manager", "Concierge", "Group Sales", "Event Planner", "Porter", "Spa Manager", "Wedding Coordinator", "Cruise Ship Attendant", "Casino Host", "Hotel Receptionist", "Reservationist", "Events Manager", "Meeting Planner", "Lodging Manager", "Director of Maintenance", "Valet", "Waiter/Waitress", "Server", "Chef", "Fast Food Worker", "Barista", "Line Cook", "Cafeteria Worker", "Restaurant Manager", "Wait Staff Manager", "Bus Person", "Restaurant Chain Executive", "Political Scientist", "Chemist", "Conservation Scientist", "Sociologist", "Biologist", "Geologist", "Physicist", "Astronomer", "Atmospheric Scientist", "Molecular Scientist", "Call Center Representative", "Customer Service", "Telemarketer", "Telephone Operator", "Phone Survey Conductor", "Dispatcher for Trucks or Taxis", "Customer Support Representative", "Over the Phone Interpreter", "Phone Sales Specialist", "Mortgage Loan Processor", "Counselor", "Mental Health Counselor", "Addiction Counselor", "School Counselor", "Speech Pathologist", "Guidance Counselor", "Social Worker", "Therapist", "Life Coach", "Couples Counselor", "Beautician", "Hair Stylist", "Nail Technician", "Cosmetologist", "Salon Manager", "Makeup Artist", "Esthetician", "Skin Care Specialist", "Manicurist", "Barber", "Journalist", "Copy Editor", "Editor/Proofreader", "Content Creator", "Speechwriter", "Communications Director", "Screenwriter", "Technical Writer", "Columnist", "Public Relations Specialist", "Proposal Writer", "Content Strategist", "Grant Writer", "Video Game Writer", "Translator", "Film Critic", "Copywriter", "Travel Writer", "Social Media Specialist", "Ghostwriter", "Warehouse Worker", "Painter", "Truck Driver", "Heavy Equipment Operator", "Welding", "Physical Therapy Assistant", "Housekeeper", "Landscaping Worker", "Landscaping Assistant", "Mover", "Animal Breeder", "Veterinary Assistant", "Farm Worker", "Animal Shelter Worker", "Dog Walker / Pet Sitter", "Zoologist", "Animal Trainer", "Service Dog Trainer", "Animal Shelter Manager", "Animal Control Officer", "Delivery Driver", "School Bus Driver", "Truck Driver", "Tow Truck Operator", "UPS Driver", "Mail Carrier", "Recyclables Collector", "Courier", "Bus Driver", "Cab Driver", "Animal Shelter Board Member", "Office Volunteer", "Animal Shelter Volunteer", "Hospital Volunteer", "Youth Volunteer", "Food Kitchen Worker", "Homeless Shelter Worker", "Conservation Volunteer", "Meals on Wheels Driver", "Habitat for Humanity Builder", "Emergency Relief Worker", "Red Cross Volunteer", "Community Food Project Worker", "Women’s Shelter Jobs", "Suicide Hotline Volunteer", "School Volunteer", "Community Volunteer Jobs", "Sports Volunteer", "Church Volunteer", "Archivist", "Actuary", "Architect", "Personal Assistant", "Entrepreneur", "Security Guard", "Mechanic", "Recruiter", "Mathematician", "Locksmith", "Management Consultant", "Shelf Stocker", "Caretaker or House Sitter", "Library Assistant", "Translator", "HVAC Technician", "Attorney", "Paralegal", "Executive Assistant", "Personal Assistant", "Bank Teller", "Parking Attendant", "Machinery Operator", "Manufacturing Assembler", "Funeral Attendant", "Assistant Golf Professional", "Yoga Instructor"];
 
 /***/ }),
 
@@ -32424,6 +32490,7 @@ module.exports = getGridImages;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 const { selection } = __webpack_require__(/*! scenegraph */ "scenegraph");
+const viewport = __webpack_require__(/*! viewport */ "viewport");
 
 const { editDom, getAssetFileFromPath, placeInParent, tagNode } = __webpack_require__(/*! ../../utils */ "./src/utils/index.js");
 
@@ -32435,17 +32502,19 @@ const getGridImages = __webpack_require__(/*! ./getImages */ "./src/Creators/Gri
 async function Grid(userProps) {
     let props = _extends({}, defaultGridProps, userProps || {});
 
-    const gridImages = await getAssetFileFromPath("images/grid", "jpg", true);
+    const dataType = props.dataType || "articles";
+    const gridImages = await getAssetFileFromPath("images/" + dataType, "jpg", true);
+    const imageNames = gridImages.map(e => e.name.replace(".jpg", ""));
 
     if (!props.data || !props.data.length || props.refreshData) {
-        props.data = generateData(props.numberOfRecords);
+        props.data = generateData(props.numberOfRecords, dataType, imageNames);
         delete props.refreshData;
     } else {
         const currentImages = getGridImages(selection.items[0], props);
         gridImages.splice(0, currentImages.length, ...currentImages);
 
         if (props.data.length > props.numberOfRecords) props.data = props.data.slice(0, props.numberOfRecords);else if (props.data.length < props.numberOfRecords) {
-            props.data = [...props.data, ...generateData(props.numberOfRecords - props.data.length)];
+            props.data = [...props.data, ...generateData(props.numberOfRecords - props.data.length, dataType, imageNames)];
         }
     }
 
@@ -32474,7 +32543,9 @@ async function Grid(userProps) {
                 if (oldGrid) {
                     placeInParent(grid, oldGrid.topLeftInParent);
                     oldGrid.removeFromParent();
-                } else placeInParent(grid, { x: 0, y: 0 });
+                } else {
+                    placeInParent(grid, { x: 0, y: viewport.bounds.y });
+                }
             } catch (error) {
                 console.log("Error creating grid: ", error);
             }
@@ -33458,7 +33529,8 @@ function createMedia({
 
       if (theme.overlay.blur) {
         const blurMap = {
-          "sm": [8, -9, 10],
+          "xs": [3, -11, 0.1],
+          "sm": [8, -9, 1],
           "md": [15, -20, 0.4]
         };
         const blurValues = blurMap[theme.overlay.blur || "sm"] || blurMap.sm;
@@ -36379,11 +36451,11 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 function Toggle({ checked, onChange }) {
     return React.createElement(
         'div',
-        { className: `cursor-pointer flex border ${checked ? 'border-dark-gray bg-dark-gray' : 'bg-black26 border-gray'}`,
+        { className: `cursor-pointer flex border ${checked ? 'border-dark-gray bg-dark-gray' : 'bg-black54 border-gray'}`,
             style: { width: "28px", padding: "1px", borderRadius: "8px" },
             onClick: () => onChange(!checked)
         },
-        React.createElement('div', { className: `rounded-full bg-white border border-gray ${checked && 'ml-auto'}`,
+        React.createElement('div', { className: `rounded-full bg-white border border-darkgray ${checked && 'ml-auto'}`,
             style: { width: "10px", height: "10px" }
         })
     );
@@ -38329,15 +38401,19 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const Creators = __webpack_require__(/*! ../../Creators */ "./src/Creators/index.js");
 const Toggle = __webpack_require__(/*! ../../components/Toggle */ "./src/components/Toggle.jsx");
 const ButtonGroup = __webpack_require__(/*! ../../components/ButtonGroup */ "./src/components/ButtonGroup.jsx");
+const ComponentFieldEditor = __webpack_require__(/*! ../../components/ComponentFieldEditor */ "./src/components/ComponentFieldEditor.jsx");
+const ColorList = __webpack_require__(/*! ../../components/ColorList */ "./src/components/ColorList.jsx");
 
 function Grid({ value, onClose }) {
     const [numberOfRecords, setNumberOfRecords] = React.useState(value ? value.numberOfRecords : "");
+    const dataType = value ? value.dataType : "articles";
     const columns = value ? value.columns : 3;
     const columnChoices = [{ label: 'TWO', value: 2 }, { label: 'THREE', value: 3 }, { label: 'FOUR', value: 4 }, { label: 'FIVE', value: 5 }];
     const columnSpacing = value ? value.columnSpacing : 20;
     const rowSpacing = value ? value.rowSpacing : 30;
     const aspectRatio = value ? value.aspectRatio : 'landscape';
     const overlay = value ? value.overlay : false;
+    const contentPlacement = value ? value.contentPlacement : false;
     const showRating = value ? value.showRating : true;
     const showTitle = value ? value.showTitle : true;
     const showDescription = value ? value.showDescription : true;
@@ -38351,6 +38427,10 @@ function Grid({ value, onClose }) {
 
     function refreshData() {
         Creators.Grid(_extends({}, value, { refreshData: true }));
+    }
+
+    function handleSetDataType(dataType) {
+        Creators.Grid(_extends({}, value, { dataType, refreshData: true }));
     }
 
     function handleSaveNumberOfRecords(e) {
@@ -38379,8 +38459,17 @@ function Grid({ value, onClose }) {
         Creators.Grid(_extends({}, value, { overlay }));
     }
 
+    function handleSetContentPlacement(contentPlacement) {
+        Creators.Grid(_extends({}, value, { contentPlacement }));
+    }
+
     function handleSetShowRating(showRating) {
         Creators.Grid(_extends({}, value, { showRating }));
+    }
+
+    function handleSetRatingColor(color) {
+        const rating = _extends({}, value.rating || {}, { color });
+        Creators.Grid(_extends({}, value, { rating }));
     }
 
     function handleSetShowTitle(showTitle) {
@@ -38449,12 +38538,12 @@ function Grid({ value, onClose }) {
                     { className: 'flex items-center justify-between' },
                     React.createElement(
                         'label',
-                        { className: 'mb-1 text-md' },
-                        'Grid data'
+                        { className: 'text-md' },
+                        'Data Set'
                     ),
                     React.createElement(
                         'span',
-                        { className: 'cursor-pointer bg-gray rounded-full flex center-center', style: { width: "22px", height: "22px", marginTop: "-4px" },
+                        { className: 'cursor-pointer bg-gray rounded-full flex center-center', style: { width: "22px", height: "22px" },
                             onClick: refreshData
                         },
                         React.createElement(
@@ -38463,6 +38552,20 @@ function Grid({ value, onClose }) {
                             React.createElement('path', { fill: 'none', stroke: '#555', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' })
                         )
                     )
+                ),
+                React.createElement(ButtonGroup, {
+                    value: dataType,
+                    choices: ["articles", "team", "shop"],
+                    onChange: handleSetDataType
+                })
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-2' },
+                React.createElement(
+                    'label',
+                    { className: 'text-md' },
+                    'Number of records'
                 ),
                 React.createElement(
                     'div',
@@ -38477,6 +38580,7 @@ function Grid({ value, onClose }) {
                             className: 'm-0 w-full',
                             type: 'number',
                             placeholder: 'Set input width here...',
+                            'uxp-quiet': 'true',
                             value: numberOfRecords,
                             onChange: e => setNumberOfRecords(e.target.value)
                         })
@@ -38485,51 +38589,41 @@ function Grid({ value, onClose }) {
             ),
             React.createElement(
                 'div',
-                { className: 'px-3 mt-2 flex flex-col items-start' },
-                React.createElement(
-                    'label',
-                    { className: 'mb-1 text-md' },
-                    'No. of columns'
-                ),
-                React.createElement(ButtonGroup, {
-                    value: columns,
-                    choices: columnChoices,
-                    onChange: handleSetColumns
+                { className: 'px-3 mt-2' },
+                React.createElement(ComponentFieldEditor, {
+                    field: {
+                        type: "number",
+                        label: "No. of columns",
+                        min: 2,
+                        max: 12,
+                        value: columns
+                    },
+                    onChange: (_id, val) => handleSetColumns(val)
                 })
             ),
             React.createElement(
                 'div',
                 { className: 'px-3 mt-3' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Column space'
-                ),
-                React.createElement(
-                    'div',
-                    null,
-                    React.createElement('input', { className: 'w-full', type: 'range', min: '0', max: '40',
-                        value: columnSpacing,
-                        onChange: e => handleSetColumnSpacing(parseInt(e.target.value))
-                    })
-                )
-            ),
-            rowCount > 1 && React.createElement(
-                'div',
-                { className: 'px-3 mt-3' },
-                React.createElement(
-                    'label',
-                    { className: 'text-md' },
-                    'Row space'
-                ),
-                React.createElement(
-                    'div',
-                    null,
-                    React.createElement('input', { className: 'w-full', type: 'range', min: '0', max: '40',
-                        value: rowSpacing,
-                        onChange: e => handleSetRowSpacing(parseInt(e.target.value))
-                    })
-                )
+                React.createElement(ComponentFieldEditor, {
+                    field: {
+                        type: "number",
+                        label: "Column space",
+                        min: 0,
+                        max: 100,
+                        value: columnSpacing
+                    },
+                    onChange: (_id, val) => handleSetColumnSpacing(parseInt(val))
+                }),
+                rowCount > 1 && React.createElement(ComponentFieldEditor, {
+                    field: {
+                        type: "number",
+                        label: "Row space",
+                        min: 0,
+                        max: 100,
+                        value: rowSpacing
+                    },
+                    onChange: (_id, val) => handleSetRowSpacing(parseInt(val))
+                })
             ),
             React.createElement(
                 'div',
@@ -38538,20 +38632,6 @@ function Grid({ value, onClose }) {
                     'label',
                     { className: 'text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26' },
                     'CARD PROPS'
-                )
-            ),
-            React.createElement(
-                'div',
-                { className: 'px-3 pt-1 mt-3' },
-                React.createElement(
-                    'div',
-                    { className: 'flex items-center justify-between' },
-                    React.createElement(
-                        'label',
-                        { className: 'text-md' },
-                        'Overlay Text'
-                    ),
-                    React.createElement(Toggle, { checked: overlay, onChange: handleSetOverlay })
                 )
             ),
             React.createElement(
@@ -38595,7 +38675,7 @@ function Grid({ value, onClose }) {
                     { className: 'mt-1' },
                     React.createElement(ButtonGroup, {
                         value: cornerRadius,
-                        choices: ["none", "sm", "md", "lg"],
+                        choices: ["none", "sm", "md", "lg", "full"],
                         onChange: handleSetCornerRadius
                     })
                 )
@@ -38662,16 +38742,58 @@ function Grid({ value, onClose }) {
             ),
             React.createElement(
                 'div',
-                { className: 'px-3 mt-3' },
+                { className: 'px-3 pt-1 mt-3' },
                 React.createElement(
                     'div',
                     { className: 'flex items-center justify-between' },
                     React.createElement(
                         'label',
                         { className: 'text-md' },
-                        'Show rating'
+                        'Overlay Content'
+                    ),
+                    React.createElement(Toggle, { checked: overlay, onChange: handleSetOverlay })
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'px-3 mt-3' },
+                React.createElement(
+                    'label',
+                    { className: 'block text-md' },
+                    'Placement'
+                ),
+                React.createElement(ButtonGroup, {
+                    value: contentPlacement,
+                    choices: [{ label: "Left", value: "bottomLeft" }, { label: "Center", value: "bottomCenter" }],
+                    onChange: handleSetContentPlacement
+                })
+            ),
+            React.createElement(
+                'div',
+                { className: `px-3 mt-3 ${showRating && 'py-2 bg-white'}` },
+                React.createElement(
+                    'div',
+                    { className: 'flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'text-md' },
+                        'Rating'
                     ),
                     React.createElement(Toggle, { checked: showRating, onChange: handleSetShowRating })
+                ),
+                showRating && React.createElement(
+                    'div',
+                    { className: 'pt-3 flex items-center justify-between' },
+                    React.createElement(
+                        'label',
+                        { className: 'block text-md' },
+                        'Color'
+                    ),
+                    React.createElement(ColorList, {
+                        colors: ["#FF385C", "#F7CD42"],
+                        selectedColor: value.rating ? value.rating.color : null,
+                        onChange: handleSetRatingColor
+                    })
                 )
             ),
             React.createElement(
@@ -38683,7 +38805,7 @@ function Grid({ value, onClose }) {
                     React.createElement(
                         'label',
                         { className: 'text-md' },
-                        'Show title'
+                        'Title'
                     ),
                     React.createElement(Toggle, { checked: showTitle, onChange: handleSetShowTitle })
                 )
@@ -38697,7 +38819,7 @@ function Grid({ value, onClose }) {
                     React.createElement(
                         'label',
                         { className: 'text-md' },
-                        'Show description'
+                        'Description'
                     ),
                     React.createElement(Toggle, { checked: showDescription, onChange: handleSetShowDescription })
                 )
@@ -38711,7 +38833,7 @@ function Grid({ value, onClose }) {
                     React.createElement(
                         'label',
                         { className: 'text-md' },
-                        'Show price'
+                        'Price'
                     ),
                     React.createElement(Toggle, { checked: showPrice, onChange: handleSetShowPrice })
                 )
@@ -39415,7 +39537,7 @@ const mediaSectionSchema = {
           },
           blur: {
             type: "radio",
-            choices: ["sm", "md"],
+            choices: ["xs", "sm", "md"],
             defaultValue: "sm",
             optional: true
           }
@@ -40393,6 +40515,9 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      verticalPadding: {
+        type: "number"
+      },
       width: {
         type: "radio",
         choices: [1600, 1920]

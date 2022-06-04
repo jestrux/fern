@@ -250,7 +250,7 @@ const mediaSectionSchema = {
           },
           blur: {
             type: "radio",
-            choices: ["sm", "md"],
+            choices: ["xs", "sm", "md"],
             defaultValue: "sm",
             optional: true,
           },

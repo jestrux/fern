@@ -19,6 +19,9 @@ const schema = {
   theme: {
     type: "section",
     children: {
+      verticalPadding: {
+        type: "number",
+      },
       width: {
         type: "radio",
         choices: [1600, 1920],

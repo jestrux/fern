@@ -2,11 +2,14 @@ const React = require('react');
 const Creators = require('../../Creators');
 const Toggle = require('../../components/Toggle');
 const ButtonGroup = require('../../components/ButtonGroup');
+const ComponentFieldEditor = require('../../components/ComponentFieldEditor');
+const ColorList = require('../../components/ColorList');
 
 function Grid({value, onClose}){
     const [numberOfRecords, setNumberOfRecords] = React.useState(
         value ? value.numberOfRecords : ""
       );
+    const dataType = value ? value.dataType : "articles";
     const columns = value ? value.columns : 3;
     const columnChoices = [
         { label: 'TWO', value: 2},
@@ -18,6 +21,7 @@ function Grid({value, onClose}){
     const rowSpacing = value ? value.rowSpacing : 30;
     const aspectRatio = value ? value.aspectRatio : 'landscape';
     const overlay = value ? value.overlay : false;
+    const contentPlacement = value ? value.contentPlacement : false;
     const showRating = value ? value.showRating : true;
     const showTitle = value ? value.showTitle : true;
     const showDescription = value ? value.showDescription : true;
@@ -31,6 +35,10 @@ function Grid({value, onClose}){
 
     function refreshData(){
         Creators.Grid({...value, refreshData: true});
+    }
+
+    function handleSetDataType(dataType){
+        Creators.Grid({...value, dataType, refreshData: true});
     }
 
     function handleSaveNumberOfRecords(e){
@@ -59,8 +67,17 @@ function Grid({value, onClose}){
         Creators.Grid({...value, overlay});
     }
 
+    function handleSetContentPlacement(contentPlacement){
+        Creators.Grid({...value, contentPlacement});
+    }
+
     function handleSetShowRating(showRating){
         Creators.Grid({...value, showRating});
+    }
+
+    function handleSetRatingColor(color){
+        const rating = {...(value.rating || {}), color}
+        Creators.Grid({...value, rating});
     }
 
     function handleSetShowTitle(showTitle){
@@ -113,14 +130,23 @@ function Grid({value, onClose}){
 
                 <div className="px-3 mt-2">
                     <div className="flex items-center justify-between">
-                        <label className="mb-1 text-md">Grid data</label>
+                        <label className="text-md">Data Set</label>
 
-                        <span className="cursor-pointer bg-gray rounded-full flex center-center" style={{width: "22px", height: "22px", marginTop: "-4px"}}
+                        <span className="cursor-pointer bg-gray rounded-full flex center-center" style={{width: "22px", height: "22px"}}
                             onClick={refreshData}
                         >
                             <svg width="14px" viewBox="0 0 24 24"><path fill="none" stroke="#555" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                         </span>
                     </div>
+                    <ButtonGroup 
+                        value={dataType}
+                        choices={["articles", "team", "shop"]}
+                        onChange={handleSetDataType}
+                    />
+                </div>
+
+                <div className="px-3 mt-2">
+                    <label className="text-md">Number of records</label>
                     <div>
                         <form
                             className="w-full"
@@ -130,6 +156,7 @@ function Grid({value, onClose}){
                                 className="m-0 w-full"
                                 type="number"
                                 placeholder="Set input width here..."
+                                uxp-quiet="true"
                                 value={numberOfRecords}
                                 onChange={e => setNumberOfRecords(e.target.value)}
                             />
@@ -137,50 +164,57 @@ function Grid({value, onClose}){
                     </div>
                 </div>
 
-                <div className="px-3 mt-2 flex flex-col items-start">
-                    <label className="mb-1 text-md">No. of columns</label>
-
-                    <ButtonGroup
-                        value={columns}
-                        choices={columnChoices}
-                        onChange={handleSetColumns}
+                <div className="px-3 mt-2">
+                    <ComponentFieldEditor 
+                        field={{
+                            type: "number",
+                            label: "No. of columns",
+                            min: 2,
+                            max: 12,
+                            value: columns,
+                        }}
+                        onChange={(_id, val) =>
+                            handleSetColumns(val)
+                        }
                     />
                 </div>
 
+
                 <div className="px-3 mt-3">
-                    <label className="text-md">Column space</label>
-                    <div>
-                        <input className="w-full" type="range" min="0" max="40"
-                            value={columnSpacing}
-                            onChange={(e) => handleSetColumnSpacing(parseInt(e.target.value))}
+                    <ComponentFieldEditor 
+                        field={{
+                            type: "number",
+                            label: "Column space",
+                            min: 0,
+                            max: 100,
+                            value:columnSpacing,
+                        }}
+                        onChange={(_id, val) =>
+                            handleSetColumnSpacing(parseInt(val))
+                        }
+                    />
+
+                    { rowCount > 1 &&
+                        <ComponentFieldEditor 
+                            field={{
+                                type: "number",
+                                label: "Row space",
+                                min: 0,
+                                max: 100,
+                                value:rowSpacing,
+                            }}
+                            onChange={(_id, val) =>
+                                handleSetRowSpacing(parseInt(val))
+                            }
                         />
-                    </div>
+                    }
                 </div>
 
-                { rowCount > 1 &&
-                    <div className="px-3 mt-3">
-                        <label className="text-md">Row space</label>
-                        <div>
-                            <input className="w-full" type="range" min="0" max="40"
-                                value={rowSpacing}
-                                onChange={(e) => handleSetRowSpacing(parseInt(e.target.value))}
-                            />
-                        </div>
-                    </div>
-                }
 
                 <div className="mt-3">
                     <label className="text-blue flex mt-3 mb-3 text-sm tracking-widest px-3 pb-1 border-b border-black26">
                         CARD PROPS
                     </label>
-                </div>
-
-                <div className="px-3 pt-1 mt-3">
-                    <div className="flex items-center justify-between">
-                        <label className="text-md">Overlay Text</label>
-                        
-                        <Toggle checked={overlay} onChange={handleSetOverlay} />
-                    </div>
                 </div>
 
                 <div className="px-3 mt-3">
@@ -210,7 +244,7 @@ function Grid({value, onClose}){
                         <div className="mt-1">
                             <ButtonGroup 
                                 value={cornerRadius}
-                                choices={["none", "sm", "md", "lg"]}
+                                choices={["none", "sm", "md", "lg", "full"]}
                                 onChange={handleSetCornerRadius}
                             />
                         </div>
@@ -259,17 +293,51 @@ function Grid({value, onClose}){
                     </label>
                 </div>
 
-                <div className="px-3 mt-3">
+                <div className="px-3 pt-1 mt-3">
                     <div className="flex items-center justify-between">
-                        <label className="text-md">Show rating</label>
+                        <label className="text-md">Overlay Content</label>
                         
-                        <Toggle checked={showRating} onChange={handleSetShowRating} />
+                        <Toggle checked={overlay} onChange={handleSetOverlay} />
                     </div>
                 </div>
 
                 <div className="px-3 mt-3">
+                    <label className="block text-md">Placement</label>
+                    
+                    <ButtonGroup 
+                        value={contentPlacement}
+                        choices={[
+                            {label: "Left", value: "bottomLeft"}, 
+                            {label: "Center", value: "bottomCenter"}, 
+                            // {label: "C-C", value: "center"}
+                        ]}
+                        onChange={handleSetContentPlacement}
+                    />
+                </div>
+
+                <div className={`px-3 mt-3 ${showRating && 'py-2 bg-white'}`}>
                     <div className="flex items-center justify-between">
-                        <label className="text-md">Show title</label>
+                        <label className="text-md">Rating</label>
+                        
+                        <Toggle checked={showRating} onChange={handleSetShowRating} />
+                    </div>
+
+                    {showRating &&
+                        <div className="pt-3 flex items-center justify-between">
+                            <label className="block text-md">Color</label>
+                            
+                            <ColorList 
+                                colors={["#FF385C", "#F7CD42"]}
+                                selectedColor={value.rating ? value.rating.color : null}
+                                onChange={handleSetRatingColor}
+                            />
+                        </div>
+                    }
+                </div>
+
+                <div className="px-3 mt-3">
+                    <div className="flex items-center justify-between">
+                        <label className="text-md">Title</label>
                         
                         <Toggle checked={showTitle} onChange={handleSetShowTitle} />
                     </div>
@@ -277,7 +345,7 @@ function Grid({value, onClose}){
 
                 <div className="px-3 mt-3">
                     <div className="flex items-center justify-between">
-                        <label className="text-md">Show description</label>
+                        <label className="text-md">Description</label>
                         
                         <Toggle checked={showDescription} onChange={handleSetShowDescription} />
                     </div>
@@ -285,7 +353,7 @@ function Grid({value, onClose}){
 
                 <div className="px-3 mt-3">
                     <div className="flex items-center justify-between">
-                        <label className="text-md">Show price</label>
+                        <label className="text-md">Price</label>
                         
                         <Toggle checked={showPrice} onChange={handleSetShowPrice} />
                     </div>

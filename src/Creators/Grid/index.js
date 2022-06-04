@@ -1,4 +1,5 @@
 const { selection } = require("scenegraph");
+const viewport = require("viewport");
 
 const { editDom, getAssetFileFromPath, placeInParent, tagNode } = require("../../utils");
 
@@ -13,10 +14,12 @@ async function Grid(userProps){
         ...(userProps || {})
     };
 
-    const gridImages = await getAssetFileFromPath("images/grid", "jpg", true);
+    const dataType = props.dataType || "articles";
+    const gridImages = await getAssetFileFromPath("images/" + dataType, "jpg", true);
+    const imageNames = gridImages.map(e => e.name.replace(".jpg", ""));
 
     if(!props.data || !props.data.length || props.refreshData){
-        props.data = generateData(props.numberOfRecords);
+        props.data = generateData(props.numberOfRecords, dataType, imageNames);
         delete props.refreshData;
     }
     else{
@@ -28,7 +31,7 @@ async function Grid(userProps){
         else if(props.data.length < props.numberOfRecords){
             props.data = [
                 ...props.data,
-                ...generateData(props.numberOfRecords - props.data.length)
+                ...generateData(props.numberOfRecords - props.data.length, dataType, imageNames)
             ];
         }
     }
@@ -60,8 +63,9 @@ async function Grid(userProps){
                     placeInParent(grid, oldGrid.topLeftInParent);
                     oldGrid.removeFromParent();
                 }
-                else
-                    placeInParent(grid, {x: 0, y: 0});
+                else {
+                    placeInParent(grid, {x: 0, y: viewport.bounds.y});
+                }
             } catch (error) {
                 console.log("Error creating grid: ", error);
             }

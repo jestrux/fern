@@ -1,6 +1,6 @@
 const { SceneNode, selection, Color, LinearGradient, ImageFill, Rectangle, Shadow, Text } = require("scenegraph");
 const commands = require("commands");
-const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode } = require("../../utils");
+const { placeInParent, createBorder, insertNode, getPadding, createText, getGroupChildByName, chunkArray, tagNode, createRectangle } = require("../../utils");
 const gridRatingComponent = require("./components/rating");
 const updateRating = require("./components/rating/updateRating");
 
@@ -30,7 +30,7 @@ function getGradient({aspectRatio, imageHeight}){
 }
 
 function getCornerRadius({cornerRadius, shadow, border}, forImage){
-    const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16 };
+    const radiusMap = { 'none': 0, 'sm': 6, 'md': 8, 'lg': 16, 'full': 9999 };
     let radius = radiusMap[cornerRadius];
     if(forImage && (shadow || border))
         radius *= 0.65;
@@ -57,12 +57,14 @@ function getShadow(shadow){
 
 function createCard(props){
     let { 
+        cornerRadius,
         aspectRatio = 'landscape', 
         width = 450,
         padding,
         border,
         shadow,
         overlay,
+        contentPlacement,
         showRating,
         showPrice,
         showTitle,
@@ -70,6 +72,9 @@ function createCard(props){
         spaceAroundImage,
         data
     } = props;
+
+    const centerContent = ["center", "bottomCenter"].includes(contentPlacement);
+    const imageIsCircle = cornerRadius == "full" && aspectRatio == "sqr";
 
     const {
         image, title, description, price, rating
@@ -85,8 +90,9 @@ function createCard(props){
     else if(aspectRatio == 'sqr')
         imageHeight = width * 1;
 
-    const cardImage = new Rectangle();
-    cardImage.resize(width, imageHeight);
+    const cardImage = createRectangle(width, imageHeight, {
+        border: true,
+    });
     
     try {
         cardImage.fill = image;
@@ -126,6 +132,7 @@ function createCard(props){
     if(showTitle){
         cardTitle = createText(title, {
             name: "Title", 
+            align: centerContent ? "center" : "left",
             fill: overlay ? new Color("white", 0.8) : new Color("#000"), 
             width: width - (!overlay && spaceAroundImage ? 0 : (padding * 2)), 
             height: showDescription || showPrice ? 21 : null, 
@@ -140,6 +147,7 @@ function createCard(props){
         const descriptionText = descriptionArray.slice(0, 20).join(" ") + (descriptionArray.length > 20 ? "..." : "");
         cardDescription = createText(descriptionText, {
             name: "Description",
+            align: centerContent ? "center" : "left",
             fill: overlay ? new Color("white", 0.8) : new Color("#6D6D6D"), 
             fontSize: baseTextSize,
             fontStyle: "Regular", lineSpacing: 22,
@@ -167,7 +175,10 @@ function createCard(props){
 
     if(textNodes.length){
         selection.items = textNodes;
-        commands.alignLeft();
+        if(centerContent)
+            commands.alignHorizontalCenter();
+        else
+            commands.alignLeft();
         commands.group();
     
         cardText = selection.items[0];
@@ -228,16 +239,22 @@ function createCard(props){
     
             selection.items = [cardText];
             commands.bringToFront();
-
+            
             let bottomPadding = padding;
-            if(!showDescription && !showPrice) 
-                bottomPadding = cardText.localBounds.height;
+            // if(!showDescription && !showPrice) 
+            //     bottomPadding = cardText.localBounds.height;
 
-            cardText.moveInParentCoordinates(padding, -bottomPadding);
+            cardText.moveInParentCoordinates(
+                padding, 
+                -bottomPadding * (imageIsCircle ? 2 : 1)
+            );
         }
         else{
             selection.items = [cardImage, cardText];
-            commands.alignLeft();
+            if(centerContent)
+                commands.alignHorizontalCenter();
+            else
+                commands.alignLeft();
             commands.group();
     
             cardContent = selection.items[0];

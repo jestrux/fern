@@ -1,6 +1,9 @@
 const defaultGridProps = {
+    data: null,
+    dataType: "articles",
     aspectRatio: "land",
     overlay: false,
+    contentPlacement: "bottomLeft",
     showImage: true,
     showRating: false,
     rating: {
@@ -21,7 +24,6 @@ const defaultGridProps = {
     columns: 4, 
     columnSpacing: 20,
     rowSpacing: 30,
-    data: null,
 };
 
 module.exports = defaultGridProps;

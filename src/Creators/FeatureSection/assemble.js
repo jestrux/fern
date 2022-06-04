@@ -76,7 +76,9 @@ function assembleFeatureSection(props = {}, images) {
   }
   else{
     selection.items = [container, features];
+    commands.alignTop();
     commands.alignLeft();
+    commands.group();
     container.resize(container.localBounds.width, features.localBounds.height);
   }
   
