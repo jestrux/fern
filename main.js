@@ -29841,7 +29841,7 @@ const defaultCTASectionProps = {
     buttons: "Get to know us,  Join the team",
     theme: {
         layout: "horizontal", // "regular", "center"
-        width: 1600, // 1920
+        width: 1920, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
         roundness: "md",
@@ -30278,7 +30278,7 @@ const defaultFAQProps = {
     },
     theme: {
         backgroundColor: "white",
-        width: 1600, // 1920
+        width: 1920, // 1920
         layout: "center",
         color: "black",
         border: false,
@@ -30739,7 +30739,7 @@ const defaultFeatureSectionProps = {
     buttons: "",
     theme: {
         backgroundColor: "white",
-        width: 1600, // 1920
+        width: 1920, // 1920
         layout: "regular",
         color: "black",
         border: false,
@@ -31022,7 +31022,6 @@ function createFooterBackground({ width, height, backgroundColor, border }) {
 
 function assembleFooter(props = {}, images) {
     props = _extends({}, props, images, {
-        width: 1600, //1920, 
         height: 70
         // icons: [
         //     "facebook",
@@ -31061,7 +31060,7 @@ function assembleFooter(props = {}, images) {
             return !slot.includes("about") && !slot.includes("subscribe");
         });
 
-        const containerWidth = props.width == 1920 ? 1600 : 1400;
+        const containerWidth = props.theme.width == 1920 ? 1600 : 1400;
 
         let totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
         let availableWidth = containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - slotsWrapperPadding * 2;
@@ -31406,12 +31405,12 @@ function createFooterSlot(props, components = {}) {
     };
 
     try {
-        const { width, height, alignment = "left" } = props;
+        const { theme, height, alignment = "left" } = props;
 
         let slot;
 
         const slotBg = new Rectangle();
-        slotBg.resize(width / 2, height);
+        slotBg.resize(theme.width / 2, height);
         slotBg.name = "FernFooterSlotBg";
         insertNode(slotBg);
 
@@ -31505,6 +31504,7 @@ const defaultFooterProps = {
     },
     subscribeSection: null,
     theme: {
+        width: 1920,
         backgroundColor: "white",
         color: "#000",
         shadow: true,
@@ -33573,7 +33573,7 @@ const defaultMediaSectionProps = {
     playButton: false,
     theme: {
         backgroundColor: "#F8F7F7",
-        width: 1600,
+        width: 1920,
         color: "black",
         border: false,
         layout: "normal", // "flip-x", "center", "overlay"
@@ -33787,7 +33787,7 @@ function createNavBackground({
   }
 
   const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
+  const containerWidth = width == 1920 ? 1600 : 1400; // 1600;
   container.resize(Math.min(width, containerWidth), height);
   container.fill = new Color("white", 0);
   container.strokeEnabled = false;
@@ -34379,7 +34379,7 @@ const defaultNavbarProps = {
   shoppingCart: false,
   socialMediaIcons: [], //["facebook", "twitter", "instagram"],
   theme: {
-    width: 1600,
+    width: 1920,
     backgroundColor: "white",
     color: "black",
     // themeColor: "#17FD9B",
@@ -34855,7 +34855,7 @@ const defaultSectionTextProps = {
     buttons: "",
     theme: {
         layout: "center", // "regular", "horizontal"
-        width: 1600, // 1920
+        width: 1920, // 1920
         backgroundColor: "transparent",
         color: "black",
         verticalPadding: 65,
@@ -36054,24 +36054,6 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
           "h2",
           { className: "px-0 text-md ml-1" },
           title
-        ),
-        React.createElement(
-          "div",
-          { className: "ml-auto flex items-center" },
-          React.createElement(
-            "button",
-            { className: "mr-2s", "uxp-quiet": "true",
-              onClick: copyProps
-            },
-            "Copy"
-          ),
-          webflow && React.createElement(
-            "button",
-            { className: "", "uxp-quiet": "true",
-              onClick: handleExportToWebflow
-            },
-            "Export"
-          )
         )
       ),
       React.createElement(SectionTitles, { currentSection: section, onChange: setSection })
@@ -36936,13 +36918,13 @@ module.exports = CTA;
 
 const ctaPresets = {
     "vibrant": {
-        props: { "heading": "Ready to embark on your unique writing journey, tell your story and inspire the masses?", "subHeading": "Join many other early stage investors and employees.", "buttons": "Get started now", "theme": { "center": false, "width": 1600, "backgroundColor": "#435cb0", "color": "white", "roundness": "sm", "verticalPadding": 65, "border": null, "heading": { "font": "sans", "brazen": false, "width": 850, "size": "md" }, "subHeading": { "width": 750, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" }, "themeColor": "#ffd26c" }, "thickness": 2, "opacity": 0.5, "layout": "horizontal", "verticalSpacing": "loose" }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
+        props: { "heading": "Ready to embark on your unique writing journey, tell your story and inspire the masses?", "subHeading": "Join many other early stage investors and employees.", "buttons": "Get started now", "theme": { "center": false, "width": 1920, "backgroundColor": "#435cb0", "color": "white", "roundness": "sm", "verticalPadding": 65, "border": null, "heading": { "font": "sans", "brazen": false, "width": 850, "size": "md" }, "subHeading": { "width": 750, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" }, "themeColor": "#ffd26c" }, "thickness": 2, "opacity": 0.5, "layout": "horizontal", "verticalSpacing": "loose" }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
     },
     "quote": {
-        props: { "heading": "\"The amount of luxury even in their most affordable\\npackages is amazing, I was very satisfied and I can not begin to possibly recommend it enough for you to review\"", "subHeading": "Toby Flanderson, Dunder Mifflin", "buttons": "", "theme": { "layout": "center", "width": 1600, "backgroundColor": "transparent", "color": "black", "roundness": "md", "verticalPadding": 65, "border": { "color": "black", "thickness": 2, "opacity": 0.8 }, "heading": { "font": "serif", "brazen": false, "width": 600, "size": "md" }, "subHeading": { "width": 700, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "placement": "center", "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" } } }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
+        props: { "heading": "\"The amount of luxury even in their most affordable\\npackages is amazing, I was very satisfied and I can not begin to possibly recommend it enough for you to review\"", "subHeading": "Toby Flanderson, Dunder Mifflin", "buttons": "", "theme": { "layout": "center", "width": 1920, "backgroundColor": "transparent", "color": "black", "roundness": "md", "verticalPadding": 65, "border": { "color": "black", "thickness": 2, "opacity": 0.8 }, "heading": { "font": "serif", "brazen": false, "width": 600, "size": "md" }, "subHeading": { "width": 700, "size": "lg" }, "buttons": { "icons": true, "iconPlacement": "right", "size": "cta", "roundness": "sm", "reversed": false, "placement": "center", "mainButton": { "icon": "chevron-right", "style": "fill" }, "secondaryButton": { "icon": "chevron-right", "style": "outline" } } }, "name": "FernCTA", "editorSection": "Content", "type": "CTA" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
@@ -38377,7 +38359,7 @@ module.exports = Footer;
 
 const footerPresets = {
     "bluey": {
-        props: { "aboutSection": { "logo": "2", "about": "Making the world a better place by making very elegant visual hierarchies." }, "menu1": { "title": "Company", "links": "Careers, Newsroom, Privacy Policy" }, "menu2": { "title": "About Us", "links": "Services, Our Values, Founding Team" }, "menu3": null, "menu4": null, "menu5": { "title": "Contact Us", "links": "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co" }, "subscribeSection": { "socials": "facebook, twitter, instagram", "subscribe": { "message": "Subscribe to newsletter to get premium content.", "placeholder": "e.g. apwbd@hogwarts.com", "action": "Join" } }, "theme": { "backgroundColor": "#033969", "color": "white", "shadow": true, "border": true, "about": { "width": 310 }, "menu": { "showTitles": false, "title": { "opacity": 0.45 } }, "subscribe": { "width": 360, "roundness": "md", "color": "black" }, "socials": { "opacity": 1 } }, "name": "FernFooter", "title": "Product", "links": "Features, Pricing, Changelog", "editorSection": "Content", "type": "Footer" },
+        props: { "aboutSection": { "logo": "2", "about": "Making the world a better place by making very elegant visual hierarchies." }, "menu1": { "title": "Company", "links": "Careers, Newsroom, Privacy Policy" }, "menu2": { "title": "About Us", "links": "Services, Our Values, Founding Team" }, "menu3": null, "menu4": null, "menu5": { "title": "Contact Us", "links": "Fern HQ, Xd Marketplace, +1 (888) 288-1588, hello@fern.co" }, "subscribeSection": { "socials": "facebook, twitter, instagram", "subscribe": { "message": "Subscribe to newsletter to get premium content.", "placeholder": "e.g. apwbd@hogwarts.com", "action": "Join" } }, "theme": { "width": 1920, "backgroundColor": "#033969", "color": "white", "shadow": true, "border": true, "about": { "width": 310 }, "menu": { "showTitles": false, "title": { "opacity": 0.45 } }, "subscribe": { "width": 360, "roundness": "md", "color": "black" }, "socials": { "opacity": 1 } }, "name": "FernFooter", "title": "Product", "links": "Features, Pricing, Changelog", "editorSection": "Content", "type": "Footer" },
         height: 50,
         fullWidth: true,
         floatingLabel: false
@@ -39277,7 +39259,7 @@ module.exports = MediaSection;
 
 const mediaSectionPresets = {
     "checklist": {
-        props: { "heading": "The 6 week curriculum", "subHeading": "Learn at your own pace and get help is close by when you get stuck on an issue for too long.", "buttons": "", "image": "4", "playButton": false, "theme": { "backgroundColor": "#F8F7F7", "width": 1600, "color": "black", "border": false, "layout": "normal", "verticalPadding": 65, "textNegativeMargin": 16, "heading": { "font": "sans", "brazen": false, "width": 530, "size": "md" }, "subHeading": { "width": 600, "size": "md" }, "checklist": { "width": 600, "iconColor": "#435cb0", "bgOpacity": 0.28 }, "buttons": { "icons": false, "iconPlacement": "right", "size": "md", "roundness": "sm", "reversed": true, "mainButton": { "icon": "", "style": "fill" }, "secondaryButton": { "icon": "", "style": "outline" } }, "image": { "aspectRatio": "portrait", "width": 680, "height": 400, "roundness": "sm" }, "overlay": { "opacity": 0.3, "color": "black" }, "playButton": { "color": "black", "invertColors": false, "smoothCorners": true } }, "name": "FernMedia", "editorSection": "Content", "checklist": true, "type": "MediaSection" },
+        props: { "heading": "The 6 week curriculum", "subHeading": "Learn at your own pace and get help is close by when you get stuck on an issue for too long.", "buttons": "", "image": "4", "playButton": false, "theme": { "backgroundColor": "#F8F7F7", "width": 1920, "color": "black", "border": false, "layout": "normal", "verticalPadding": 65, "textNegativeMargin": 16, "heading": { "font": "sans", "brazen": false, "width": 530, "size": "md" }, "subHeading": { "width": 600, "size": "md" }, "checklist": { "width": 600, "iconColor": "#435cb0", "bgOpacity": 0.28 }, "buttons": { "icons": false, "iconPlacement": "right", "size": "md", "roundness": "sm", "reversed": true, "mainButton": { "icon": "", "style": "fill" }, "secondaryButton": { "icon": "", "style": "outline" } }, "image": { "aspectRatio": "portrait", "width": 680, "height": 400, "roundness": "sm" }, "overlay": { "opacity": 0.3, "color": "black" }, "playButton": { "color": "black", "invertColors": false, "smoothCorners": true } }, "name": "FernMedia", "editorSection": "Content", "checklist": true, "type": "MediaSection" },
         height: 100,
         fullWidth: true,
         floatingLabel: false
@@ -40130,25 +40112,25 @@ module.exports = Navbar;
 
 const navbarPresets = {
     "center-menu-dp": {
-        props: { "leftSlot": { "logo": "2" }, "middleSlot": { "menu": { "links": "Home, About Us, Events, Contact Us", "activeLink": "Home" } }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "dp": "1" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#033969", "color": "#BAC9D6", "shadow": null, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 }, "themeColor": "#44ED95" }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        props: { "leftSlot": { "logo": "2" }, "middleSlot": { "menu": { "links": "Home, About Us, Events, Contact Us", "activeLink": "Home" } }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "dp": "1" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1920, "backgroundColor": "#033969", "color": "#BAC9D6", "shadow": null, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 }, "themeColor": "#44ED95" }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
     },
     "search-social": {
-        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": true }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "facebook, twitter, instagram" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "white", "color": "black", "shadow": true, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": true }, "rightSlot": { "menu": null, "buttons": "", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "facebook, twitter, instagram" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1920, "backgroundColor": "white", "color": "black", "shadow": true, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" } }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
     },
     "minimal": {
-        props: { "leftSlot": { "logo": null, "menu": { "links": "Contribute", "activeLink": "Home" } }, "middleSlot": { "search": false, "logo": "5" }, "rightSlot": { "menu": null, "buttons": "Get Help", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#efeae8", "color": "black", "shadow": false, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "reversed": true }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        props: { "leftSlot": { "logo": null, "menu": { "links": "Contribute", "activeLink": "Home" } }, "middleSlot": { "search": false, "logo": "5" }, "rightSlot": { "menu": null, "buttons": "Get Help", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1920, "backgroundColor": "#efeae8", "color": "black", "shadow": false, "border": null, "persona": "normal", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Medium", "textTransform": "none", "letterSpacing": 18, "fontSize": 16 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "reversed": true }, "socials": { "opacity": 0.5 } }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
         height: 80,
         fullWidth: true,
         floatingLabel: false
     },
     "loud": {
-        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": false, "menu": { "links": "HOME, ABOUT US, EVENTS, CONTACT US", "activeLink": "HOME" } }, "rightSlot": { "menu": null, "buttons": "OPEN SESAME", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1600, "backgroundColor": "#ffc107", "color": "#775A03", "shadow": null, "border": { "color": "black", "thickness": 4, "opacity": 1 }, "persona": "loud", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Condensed Black", "textTransform": "uppercase", "letterSpacing": 50, "fontSize": 22 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "themeColor": "#0083f6" }, "socials": { "opacity": 0.5 }, "themeColor": "#0083F6", "activeIndicator": false }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
+        props: { "leftSlot": { "logo": "4" }, "middleSlot": { "search": false, "menu": { "links": "HOME, ABOUT US, EVENTS, CONTACT US", "activeLink": "HOME" } }, "rightSlot": { "menu": null, "buttons": "OPEN SESAME", "links": "Home, About Us, Events, Contact Us", "activeLink": "Home", "socials": "" }, "activeLink": "Home", "profile": false, "search": false, "shoppingCart": false, "socialMediaIcons": [], "theme": { "width": 1920, "backgroundColor": "#ffc107", "color": "#775A03", "shadow": null, "border": { "color": "black", "thickness": 4, "opacity": 1 }, "persona": "loud", "text": { "fontFamily": "Helvetica Neue", "fontStyle": "Condensed Black", "textTransform": "uppercase", "letterSpacing": 50, "fontSize": 22 }, "buttons": { "size": "sm", "roundness": "sm", "mainButton": { "style": "fill" }, "secondaryButton": { "style": "outline" }, "themeColor": "#0083f6" }, "socials": { "opacity": 0.5 }, "themeColor": "#0083F6", "activeIndicator": false }, "name": "FernNavbar", "editorSection": "Content", "type": "Navbar" },
         height: 80,
         fullWidth: true,
         floatingLabel: false

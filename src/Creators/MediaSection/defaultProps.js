@@ -7,7 +7,7 @@ const defaultMediaSectionProps = {
     playButton: false,
     theme: {
         backgroundColor: "#F8F7F7",
-        width: 1600,
+        width: 1920,
         color: "black",
         border: false,
         layout: "normal", // "flip-x", "center", "overlay"

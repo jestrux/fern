@@ -22,6 +22,7 @@ const defaultFooterProps = {
     },
     subscribeSection: null,
     theme: {
+        width: 1920,
         backgroundColor: "white",
         color: "#000",
         shadow: true,

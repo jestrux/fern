@@ -14,7 +14,7 @@ const defaultNavbarProps = {
   shoppingCart: false,
   socialMediaIcons: [], //["facebook", "twitter", "instagram"],
   theme: {
-    width: 1600,
+    width: 1920,
     backgroundColor: "white",
     color: "black",
     // themeColor: "#17FD9B",

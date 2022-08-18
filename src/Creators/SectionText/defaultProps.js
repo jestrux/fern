@@ -4,7 +4,7 @@ const defaultSectionTextProps = {
     buttons: "",
     theme: {
         layout: "center", // "regular", "horizontal"
-        width: 1600, // 1920
+        width: 1920, // 1920
         backgroundColor: "transparent",
         color: "black",
         verticalPadding: 65,

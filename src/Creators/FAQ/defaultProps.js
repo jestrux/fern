@@ -7,7 +7,7 @@ const defaultFAQProps = {
     },
     theme: {
         backgroundColor: "white",
-        width: 1600, // 1920
+        width: 1920, // 1920
         layout: "center",
         color: "black",
         border: false,

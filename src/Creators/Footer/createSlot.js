@@ -41,12 +41,12 @@ function createFooterSlot(props, components = {}){
     }
 
     try {
-        const { width, height, alignment = "left" } = props;
+        const { theme, height, alignment = "left" } = props;
 
         let slot;
 
         const slotBg = new Rectangle();
-        slotBg.resize(width / 2, height);
+        slotBg.resize(theme.width / 2, height);
         slotBg.name = "FernFooterSlotBg";
         insertNode(slotBg);
 

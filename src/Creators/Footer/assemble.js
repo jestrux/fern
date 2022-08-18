@@ -30,7 +30,6 @@ function assembleFooter(props = {}, images){
     props = {
         ...props,
         ...images,
-        width: 1600, //1920, 
         height: 70, 
         // icons: [
         //     "facebook",
@@ -78,7 +77,7 @@ function assembleFooter(props = {}, images){
             return !slot.includes("about") && !slot.includes("subscribe");
         });
 
-        const containerWidth = props.width == 1920 ? 1600 : 1400;
+        const containerWidth = props.theme.width == 1920 ? 1600 : 1400;
 
         let totalSpaceBetweenSlots = (slots.length - 1) * spaceBetweenSlots;
         let availableWidth = (containerWidth - fixedSlotSpace - totalSpaceBetweenSlots - (slotsWrapperPadding * 2));

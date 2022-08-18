@@ -40,7 +40,7 @@ function createNavBackground({
   }
 
   const container = new Rectangle();
-  const containerWidth = 1400; // 1600;
+  const containerWidth = width == 1920 ? 1600 : 1400; // 1600;
   container.resize(Math.min(width, containerWidth), height);
   container.fill = new Color("white", 0);
   container.strokeEnabled = false;

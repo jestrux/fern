@@ -62,7 +62,7 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
 
           <h2 className="px-0 text-md ml-1">{title}</h2>
 
-          <div className="ml-auto flex items-center">
+          {/* <div className="ml-auto flex items-center">
             <button className="mr-2s" uxp-quiet="true"
               onClick={copyProps}
             >
@@ -76,7 +76,7 @@ const ComponentPage = function ({ title, onClose, schema, data, webflow, presets
                 Export
               </button>
             }
-          </div>
+          </div> */}
         </div>
 
         <SectionTitles currentSection={section} onChange={setSection} />

@@ -4,7 +4,7 @@ const defaultFeatureSectionProps = {
     buttons: "",
     theme: {
         backgroundColor: "white",
-        width: 1600, // 1920
+        width: 1920, // 1920
         layout: "regular",
         color: "black",
         border: false,

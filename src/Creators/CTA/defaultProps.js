@@ -4,7 +4,7 @@ const defaultCTASectionProps = {
     buttons: "Get to know us,  Join the team",
     theme: {
         layout: "horizontal", // "regular", "center"
-        width: 1600, // 1920
+        width: 1920, // 1920
         backgroundColor: "transparent", // "#eee",
         color: "black",
         roundness: "md",
